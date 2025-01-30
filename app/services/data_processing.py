@@ -2,7 +2,7 @@
 
 import polars as pl
 from taipy.gui import Icon
-from services.database_service import create_connection, load_table_from_db
+from app.services.database_service import create_connection, load_table_from_db
 
 def load_contracts() -> pl.DataFrame:
     db_config = create_connection()

@@ -2,7 +2,7 @@
 
 import polars as pl
 from taipy.gui import navigate, notify
-from services.data_processing import load_contracts, load_salaries
+from app.services.data_processing import load_contracts, load_salaries
 
 def calculate_new_salary(df: pl.DataFrame) -> pl.DataFrame:
     """

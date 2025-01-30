@@ -3,16 +3,13 @@ import logging
 import pandas as pd
 import polars as pl
 import psycopg2
-from config.config import db_config
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 import rpy2.rinterface_lib as rinterface_lib
 from datetime import datetime
 import numpy as np
-from services.ffscrapr import *
-import sys
-sys.path.append('./adl_contract_admin')
-
+from app.services.ffscrapr import *
+from app.config.config import db_config
 
 def create_connection():
     """Verbindet sich mit der PostgreSQL-Datenbank anhand der Konfiguration in db_config."""
