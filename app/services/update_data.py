@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from app.services.database_service import create_connection, load_franchises, load_rosters, calculate_and_save_contracts, load_playerscores
+from services.database_service import create_connection, load_franchises, load_rosters, calculate_and_save_contracts, load_playerscores
 
 # Importiere Konfigurationsvariablen
 from config.config import START_YEAR, DEFAULT_SEASON, LEAGUE_ID

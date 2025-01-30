@@ -35,4 +35,4 @@ ENV PORT=5000
 EXPOSE $PORT
 
 # Starte die Anwendung
-CMD ["python", "main.py"]
+CMD ["python", "app/main.py"]
