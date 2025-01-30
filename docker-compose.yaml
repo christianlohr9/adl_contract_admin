@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  web:
+    image: taipy-app
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=adl_data
+      - DB_USER=postgres
+      - DB_PASSWORD=jD5rb#qojM4Ki%
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: jD5rb#qojM4Ki%
+      POSTGRES_DB: adl_data
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/dump.sql:/docker-entrypoint-initdb.d/backup.sql  # Pfad zur Dump-Datei anpassen
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d adl_data"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+
+  
