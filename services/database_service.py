@@ -10,6 +10,9 @@ import rpy2.rinterface_lib as rinterface_lib
 from datetime import datetime
 import numpy as np
 from services.ffscrapr import *
+import sys
+sys.path.append('./app')
+
 
 def create_connection():
     """Verbindet sich mit der PostgreSQL-Datenbank anhand der Konfiguration in db_config."""
