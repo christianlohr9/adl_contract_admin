@@ -11,7 +11,7 @@ from datetime import datetime
 import numpy as np
 from services.ffscrapr import *
 import sys
-sys.path.append('./app')
+sys.path.append('./adl_contract_admin')
 
 
 def create_connection():
