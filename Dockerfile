@@ -15,9 +15,10 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Setze die Umgebungsvariablen für R
+# Setze die Umgebungsvariablen für R und Pythonpath
 ENV R_HOME=/usr/lib/R
 ENV PATH="${R_HOME}/bin:${PATH}"
+ENV PYTHONPATH="/app"
 
 # Kopiere die requirements.txt Datei in das Arbeitsverzeichnis
 COPY requirements.txt .
