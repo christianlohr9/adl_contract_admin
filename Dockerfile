@@ -18,7 +18,7 @@ RUN apt-get update && \
 # Setze die Umgebungsvariablen für R und Pythonpath
 ENV R_HOME=/usr/lib/R
 ENV PATH="${R_HOME}/bin:${PATH}"
-ENV PYTHONPATH="/app"
+ENV PYTHONPATH="/adl_contract_admin/app"
 
 # Kopiere die requirements.txt Datei in das Arbeitsverzeichnis
 COPY requirements.txt .
