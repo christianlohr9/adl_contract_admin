@@ -2,13 +2,13 @@
 
 import os
 
-# Absoluter Pfad zur Datenbank
+# Absoluter Pfad zur externen Render-Datenbank
 db_config = {
-    "host": os.getenv("DB_HOST", "localhost"),      # Standardwert: "localhost"
+    "host": os.getenv("DB_HOST", "localhost"),      # Hier wird der Wert von DB_HOST erwartet
     "port": int(os.getenv("DB_PORT", 5432)),        # Standardwert: 5432
-    "dbname": os.getenv("DB_NAME", "adl_data"),     # Standardwert: "taipy_db"
-    "user": os.getenv("DB_USER", "postgres"),           # Standardwert: "postgres"
-    "password": os.getenv("DB_PASSWORD", "jD5rb#qojM4Ki%") # Standardwert: "password"
+    "dbname": os.getenv("DB_NAME", "adl_data"),     # Standardwert: "adl_data"
+    "user": os.getenv("DB_USER", "adl_data_user"),           # Dein Benutzername
+    "password": os.getenv("DB_PASSWORD", "6YpiBm5BJCR6ABi9IELdCN9MqXLcGvIF")  # Dein Passwort
 }
 
 # Andere Konstanten

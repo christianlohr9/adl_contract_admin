@@ -7,17 +7,17 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - DB_HOST=db
+      - DB_HOST=dpg-cuke2v5umphs73bcnhu0-a.a.render.com      # Externer Host für Render-Datenbank
       - DB_PORT=5432
       - DB_NAME=adl_data
-      - DB_USER=postgres
-      - DB_PASSWORD=jD5rb#qojM4Ki%
+      - DB_USER=adl_data_user
+      - DB_PASSWORD=6YpiBm5BJCR6ABi9IELdCN9MqXLcGvIF         # Dein Passwort aus Render
     depends_on:
       db:
         condition: service_healthy
 
   db:
-    image: postgres:16 
+    image: postgres:16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: jD5rb#qojM4Ki%
@@ -30,4 +30,3 @@ services:
       retries: 5
       start_period: 10s
 
-  
