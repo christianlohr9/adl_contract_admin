@@ -7,11 +7,11 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - DB_HOST=dpg-cuke2v5umphs73bcnhu0-a.a.render.com      # Externer Host für Render-Datenbank
+      - DB_HOST=dpg-cuke2v5umphs73bcnhu0-a.frankfurt-postgres.render.com  # Korrekte externe Adresse!
       - DB_PORT=5432
       - DB_NAME=adl_data
       - DB_USER=adl_data_user
-      - DB_PASSWORD=6YpiBm5BJCR6ABi9IELdCN9MqXLcGvIF         # Dein Passwort aus Render
+      - DB_PASSWORD=6YpiBm5BJCR6ABi9IELdCN9MqXLcGvIF  # ⚠️ Optional in `.env` auslagern!
     depends_on:
       db:
         condition: service_healthy
