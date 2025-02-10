@@ -56,4 +56,4 @@ def menu_action(state, action, payload):
 
 # Taipy GUI starten
 gui = Gui(pages=pages)
-gui.run(run_browser=True, use_reloader=True)
+gui.run(host="0.0.0.0", port=5000, run_browser=True, use_reloader=True)
