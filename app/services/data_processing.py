@@ -43,10 +43,11 @@ def get_unique_teams() -> list:
     unique_contracts_df = contracts_df.unique(subset=["franchise_name"]).sort("division")
 
     # Teams-Liste erstellen
-    teams = [
-        (row["franchise_name"], Icon(row["logo"], row["franchise_name"]))
-        for row in unique_contracts_df.iter_rows(named=True)
-    ]
+    # teams = [
+    #     (row["franchise_name"], Icon(row["logo"], row["franchise_name"]))
+    #     for row in unique_contracts_df.iter_rows(named=True)
+    # ]
+    teams = unique_contracts_df.select("franchise_name").to_series().to_list()
 
     return teams
 
