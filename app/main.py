@@ -20,14 +20,11 @@ selected_team = teams[0]
 selected_season = seasons[0]
 selected_weeks = weeks[0]
 
-print(f"Teams: {selected_team}, Type: {type(selected_team)}")
-print(f"Seasons: {seasons}, Type: {type(seasons)}")
-print(f"Weeks: {weeks}, Type: {type(weeks)}")
-
 # Seiten- und Filterlogik
 def filter_and_navigate(state):
     state.filtered_df = filter_table(state.selected_team[0], state.selected_season)
-    state.filtered_df["week"] = state.selected_weeks
+    # state.filtered_df = state.filtered_df.with_columns(week=state.selected_weeks)
+    state.filtered_df = state.filtered_df.assign(week=state.selected_weeks)
     navigate(state, "extension")
     notify(state, "success", f'Clicked on team: {state.selected_team[0]}')
 

@@ -1,5 +1,5 @@
 # data_processing.py
-
+import pandas as pd
 import polars as pl
 from taipy.gui import Icon
 from services.database_service import create_connection, load_table_from_db

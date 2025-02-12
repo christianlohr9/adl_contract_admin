@@ -4,11 +4,11 @@ import os
 
 # Render-Datenbank-Konfiguration
 db_config = {
-    "host": os.getenv("DB_HOST", "dpg-cuke2v5umphs73bcnhu0-a.frankfurt-postgres.render.com"),  # Externer Hostname!
-    "port": int(os.getenv("DB_PORT", 5432)),  # Standardport für PostgreSQL
-    "dbname": os.getenv("DB_NAME", "adl_data"),
-    "user": os.getenv("DB_USER", "adl_data_user"),
-    "password": os.getenv("DB_PASSWORD", "6YpiBm5BJCR6ABi9IELdCN9MqXLcGvIF")  # ⚠️ Niemals direkt im Code speichern!
+    "host": os.getenv("DB_HOST", "aws-0-eu-central-1.pooler.supabase.com"),  # Externer Hostname!
+    "port": int(os.getenv("DB_PORT", 6543)),  # Standardport für PostgreSQL
+    "dbname": os.getenv("DB_NAME", "postgres"),
+    "user": os.getenv("DB_USER", "postgres.dvgannvtzcvqnpdxrvno"),
+    "password": os.getenv("DB_PASSWORD", "w5b^b4XmNfAo7v")  # ⚠️ Niemals direkt im Code speichern!
 }
 
 # Andere Konstanten
