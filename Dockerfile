@@ -30,7 +30,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Setze die Umgebungsvariable für den Port, auf dem die App laufen soll
-ENV PORT=5000
+ENV PORT=8080
 
 # Exponiere den Port, auf dem die App laufen soll
 EXPOSE $PORT
