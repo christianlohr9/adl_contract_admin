@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 1 of 8 (Rules Extraction)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-10 — Completed 01-01-PLAN.md
+Last activity: 2026-03-10 — Completed 01-02-PLAN.md
 
-Progress: █░░░░░░░░░ 4%
+Progress: ██░░░░░░░░ 8%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 5 min
-- Total execution time: 5 min
+- Total plans completed: 2
+- Average duration: 6 min
+- Total execution time: 12 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 - Rules Extraction | 1 | 5 min | 5 min |
+| 1 - Rules Extraction | 2 | 12 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min)
+- Last 5 plans: 01-01 (5 min), 01-02 (7 min)
 - Trend: —
 
 ## Accumulated Context
@@ -44,6 +44,7 @@ Recent decisions affecting current work:
 |-------|----------|-----------|
 | 01-01 | Used pay-in table value ($3,810) for prize pool | Bylaws has internal inconsistency; pay-in table is more reliable |
 | 01-01 | Renamed neft_bid_error_penalty to bid_error_penalty | Applies to both NEFT and RFA auctions per bylaws |
+| 01-02 | Bylaws wins over old EPV code on floor calculation | Old code uses 100% floor; bylaws specifies 75% — documented as epv_code_discrepancy |
 
 ### Deferred Issues
 
@@ -56,5 +57,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-10
-Stopped at: Completed 01-01-PLAN.md
-Resume file: .planning/phases/01-rules-extraction/01-02-PLAN.md
+Stopped at: Completed 01-02-PLAN.md
+Resume file: .planning/phases/01-rules-extraction/01-03-PLAN.md
