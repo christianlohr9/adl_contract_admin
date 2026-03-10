@@ -23,6 +23,8 @@ ENV PATH="/app/.venv/bin:$PATH" PYTHONPATH="/app/src"
 
 WORKDIR /app
 COPY --from=builder /app/src /app/src
+COPY migrations/ migrations/
+COPY alembic.ini .
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

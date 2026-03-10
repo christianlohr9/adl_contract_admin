@@ -28,6 +28,9 @@ src = ["src"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "SIM", "TCH"]
 
+[tool.ruff.lint.per-file-ignores]
+"migrations/versions/*.py" = ["E501", "UP", "I", "F401"]
+
 [tool.mypy]
 python_version = "3.13"
 strict = true
