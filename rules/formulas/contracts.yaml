@@ -1,0 +1,57 @@
+rookie_minimum_salary:
+  description: >
+    ADL rookie (UDFA) minimum salary, set each offseason by smoothing the NFL's rookie minimum
+    salary over 3 years of a UDFA contract using the 10% annual salary inflation rate.
+  formula: "ROUND_TO_NEAREST_10K( (NFL_rookie_min_yr1 + NFL_rookie_min_yr2 * 1.1 + NFL_rookie_min_yr3 * 1.1^2) / (1 + 1.1 + 1.1^2) )"
+  variables:
+    NFL_rookie_min_yr1: "NFL rookie minimum salary in the current year"
+    NFL_rookie_min_yr2: "NFL rookie minimum salary in the following year (year 2 of UDFA contract)"
+    NFL_rookie_min_yr3: "NFL rookie minimum salary in year 3 of UDFA contract"
+  example: >
+    2025: ($840k + $885k * 1.1 + $930k * 1.1^2) / (1 + 1.1 + 1.21) =
+    ($840k + $973.5k + $1125.3k) / 3.31 = $2938.8k / 3.31 = $887.9k,
+    rounded to $890k = $0.89m, displayed as $0.90m (per contracts.md table).
+  notes: >
+    The bylaws state: "the NFL's rookie minimum smoothed over 3 years of a UDFA contract."
+    In 2025 the bylaws show the formula as ($840k + $1005k + $1120k) / (1 + 1.1 + 1.1^2) = $900k.
+    The numerator values ($1005k, $1120k) appear to be the NFL rookie minimums for years 2
+    and 3 already multiplied by 1.1 factors, confirming the smoothing uses 10% inflation.
+
+annual_salary_inflation:
+  description: >
+    At the beginning of every offseason, all player contract salaries increase by 10%,
+    unless tolled due to a full-year (or multi-year) suspension or holdout.
+  formula: "new_salary = current_salary * 1.10"
+  variables:
+    current_salary: "Player's contract salary from the previous season"
+  notes: >
+    Tolled contracts (suspension or holdout for the full year) do not receive the increase.
+    The 10% rate is stored in contracts.json as salary_growth_rate.
+
+veteran_minimum_salary:
+  description: >
+    ADL veteran (UFA) minimum salary, set at the NFL's minimum salary for players
+    with 2 accrued seasons, modeling the NFL's Veteran Salary Benefit rule.
+  formula: "NFL_veteran_minimum_2_accrued_seasons"
+  variables:
+    NFL_veteran_minimum_2_accrued_seasons: "NFL minimum salary for players with 2 accrued seasons"
+  notes: >
+    This is a direct adoption of an NFL value, not a computed formula.
+    Values are stored in contracts.json as veteran_minimum_by_year.
+
+udfa_auction_budget:
+  description: >
+    Each team's UDFA auction budget, representing signing bonus money for undrafted rookies.
+  formula: "ROUND_TO_NEAREST_1000( 0.81 * NFL_Undrafted_Rookie_Reservation )"
+  variables:
+    NFL_Undrafted_Rookie_Reservation: "NFL's Undrafted Rookie Reservation amount from the CBA"
+  fallback_formula: "prior_year_budget * (current_rookie_pool / prior_rookie_pool)"
+  fallback_variables:
+    prior_year_budget: "Previous year's ADL UDFA auction budget"
+    current_rookie_pool: "Sum of all 96 Year 1 Drafted Rookie Salaries for current year"
+    prior_rookie_pool: "Sum of all 96 Year 1 Drafted Rookie Salaries for prior year"
+  notes: >
+    The 0.81 multiplier mirrors the ADL salary cap formula multiplier.
+    2025: 0.81 * ~$201k = ~$163k, budget set at $163,000.
+    Fallback formula is used when the NFL Undrafted Rookie Reservation is not easily ascertained.
+
