@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__
+*.pyc
+.planning
+.env
+.github
+archive
+node_modules
