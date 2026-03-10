@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 3 in progress — MFL API Integration
+**Current focus:** Phase 3 complete — ready for Phase 4 (Contract Engine)
 
 ## Current Position
 
 Phase: 3 of 8 (MFL API Integration)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-03-10 — Completed 03-03-PLAN.md
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-03-10 — Completed 03-04-PLAN.md
 
-Progress: █████████░ 36%
+Progress: ██████████░░░░░░░░░░ 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 4 min
-- Total execution time: 40 min
+- Total execution time: 44 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: █████████░ 36%
 |-------|-------|-------|----------|
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
-| 3 - MFL API Integration | 3 | 10 min | 3 min |
+| 3 - MFL API Integration | 4 | 14 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (5 min), 02-03 (6 min), 03-01 (4 min), 03-02 (2 min), 03-03 (4 min)
+- Last 5 plans: 02-03 (6 min), 03-01 (4 min), 03-02 (2 min), 03-03 (4 min), 03-04 (4 min)
 - Trend: —
 
 ## Accumulated Context
@@ -64,6 +64,10 @@ Recent decisions affecting current work:
 | 03-03 | ContractType set to NG placeholder for all contracts | Phase 4 contract engine will classify NG/SD/FG properly |
 | 03-03 | Salary parsed via float(Decimal(str)) | Preserve precision during conversion, match Contract model float field |
 | 03-03 | sync_historical_scores uses async context manager factory | Year-scoped MFL clients need separate instances per season |
+| 03-04 | APScheduler 4.x alpha (>=4.0.0a1) for AsyncScheduler | v3.x lacks async support needed for FastAPI integration |
+| 03-04 | BackgroundTasks for manual sync trigger | Non-blocking 202 response, appropriate for one-off triggered tasks |
+| 03-04 | Single transaction for full sync atomicity | All four sync steps committed together or rolled back together |
+| 03-04 | No sync on startup | Only on schedule interval or manual trigger to avoid blocking app start |
 
 ### Deferred Issues
 
@@ -76,5 +80,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-10
-Stopped at: Completed 03-03-PLAN.md
-Resume file: None — ready for 03-04-PLAN.md
+Stopped at: Completed 03-04-PLAN.md — Phase 3 complete
+Resume file: None — ready for Phase 4 planning

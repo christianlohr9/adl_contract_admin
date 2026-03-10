@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
 - [x] **Phase 2: Foundation** — Complete
-- [ ] **Phase 3: MFL API Integration** - In progress (3/4 plans)
+- [x] **Phase 3: MFL API Integration** — Complete
 - [ ] **Phase 4: Contract Engine** - Port EPV logic, build all contract tools
 - [ ] **Phase 5: Salary Cap & Validation** - Cap penalties and eligibility checks
 - [ ] **Phase 6: API Layer** - FastAPI REST endpoints for all resources
@@ -60,7 +60,7 @@ Plans:
 - [x] 03-01: MFL API client and response models
 - [x] 03-02: Implement MFL data sync module
 - [x] 03-03: Sync rosters, contracts, and player scores
-- [ ] 03-04: Background sync scheduler and manual trigger endpoint
+- [x] 03-04: Background sync scheduler and manual trigger endpoint
 
 ### Phase 4: Contract Engine
 **Goal**: Port EPV calculation logic from old codebase and build the full contract tools engine — extensions (X-A/B), franchise/transition tags (X-C), ERFA tenders (X-D), buyouts/restructures (X-E)
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
 | 2. Foundation | 3/3 | Complete | 2026-03-10 |
-| 3. MFL API Integration | 3/4 | In progress | - |
+| 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
 | 4. Contract Engine | 0/4 | Not started | - |
 | 5. Salary Cap & Validation | 0/2 | Not started | - |
 | 6. API Layer | 0/3 | Not started | - |
