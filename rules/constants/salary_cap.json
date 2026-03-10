@@ -1,0 +1,75 @@
+{
+  "salary_cap_formula_multiplier": 0.81,
+  "nfl_salary_cap_2025": 279.2,
+  "adl_salary_cap_2025": 226.2,
+  "max_rollover_pct": 0.10,
+  "rollover_rounding": 0.01,
+  "excess_cap_space_inactivity_threshold_pct": 0.20,
+  "salary_cap_snapshot_weeks": [3, 7, 11, 16],
+  "salary_cap_snapshot_time_et": "20:30",
+  "snapshot_expenditure_components": [
+    "active_and_ir_salaries_plus_cap_penalties",
+    "temporarily_eligible_taxi_squad",
+    "veteran_minimum_per_unpaid_spot_below_45"
+  ],
+  "unpaid_roster_spot_charge_2025": 1.0,
+  "unpaid_roster_spot_basis": "veteran_minimum",
+  "unpaid_roster_spot_count_basis": 45,
+  "cap_penalty_rates": {
+    "NG": {
+      "year1_pct": 0.0,
+      "additional_years_pct_per_year": 0.0
+    },
+    "SD": {
+      "year1_pct": 0.60,
+      "additional_years_pct_per_year": 0.30
+    },
+    "FG": {
+      "year1_pct": 1.0,
+      "additional_years_annual_increase": 0.10,
+      "multi_year_split_year1_rounded": "up",
+      "multi_year_split_year2_rounded": "down"
+    }
+  },
+  "cap_penalty_rounding": 0.01,
+  "cap_penalty_acceleration": {
+    "cutoff_date": "July 1",
+    "pre_cutoff": "lump_sum_current_year",
+    "post_cutoff": "year1_now_additional_years_next_year",
+    "july_1_tenders_per_team": 2,
+    "july_1_tender_declare_hours": 24,
+    "july_1_tender_returned_if_claimed": true
+  },
+  "trade_cash": {
+    "increment": 0.01,
+    "max_net_pct_of_adl_cap": 0.05,
+    "max_net_2025": 11.31,
+    "requires_sd_minimum_contract_or_1st_2nd_pick": true
+  },
+  "bid_error_penalty_pct": 0.01,
+  "bid_error_penalty_2025": 2.26,
+  "bid_error_penalty_rounding": 0.01,
+  "auction_parameters": {
+    "starting_bid": 1.0,
+    "bid_increment": 0.10,
+    "clock_hours": 24,
+    "max_players_on_board": 100,
+    "max_nominations_per_franchise": 6,
+    "proxy_bidding": true
+  },
+  "suspended_player_penalty_discount": 0.50,
+  "retired_player_penalty": 0.0,
+  "deceased_player_penalty": 0.0,
+  "future_deposit_thresholds": {
+    "draft_capital_points_minimum": 6,
+    "draft_capital_points_values": {
+      "future_1st_round": 2,
+      "future_2nd_round": 1,
+      "future_3rd_round": 0.5
+    },
+    "contract_years_threshold": 100,
+    "future_cap_space_threshold_pct": 0.10,
+    "future_cap_space_threshold_2025": 22.62
+  },
+  "security_deposit_amount": "next_season_league_fee"
+}

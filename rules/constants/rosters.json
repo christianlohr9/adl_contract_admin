@@ -1,0 +1,71 @@
+{
+  "roster_limits": {
+    "early_offseason": {
+      "active_max": 43,
+      "taxi_max": 32,
+      "ir_max": 0,
+      "active_plus_taxi_max": 75
+    },
+    "late_offseason": {
+      "active_max": 43,
+      "taxi_max": 25,
+      "ir_max": 7,
+      "active_plus_taxi_max": 68
+    },
+    "regular_season": {
+      "active_max": 45,
+      "taxi_max": 5,
+      "ir_max": 30,
+      "active_plus_taxi_max": 47
+    }
+  },
+  "contract_years_cap": 120,
+  "contract_years_cap_counts": "active_only",
+  "contract_years_deposit_threshold": 100,
+  "contract_years_deposit_deadline": "week_16_kickoff",
+  "top_n_signed_active_rule": 43,
+  "taxi_squad": {
+    "suspended_holdout_max": 2,
+    "temporarily_eligible_max": 3,
+    "te_week_17_ng_only": true
+  },
+  "positional_roster_limits": "none",
+  "starting_lineup": {
+    "total_starters": 21,
+    "offense": {
+      "total": 7,
+      "QB": { "min": 1, "max": 1 },
+      "RB": { "min": 1, "max": 2 },
+      "WR": { "min": 2, "max": 4 },
+      "TE": { "min": 1, "max": 2 }
+    },
+    "special_teams": {
+      "total": 2,
+      "PK": { "min": 1, "max": 1 },
+      "PN": { "min": 1, "max": 1 }
+    },
+    "defense": {
+      "total": 12,
+      "DT": { "min": 2, "max": 3 },
+      "DE": { "min": 2, "max": 3 },
+      "LB": { "min": 1, "max": 3 },
+      "CB": { "min": 2, "max": 4 },
+      "S": { "min": 2, "max": 3 }
+    }
+  },
+  "ir_eligibility_tags": ["IR", "IR-r", "S", "H"],
+  "waiver_claim_period_hours": {
+    "standard_offseason": 48,
+    "near_cutdown": 24
+  },
+  "waiver_processing_time_et": "5:00",
+  "roster_violation_drop_priority": [
+    "lowest_salary",
+    "lowest_contract_years_remaining",
+    "most_recent_acquisition"
+  ],
+  "roster_violation_warning_hours": 24,
+  "add_drop_min_roster_days": 6,
+  "add_drop_in_season_restriction": "end_of_week",
+  "player_lock_window": "kickoff_to_4h_after_last_game"
+}
