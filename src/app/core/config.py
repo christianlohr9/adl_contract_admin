@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     mfl_base_url: str = "https://api.myfantasyleague.com"
     mfl_request_delay: float = 1.0
 
+    # Sync scheduler configuration
+    sync_interval_hours: int = 6
+    sync_enabled: bool = True
+    sync_historical_years: list[int] = [2020, 2021, 2022, 2023, 2024, 2025]
+
 
 @lru_cache
 def get_settings() -> Settings:

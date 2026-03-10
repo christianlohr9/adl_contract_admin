@@ -1,18 +1,52 @@
 """FastAPI application with lifespan management."""
 
-from collections.abc import AsyncIterator
+from __future__ import annotations
+
+import logging
 from contextlib import asynccontextmanager
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
 
 from fastapi import FastAPI
 from sqlalchemy import text
 
+from app.core.config import settings
 from app.core.db import SessionDep, engine
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Manage application startup and shutdown."""
+    scheduler = None
+
+    if settings.sync_enabled:
+        from apscheduler import AsyncScheduler
+        from apscheduler.triggers.interval import IntervalTrigger
+
+        from app.services.sync_orchestrator import run_full_sync
+
+        scheduler = AsyncScheduler()
+        await scheduler.add_schedule(
+            run_full_sync,
+            IntervalTrigger(hours=settings.sync_interval_hours),
+            id="mfl-full-sync",
+            kwargs={"settings": settings},
+        )
+        await scheduler.start_in_background()
+        logger.info(
+            "APScheduler started: full sync every %d hours", settings.sync_interval_hours
+        )
+
     yield
+
+    if scheduler is not None:
+        await scheduler.stop()
+        logger.info("APScheduler stopped")
+
     await engine.dispose()
 
 
