@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Parse bylaws into separate markdown docs by article/section
+- [x] 01-01: Verify rule constants against bylaws
 - [ ] 01-02: Extract rule constants into JSON files
 - [ ] 01-03: Extract rule formulas into YAML files
 
@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rules Extraction | 0/3 | Not started | - |
+| 1. Rules Extraction | 1/3 | In progress | - |
 | 2. Foundation | 0/3 | Not started | - |
 | 3. MFL API Integration | 0/3 | Not started | - |
 | 4. Contract Engine | 0/4 | Not started | - |
