@@ -17,7 +17,7 @@ None
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
-- [ ] **Phase 2: Foundation** - Archive old app, new project structure, FastAPI scaffold, DB schema
+- [ ] **Phase 2: Foundation** — In progress (1/3 plans)
 - [ ] **Phase 3: MFL API Integration** - Research and implement MFL data sync
 - [ ] **Phase 4: Contract Engine** - Port EPV logic, build all contract tools
 - [ ] **Phase 5: Salary Cap & Validation** - Cap penalties and eligibility checks
@@ -45,7 +45,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Archive old app, create new project structure
+- [x] 02-01: Archive old app, create new project structure
 - [ ] 02-02: SQLAlchemy models and Alembic migrations
 - [ ] 02-03: FastAPI scaffold with project config
 
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
-| 2. Foundation | 0/3 | Not started | - |
+| 2. Foundation | 1/3 | In progress | - |
 | 3. MFL API Integration | 0/3 | Not started | - |
 | 4. Contract Engine | 0/4 | Not started | - |
 | 5. Salary Cap & Validation | 0/2 | Not started | - |
