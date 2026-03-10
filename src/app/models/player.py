@@ -12,6 +12,7 @@ from app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.contract import Contract
+    from app.models.player_score import PlayerScore
     from app.models.roster import RosterEntry
 
 
@@ -44,3 +45,4 @@ class Player(TimestampMixin, Base):
     # Relationships
     contracts: Mapped[list[Contract]] = relationship(back_populates="player")
     roster_entries: Mapped[list[RosterEntry]] = relationship(back_populates="player")
+    scores: Mapped[list[PlayerScore]] = relationship(back_populates="player")
