@@ -1,0 +1,51 @@
+{
+  "league_id": 60206,
+  "league_name": "Analytics Dynasty League",
+  "edition": 2025,
+  "platform": "MyFantasyLeague",
+  "num_teams": 32,
+  "num_conferences": 2,
+  "teams_per_conference": 16,
+  "divisions_per_conference": 4,
+  "teams_per_division": 4,
+  "conferences": ["AFC", "NFC"],
+  "current_season": 2025,
+  "regular_season_weeks": 12,
+  "postseason_weeks": 5,
+  "total_season_weeks": 17,
+  "bonus_games_per_season": 5,
+  "bonus_game_weeks": [3, 6, 9, 12],
+  "season_long_bonus_game_week": 12,
+  "total_games_per_team": 17,
+  "inter_conference_trading": false,
+  "inter_conference_play_week": 17,
+  "playoffs": {
+    "teams_per_conference": 7,
+    "division_winners_per_conference": 4,
+    "wild_cards_per_conference": 3,
+    "byes_per_conference": 1,
+    "consolation_ladder_teams_per_conference": 9,
+    "consolation_ladder_games": 4,
+    "wild_card_round_weeks": [13, 14],
+    "divisional_round_week": 15,
+    "conference_championship_week": 16,
+    "super_bowl_week": 17
+  },
+  "starters_per_lineup": 21,
+  "finances": {
+    "league_fee_standard": 125,
+    "league_fee_late_surcharge": 25,
+    "league_fee_late_total": 150,
+    "payment_deadline": "February 14",
+    "late_payment_deadline": "March 1",
+    "mfl_hosting_fee": 190,
+    "total_prize_pool": 3810
+  },
+  "commissioner_triumvirate": [
+    "Mike Filicicchia (CHI)",
+    "Carson Witte (KC)",
+    "Andrew Mast (IND)"
+  ],
+  "commissioner_assistant": "Paul Stone (SEA)",
+  "trade_offer_expiry_days": 5
+}
