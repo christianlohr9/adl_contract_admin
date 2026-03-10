@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 2 of 8 (Foundation)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-10 — Completed 02-01-PLAN.md
+Last activity: 2026-03-10 — Completed 02-02-PLAN.md
 
-Progress: ████░░░░░░ 16%
+Progress: █████░░░░░ 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 5
 - Average duration: 5 min
-- Total execution time: 19 min
+- Total execution time: 24 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
-| 2 - Foundation | 1 | 3 min | 3 min |
+| 2 - Foundation | 2 | 8 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 01-02 (7 min), 01-03 (4 min), 02-01 (3 min)
+- Last 5 plans: 01-01 (5 min), 01-02 (7 min), 01-03 (4 min), 02-01 (3 min), 02-02 (5 min)
 - Trend: —
 
 ## Accumulated Context
@@ -49,6 +49,8 @@ Recent decisions affecting current work:
 | 01-03 | Created new contracts.yaml for contract formulas | Domain separation — rookie min, inflation, veteran min, UDFA budget don't fit existing formula files |
 | 02-01 | Used uv (not pip/poetry) for package management | Per research phase — faster, modern, single tool for deps+venvs |
 | 02-01 | src/app/ layout with core/models/schemas/api subpackages | Standard FastAPI convention, clean separation |
+| 02-02 | expire_on_commit=False for async sessions | Prevents MissingGreenlet errors in async SQLAlchemy |
+| 02-02 | Separate db-test service on port 5433 | Test isolation without affecting dev database |
 
 ### Deferred Issues
 
@@ -61,5 +63,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-10
-Stopped at: Completed 02-01-PLAN.md — Phase 2 in progress
-Resume file: None — ready for 02-02-PLAN.md
+Stopped at: Completed 02-02-PLAN.md — Phase 2 in progress
+Resume file: None — ready for 02-03-PLAN.md
