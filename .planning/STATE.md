@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 2 complete — ready for Phase 3 (MFL API Integration)
+**Current focus:** Phase 3 in progress — MFL API Integration
 
 ## Current Position
 
-Phase: 2 of 8 (Foundation)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-03-10 — Completed 02-03-PLAN.md
+Phase: 3 of 8 (MFL API Integration)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-10 — Completed 03-01-PLAN.md
 
-Progress: ██████░░░░ 24%
+Progress: ███████░░░ 28%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 5 min
-- Total execution time: 30 min
+- Total execution time: 34 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: ██████░░░░ 24%
 |-------|-------|-------|----------|
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
+| 3 - MFL API Integration | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (7 min), 01-03 (4 min), 02-01 (3 min), 02-02 (5 min), 02-03 (6 min)
+- Last 5 plans: 01-03 (4 min), 02-01 (3 min), 02-02 (5 min), 02-03 (6 min), 03-01 (4 min)
 - Trend: —
 
 ## Accumulated Context
@@ -55,6 +56,8 @@ Recent decisions affecting current work:
 | 02-03 | JSONB for transaction details | Flexible storage for varied transaction types |
 | 02-03 | Numeric(5,2)/Numeric(6,2) for money fields | Avoids float rounding errors |
 | 02-03 | Alembic upgrade head in Docker startup | Automatic schema sync on container start |
+| 03-01 | Added hatchling build-system to pyproject.toml | Required for package imports to work |
+| 03-01 | Snake_case fields with Field(alias=...) for MFL camelCase | Satisfies ruff N815 while matching API response keys |
 
 ### Deferred Issues
 
@@ -67,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-10
-Stopped at: Completed 02-03-PLAN.md — Phase 2 complete
-Resume file: None — ready for Phase 3 planning
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None — ready for 03-02-PLAN.md

@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
 - [x] **Phase 2: Foundation** — Complete
-- [ ] **Phase 3: MFL API Integration** - Research and implement MFL data sync
+- [ ] **Phase 3: MFL API Integration** - In progress (1/3 plans)
 - [ ] **Phase 4: Contract Engine** - Port EPV logic, build all contract tools
 - [ ] **Phase 5: Salary Cap & Validation** - Cap penalties and eligibility checks
 - [ ] **Phase 6: API Layer** - FastAPI REST endpoints for all resources
@@ -57,7 +57,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: Research MFL API approach
+- [x] 03-01: MFL API client and response models
 - [ ] 03-02: Implement MFL data sync module
 - [ ] 03-03: Sync franchises, rosters, and player scores
 
@@ -126,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
 | 2. Foundation | 3/3 | Complete | 2026-03-10 |
-| 3. MFL API Integration | 0/3 | Not started | - |
+| 3. MFL API Integration | 1/3 | In progress | - |
 | 4. Contract Engine | 0/4 | Not started | - |
 | 5. Salary Cap & Validation | 0/2 | Not started | - |
 | 6. API Layer | 0/3 | Not started | - |
