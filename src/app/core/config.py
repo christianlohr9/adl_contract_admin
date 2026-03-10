@@ -14,6 +14,15 @@ class Settings(BaseSettings):
     debug: bool = False
     database_url: str = "postgresql+asyncpg://adl:adl_dev@localhost:5432/adl"
 
+    # MFL API configuration
+    mfl_league_id: int = 60206
+    mfl_year: int = 2026
+    mfl_api_key: str = ""
+    mfl_username: str = ""
+    mfl_password: str = ""
+    mfl_base_url: str = "https://api.myfantasyleague.com"
+    mfl_request_delay: float = 1.0
+
 
 @lru_cache
 def get_settings() -> Settings:
