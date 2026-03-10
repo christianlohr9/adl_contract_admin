@@ -1,0 +1,170 @@
+erfa_tender:
+  description: "Exclusive Rights Free Agent tender salary calculation"
+  formula: "MAX(veteran_minimum, 1.10 * prev_salary)"
+  variables:
+    veteran_minimum: "ADL veteran minimum salary for the current year ($1.0m in 2025)"
+    prev_salary: "Player's previous year contract salary"
+  eligibility: >
+    Player must have signed their previous contract at or below the ADL veteran minimum salary
+    in one of the previous two league years (i.e. at $900k in 2023 or $1.0m in 2024 for 2025).
+    Players whose expired contracts are ERFA contracts are not eligible to receive the ERFA tender.
+  contract_years: 1
+  notes: "ERFA players do not enter RFA auctions. Each GM gets 2 ERFA tenders per offseason."
+
+rfa_frfa_tender:
+  description: "First Round Restricted Free Agent tender opening bid"
+  formula: "MAX(NFL_FRFA_price, 2.20 * prev_salary)"
+  variables:
+    NFL_FRFA_price: "NFL CBA First Round RFA price, rounded down to nearest $100k"
+    prev_salary: "Player's previous/expired Contract Salary"
+  compensation: "1st round draft pick"
+  notes: "Rounded down to nearest $100k."
+
+rfa_srfa_tender:
+  description: "Second Round Restricted Free Agent tender opening bid"
+  formula: "MAX(NFL_SRFA_price, 1.65 * prev_salary)"
+  variables:
+    NFL_SRFA_price: "NFL CBA Second Round RFA price, rounded down to nearest $100k"
+    prev_salary: "Player's previous/expired Contract Salary"
+  compensation: "2nd round draft pick"
+  notes: "Rounded down to nearest $100k."
+
+rfa_orfa_tender:
+  description: "Original Round Restricted Free Agent tender opening bid"
+  formula: "MAX(NFL_ORFA_price, 1.10 * prev_salary)"
+  variables:
+    NFL_ORFA_price: "NFL CBA Original Round RFA price, rounded down to nearest $100k"
+    prev_salary: "Player's previous/expired Contract Salary"
+  compensation: >
+    Draft pick in the round corresponding to the player's ADL rookie draft order mapped to
+    the current draft structure. If never drafted in ADL, no compensation required (ORFAN).
+  notes: "Rounded down to nearest $100k. Maximum legal compensation assigned automatically by commissioners."
+
+rfa_rrfa_tender:
+  description: "Right-of-Refusal RFA tender opening bid"
+  formula: "FLOOR_100K(NFL_RRFA_price)"
+  variables:
+    NFL_RRFA_price: "NFL CBA Right-of-Refusal RFA price"
+  compensation: "None"
+  notes: "Rounded down to nearest $100k."
+
+rfa_eligibility:
+  description: >
+    A player's expiring contract must not be 4+ years old, a previous RFA contract,
+    or a premium contract type. Specifically, the contract must not include certain
+    types from certain years.
+  ineligible_contract_types_2021_or_earlier:
+    - "EFT"
+    - "NEFT"
+    - "TT"
+    - "NEFToff"
+    - "TToff"
+    - "FRFA"
+    - "SRFA"
+    - "ORFA"
+    - "RRFA"
+    - "B/R"
+    - "EXT"
+    - "5YO"
+  ineligible_multi_year_ufa: "UFA contracts from 2023 or earlier that were multi-year"
+  notes: "Each GM is allotted 2 RFA tenders per offseason (which may also be used as ERFA tenders)."
+
+ufa_auction:
+  description: "Unrestricted Free Agent auction rules and salary formula"
+  starting_bid: "Veteran minimum salary ($1.0m in 2025)"
+  bid_increment: 0.10
+  bid_increment_note: "$100k increments"
+  clock: "24-hour high-bidder clock"
+  proxy_bids: true
+  salary_formula:
+    description: "UFA winning bid with multi-year discount"
+    formula: "winning_bid * (1 - 0.05 * (contract_years - 1))"
+    variables:
+      winning_bid: "High bid amount from the UFA auction"
+      contract_years: "Number of years the GM signs the player for"
+    notes: >
+      Discount may not drop contract salary below the SD Minimum.
+      Contract years choice is the GM's, subject to standard restrictions (max 6 years).
+      Post-Final Roster Cutdown UFAs are fixed 1-year contracts.
+
+franchise_tag_eft:
+  description: "Exclusive Franchise Tag salary calculation"
+  initial_salary:
+    formula: "MAX(ADL_Cap_Pct * AVERAGE(Top5_Salaries_at_Position_EOY), 1.20 * prev_salary)"
+    rounding: "Nearest $10k"
+    notes: "Uses end-of-previous-season salary data"
+  july_1_update:
+    formula: "MAX(AVERAGE(Top5_Salaries_at_Position_Current), initial_NEFT_value)"
+    notes: >
+      Updated on July 1 using current salary data including all NEFTs.
+      Entered into Jul1 Salaries tab for that season's EXT formulas.
+  contract_years: 1
+  guarantee_level: "Fully Guaranteed"
+
+franchise_tag_neft:
+  description: "Non-Exclusive Franchise Tag salary and auction opening bid"
+  initial_salary:
+    formula: "MAX(ADL_Cap_Pct * AVERAGE(Top5_Salaries_at_Position_EOY), 1.20 * prev_salary)"
+    rounding: "Nearest $10k"
+  opening_bid:
+    formula: "MAX(CEIL_100K(SD_Min - 0.1), FLOOR_100K(Initial_Salary))"
+    notes: "Higher of SD Minimum minus $100k (rounded up to nearest $100k) or Initial Salary rounded down to nearest $100k"
+  compensation: "Two 1st round draft picks (one must be current year, team's own or better; second current or next year)"
+  match_window_hours: 48
+  contract_years: "GM's choice up to 6 years with 5% per-year discount beyond 1"
+  guarantee_level: "Fully Guaranteed"
+
+franchise_tag_tt:
+  description: "Transition Tag salary and auction opening bid"
+  initial_salary:
+    formula: "MAX(ADL_Cap_Pct * AVERAGE(Top10_Salaries_at_Position_EOY), 1.20 * prev_salary)"
+    rounding: "Nearest $10k"
+  opening_bid:
+    formula: "MAX(CEIL_100K(SD_Min - 0.1), FLOOR_100K(Initial_Salary))"
+  compensation: "None"
+  match_window_hours: 48
+  contract_years: "GM's choice up to 6 years with 5% per-year discount beyond 1"
+  guarantee_level: "Fully Guaranteed"
+
+franchise_tag_consecutive_limit:
+  description: "A player cannot receive any combination of EFT and NEFT tags for more than 3 consecutive seasons"
+  third_consecutive_tag_salary:
+    formula: "MAX(1.44 * prev_franchise_tag_salary, 1.20 * positional_FT_tag_price, highest_positional_franchise_tag_amount)"
+
+compensatory_free_agents:
+  description: "Rules governing compensatory draft picks based on free agent movement"
+  cfa_salary_cutoff:
+    formula: "MAX(65th_percentile_EOY_salaries, SD_Min_bid + 0.1)"
+    values_2024_2025: "Higher of $2.82m (2024 65th pct) or $2.0m (2025 SD min bid + $100k)"
+  pick_round_thresholds:
+    round_3: "Signed at or above 90th percentile of EOY salaries"
+    round_4: "Signed at or above 80th percentile and below 90th percentile"
+    round_5: "Signed at or above CFA Salary Cutoff and below 80th percentile"
+  max_picks_per_team: 4
+  total_picks_per_conference: 16
+  notes: >
+    Franchise must have lost same number or more CFAs than acquired.
+    Each CFA gained cancels out a lost CFA of equivalent round.
+    A traded CFA counts as gained for both the UFA acquiring team and any trade acquirer.
+
+br_salary:
+  description: "Buyout/Restructure auction salary determination"
+  opening_bid: "SD Minimum rounded up to nearest $100k ($1.9m in 2025)"
+  retained_salary_formula:
+    description: "Salary when original GM retains via Restructure or new GM acquires via Buyout"
+    formula: "high_bid * (1 - 0.05 * (contract_years - 1))"
+    variables:
+      high_bid: "Winning auction bid"
+      contract_years: "Number of contract years signed"
+    notes: "5% per-year discount beyond 1 year; may not drop below SD Minimum"
+  original_gm_options:
+    - name: "Retain/Restructure"
+      description: "Re-sign at new salary structure based on high bid, any contract length"
+    - name: "Retain/Revert"
+      description: "Revert to exact pre-B/R contract (salary, years, type)"
+    - name: "Revert/Transfer"
+      description: "Revert contract and send player to high bidder (with optional trade compensation)"
+    - name: "Buyout/Transfer"
+      description: "Release player to high bidder at new salary structure"
+  decision_window_hours: 48
+  default_if_no_action: "Buyout/Transfer without compensation"

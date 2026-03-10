@@ -1,0 +1,142 @@
+adl_salary_cap:
+  description: "Annual ADL Salary Cap derived from the NFL Salary Cap"
+  formula: "ROUND(0.81 * NFL_Salary_Cap)"
+  variables:
+    NFL_Salary_Cap: "NFL Franchise Salary Cap for the season"
+  notes: >
+    Rounded to nearest $100k or $10k, mirroring whichever rounding the NFL chooses.
+    2025: 0.81 * $279.2m = $226.2m.
+
+sd_minimum_salary:
+  description: "Minimum salary threshold for Standard (SD) contract classification"
+  formula: "ROUND_TO_NEAREST_10K(NFL_Salary_Cap / 150)"
+  variables:
+    NFL_Salary_Cap: "NFL Franchise Salary Cap for the season (in millions)"
+  notes: >
+    Contracts below this amount are classified as Non-Guaranteed (NG).
+    2025: $279.2m / 150 = $1.861m, rounded to $1.86m.
+
+franchise_salary_cap:
+  description: "Individual franchise salary cap including rollover from prior season"
+  formula: "ADL_Salary_Cap + Salary_Cap_Rollover"
+
+salary_cap_rollover:
+  description: "Amount of unused cap space that rolls over to next season"
+  formula: "MIN(Franchise_Salary_Cap - Salary_Expenditures, 0.10 * ADL_Salary_Cap)"
+  variables:
+    Franchise_Salary_Cap: "That franchise's individual salary cap"
+    Salary_Expenditures: "Average of four quarterly salary snapshots"
+    ADL_Salary_Cap: "League-wide salary cap"
+  notes: "Capped at 10% of ADL Salary Cap. Accurate to $10k level."
+
+salary_expenditures:
+  description: "Proxy for a franchise's total annual spending, averaged from four snapshots"
+  formula: "AVERAGE(Snapshot_Q1, Snapshot_Q2, Snapshot_Q3, Snapshot_Q4)"
+  snapshot_weeks: [3, 7, 11, 16]
+  snapshot_components:
+    - "All Active & IR salaries + Cap Penalties (displayed Salary Cap total)"
+    - "All non-Suspended/Holdout Taxi Squad players (Temporarily Eligible)"
+    - "Veteran Minimum ($1.0m in 2025) charged per empty roster spot below 45 (Active + IR + Temp Elig)"
+
+ng_penalty:
+  description: "Salary cap penalty for dropping a Non-Guaranteed contract player"
+  formula: "0"
+  notes: "No penalty regardless of remaining Contract Years."
+
+sd_penalty:
+  description: "Salary cap penalty for dropping a Standard contract player"
+  year_1_penalty:
+    formula: "0.60 * current_year_salary"
+    description: "60% of player's current-year salary, assessed in the current year"
+  additional_years_penalty:
+    formula: "0.30 * current_year_salary * (total_contract_years - 1)"
+    description: "30% of current-year salary per remaining year beyond year 1, assessed next offseason"
+  variables:
+    current_year_salary: "Player's salary at time of drop"
+    total_contract_years: "Total years remaining on the contract at time of drop"
+  example: >
+    Player A: $7.50m salary, 4 years remaining.
+    Year 1 Penalty = 0.6 * $7.50 = $4.50m
+    Year 2 Penalty = 0.3 * $7.50 * (4 - 1) = $6.75m
+    Total = $11.25m over 2 years.
+
+fg_penalty:
+  description: "Salary cap penalty for dropping a Fully Guaranteed contract player"
+  formula: "salary + salary * 1.1 + salary * 1.1^2 + ... for each remaining year"
+  detailed_formula: "SUM(salary * 1.1^n for n=0 to years_remaining-1)"
+  multi_year_split:
+    year_1: "CEIL(total_penalty / 2)"
+    year_2: "FLOOR(total_penalty / 2)"
+    description: "If multiple years remaining, 50% (rounded up) in present year, 50% (rounded down) next year as lump sum"
+  variables:
+    salary: "Player's current-year fully guaranteed salary"
+    years_remaining: "Number of years remaining on the contract"
+  example: >
+    Player A: FG contract, $6.60m salary, 3 years remaining (including current year counted as year due).
+    Penalty = $6.60 + $6.60*1.1 + $6.60*1.1^2 = $6.60 + $7.26 + $7.99 = $21.85m
+    Year 1 Penalty = $10.93m; Year 2 Penalty = $10.92m
+
+cap_penalty_rounding:
+  description: "All salary cap penalties are rounded to the nearest $10k ($0.01m)"
+
+cap_penalty_acceleration:
+  description: >
+    Pre-July 1 cuts have their Additional Years Penalty accelerated into the current year.
+    Post-July 1 cuts split penalty across current and next year as normal.
+  pre_july_1:
+    formula: "Total Penalty = Year_1_Penalty + Additional_Years_Penalty (all in current year)"
+    description: "Lump-sum penalty in the current year; no additional years penalty carried forward"
+  post_july_1:
+    formula: "Year 1: Year_1_Penalty; Year 2: Additional_Years_Penalty"
+    description: "Standard split across current year and next offseason"
+
+july_1_tenders:
+  description: >
+    Each franchise receives 2 July 1 Tenders per season to un-accelerate a pre-July 1
+    roster cut's salary cap penalty, causing it to follow post-July 1 protocol instead.
+  quantity_per_team: 2
+  usage_rules:
+    - "Must announce intent via ADL Message Board within 24 hours of dropping the player"
+    - "If the player is claimed on waivers, the used JT is returned"
+
+br_penalty:
+  description: >
+    Salary cap penalty for Buyout/Restructure actions when the new salary is lower
+    than the previous salary.
+  formula: >
+    Equivalent to: penalty_on_old_contract - penalty_on_new_contract, where each
+    penalty is calculated per the contract type (SD or FG) of the previous contract.
+    For SD: Year 1 = 0.6 * old_salary - 0.6 * new_salary,
+    Year 2 = 0.3 * old_salary * (old_years - 1) - 0.3 * new_salary * (new_years - 1).
+    For restructures (same years), simplifies to a virtual contract worth
+    (old_salary - new_salary) assessed at old contract years and penalty level.
+    For buyouts (different years), includes additional penalty for deleted years.
+  notes: >
+    Penalty cannot be negative; B/R auctions finishing at or above the previous
+    initial salary incur no penalty. If the original GM chooses Revert, no penalty.
+  example_restructure: >
+    Player X: 4 years remaining, $15m SD contract. B/R auction high bid = $10m.
+    Bills choose Restructure at 4 years: new salary = $10m - 5%*(4-1) = $8.5m.
+    Year 1 Penalty = 0.6 * ($15m - $8.5m) = $3.9m
+    Year 2 Penalty = 0.3 * ($15m - $8.5m) * (4 - 1) = $5.85m
+  example_buyout: >
+    Player X: 4 years remaining, $15m SD contract. B/R high bid = $10m, 3 years.
+    New salary = $10m - 5%*(3-1) = $9m.
+    Year 1 Penalty = 0.6 * ($15m - $9m) = $3.6m
+    Year 2 Penalty = 0.3 * ($15m - $9m) * (4 - 1) + 0.3 * $9m * (4 - 3)
+                    = $5.4m + $2.7m = $8.1m
+
+suspended_player_penalty:
+  description: "Players with MFL Suspended (S) tag or released by NFL for criminal conduct"
+  formula: "0.50 * normal_cap_penalty_for_contract_type"
+  notes: >
+    GM must provide reputable media reports and obtain Commissioner approval for
+    non-Suspended players to qualify for this relief.
+
+retired_player_penalty:
+  description: "Players who have retired from NFL while on ADL roster (Barry Sanders Rule)"
+  formula: "0"
+
+deceased_player_penalty:
+  description: "Deceased players"
+  formula: "0"
