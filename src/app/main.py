@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 from fastapi import FastAPI
 from sqlalchemy import text
 
+from app.api.sync import router as sync_router
 from app.core.config import settings
 from app.core.db import SessionDep, engine
 
@@ -51,6 +52,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="ADL Contract Admin", lifespan=lifespan)
+app.include_router(sync_router)
 
 
 @app.get("/health")
