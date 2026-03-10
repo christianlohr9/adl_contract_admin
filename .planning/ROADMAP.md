@@ -16,7 +16,7 @@ None
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
+- [x] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
 - [ ] **Phase 2: Foundation** - Archive old app, new project structure, FastAPI scaffold, DB schema
 - [ ] **Phase 3: MFL API Integration** - Research and implement MFL data sync
 - [ ] **Phase 4: Contract Engine** - Port EPV logic, build all contract tools
@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01: Verify rule constants against bylaws
 - [x] 01-02: Verify rule formulas against bylaws
-- [ ] 01-03: Extract rule formulas into YAML files
+- [x] 01-03: Extract rule formulas into YAML files
 
 ### Phase 2: Foundation
 **Goal**: Set up the new project structure — archive old Taipy app, scaffold FastAPI backend, define PostgreSQL schema with SQLAlchemy models and Alembic migrations
@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rules Extraction | 2/3 | In progress | - |
+| 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
 | 2. Foundation | 0/3 | Not started | - |
 | 3. MFL API Integration | 0/3 | Not started | - |
 | 4. Contract Engine | 0/4 | Not started | - |
