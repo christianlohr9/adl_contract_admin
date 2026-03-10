@@ -1,0 +1,161 @@
+pr_starter_floor:
+  description: >
+    Number of starter-caliber players in each ADL position group, used for 5YO, PPE, and EXT calculations.
+  formula: "ROUND_TO_NEAREST_4( (Total Position ADL Starts in Prior League Year) / (ADL Weeks Played * 2) * Missed_Start_Inflation_Rate )"
+  variables:
+    total_position_adl_starts: "Total number of starts at the position across the ADL in the prior league year"
+    adl_weeks_played: "Number of weeks played in the ADL season"
+    missed_start_inflation_rate: "Historically ~0.5% (i.e. multiply by ~1.005)"
+  notes: >
+    Rounded to the nearest multiple of 4 to allow whole-number quartiles for PPE.
+    In the event of a perfect rounding tie, round to the number that creates a proper sum
+    across all positions on that side of the ball.
+
+position_rank:
+  description: >
+    A player's Position Rank (PR) for EXT purposes. The higher rank of
+    (1) ADL Total Points rank and (2) ADL PPG rank at his position, after stat corrections.
+  notes: >
+    Always calculated on that year's league page.
+    Ties are logged as the average of tied ranks (e.g. LB20/21 => LB20.5).
+    Displayed PPG ties are treated as actual ties.
+    A "Robust" PR requires 8 or more Active games through the final week (Week 17).
+    "Active" means the player has a numerical value on the ADL Player Stats page for that week.
+
+performance_salary:
+  description: >
+    Dollar value of a season's performance based on the market rate of the commensurate
+    salary rank for a given PR minus 1, floored at the PR Starter Floor.
+  formula: "ROUND_TO_NEAREST_10K( AVERAGE(SAL(2*PR - 3), SAL(2*PR - 2)) )"
+  variables:
+    SAL_n: "The nth highest ADL salary at the player's position from current season salary rankings (published after July 1)"
+    PR: "Position Rank (see position_rank above); floored at PR Starter Floor"
+  notes: >
+    The minus-1 adjustment ensures the player is paid to his PR *after* the EXT salary
+    is implemented (e.g. QB8 gets QB7 salary to rank QB8 in salary after signing).
+    For PR=1: formula becomes 2*AVG(SAL(1),SAL(2)) - AVG(SAL(3),SAL(4)),
+    which is a linear extrapolation above rank 1.
+
+estimated_player_values:
+  description: "The three EPV variants used in EXT salary calculation"
+  epv_curr:
+    description: "Current (non-robust) season EPV, only available during the regular season"
+    formula: "Performance Salary based on PRcurrentNR"
+    notes: "Only computed if regular season has started but PR is not yet robust. N/A in offseason."
+  epv_new:
+    description: "Most recent robust season's EPV"
+    formula: "Performance Salary based on PRrecentR"
+    notes: "PRrecentR is the most current Robust PR (which may or may not be the current season)"
+  epv_old:
+    description: "Previous robust season's EPV"
+    formula: "Performance Salary based on PRpreviousR"
+    notes: >
+      PRpreviousR is the most current Robust PR prior to PRrecentR.
+      If no PRpreviousR exists, the player is still eligible but this EPV is blank.
+      If PRpreviousR falls below the PR Starter Floor, evaluate at the PR Starter Floor.
+
+extended_years_salary:
+  description: >
+    The annual salary for years added to a player's contract via Extension.
+    Represents the agent's demands: paid at highest EPV, floored at 75% of previous salary,
+    with a baseline of 3 years and 5% per-year adjustment.
+  formula: "MAX(EPVcurr, EPVnew, EPVold, 0.75 * PrevSal) * (1.15 - 0.05 * EXTyears)"
+  variables:
+    EPVcurr: "Current season estimated player value (if available)"
+    EPVnew: "Most recent robust season estimated player value"
+    EPVold: "Previous robust season estimated player value"
+    PrevSal: "Player's previous contract salary"
+    EXTyears: "Number of years being added to the contract"
+  notes: >
+    For expired contracts (0 years remaining), the floor is 82.5% of previous salary
+    instead of 75% (i.e. MAX(..., 0.825 * PrevSal)).
+    The (1.15 - 0.05 * EXTyears) factor means:
+      1 year added => 1.10x multiplier
+      2 years added => 1.05x
+      3 years added => 1.00x (baseline)
+      4 years added => 0.95x
+      5 years added => 0.90x
+      6 years added => 0.85x
+    When 5YO is exercised, the 5YO year rolls into the EXT, so effective EXTyears
+    for the multiplier is (total_ext_years - 1) since the 5YO year is not a new year.
+  epv_code_discrepancy: >
+    OLD CODE BUG (epv_calculations.py line 179): Uses MAX(PrevSal, EPVs) — i.e. a 100%
+    floor on previous salary — instead of MAX(0.75 * PrevSal, EPVs) per bylaws.
+    Bylaws wins: the correct floor is 75% (or 82.5% for expired contracts).
+
+ext_salary_smoothing:
+  description: >
+    After EYS is calculated, it is appended to the remaining old contract and smoothed
+    using 10% annual salary growth.
+  formula: >
+    Total contract value = sum of (old_salary * 1.1^i for remaining old years)
+    + sum of (EYS * 1.1^j for each extended year).
+    Smoothed salary = total_value / sum of (1.1^k for k=0..new_total_years-1).
+  variables:
+    old_salary: "Player's current contract salary"
+    EYS: "Extended Years Salary computed above"
+    remaining_old_years: "Years remaining on old contract"
+    new_total_years: "remaining_old_years + EXTyears"
+  example: >
+    Player at $10m with 2 remaining years, extended 3 years at EYS=$15m:
+    Total = ($10 + $10*1.1 + $15*1.1^2 + $15*1.1^3 + $15*1.1^4) = $81.08m over 5 years.
+    Smoothed = $13.28m (so that $13.28 * (1 + 1.1 + 1.1^2 + 1.1^3 + 1.1^4) = $81.08m).
+
+ext_in_season_notes:
+  description: "In-season extensions (iEXT) follow the same formulas but have a different signing window"
+  signing_window: "Between Week 1 kickoff and Week 16 kickoff of that player's game"
+  week_coding: >
+    The 'Week' variable is coded as the most recent week the player's NFL franchise has
+    kicked off, or (if on Bye) the most recent week in which two NFL games have kicked off,
+    as of the extension timestamp. Never exceeds 17.
+
+ext_additional_rules:
+  - "All EXTs are SD (Standard) contracts"
+  - "Final EXT salaries below the minimum SD salary are rounded up to the minimum SD salary"
+  - "EXTs cannot cause contract years to exceed the 6-year maximum"
+  - "If a player in Year 4 with exercised 5YO is extended, the 5YO year and salary roll into the EXT contract but EXT retains SD status"
+  - "Players with Contract Years >= 2 are ineligible for EXT"
+  - "Players on rookie contracts signed for less than max years are ineligible for EXT"
+  - "Players who received an EXT in the current or prior window are ineligible"
+  - "Players with no Robust PRs are ineligible"
+  - "Players on Drafted Rookie or UDFA contracts are ineligible until NFL games kick off in the final year of their contract"
+
+fifth_year_option:
+  description: >
+    First-round drafted rookies may have their contract extended by 1 year in the
+    player's 4th season by exercising the 5th Year Option (5YO).
+  deadline: "July 1 of the rookie's fourth season"
+  salary_tiers:
+    top_87_5_pct:
+      description: "Players scoring 87.5th percentile or higher above PR Starter Floor in ADL-wide Total Starter Points"
+      salary: "Non-Exclusive Franchise Tag (NEFT) price in the player's 4th season"
+    75_to_87_5_pct:
+      description: "Players scoring 75th-87.5th percentile above PR Starter Floor"
+      salary: "Transition Tag (TT) price in the player's 4th season"
+    25_to_75_pct:
+      description: "Players scoring 25th-75th percentile above PR Starter Floor"
+      salary: "Transition Tag price but averaging 3rd-20th highest salaries instead of 1st-10th"
+    bottom_25_pct:
+      description: "Players scoring below 25th percentile above PR Starter Floor or below"
+      salary: "Transition Tag price but averaging 3rd-25th highest salaries instead of 1st-10th"
+  notes: >
+    Once declared, 5YOs are immediately Fully Guaranteed and irreversible.
+    Denoted on roster by appending '+' to contract status (e.g. 1.05+).
+    Position designations follow the same rule as for Franchise Tags.
+
+proven_performance_escalator:
+  description: >
+    Salary escalator for players in the 4th year of their rookie contract who were
+    drafted in rounds 2-6 of their conference's ADL draft.
+  level_3_escalator:
+    threshold: "75th percentile above PR Starter Floor in ADL-wide Total Starter Points"
+    salary: "SRFA tag price"
+  level_1_2_escalator:
+    threshold: "0th-75th percentile above PR Starter Floor in ADL-wide Total Starter Points"
+    salary: "ORFA tag price"
+  notes:
+    - "Only salary changes (not contract type or guarantee level)"
+    - "Kickers and Punters are not eligible"
+    - "If current salary is higher than qualifying PPE, player maintains current salary"
+    - "Applied in offseason soon after RFA tag amounts are announced"
+    - "Ranking ties are rounded down to nearest whole number (players get highest eligible escalator)"

@@ -1,0 +1,156 @@
+contract_tools_allotment:
+  description: "Each GM's annual allotment of contract tools"
+  extensions: "Unlimited"
+  franchise_tags: 1
+  buyout_restructures: 1
+  rfa_tenders: 2
+  erfa_tenders: 2
+  july_1_tenders: 2
+  notes: "Contract tools cannot be traded nor do they roll over to future seasons."
+
+franchise_tag_rules:
+  description: "Rules governing the use of the Franchise Tag"
+  quantity_per_team: 1
+  eligible_players: "Players with 0 remaining contract years"
+  tag_types:
+    - "Exclusive Franchise Tag (EFT)"
+    - "Non-Exclusive Franchise Tag (NEFT)"
+    - "Transition Tag (TT)"
+  declaration: "Must declare simultaneously which player and which tag type"
+  guarantee_level: "All Franchise Tag salaries are fully guaranteed"
+  position_determination: "Current ADL position at FT deadline; Kickers and Punters grouped into single K/PN category"
+  consecutive_limit:
+    max_consecutive_eft_neft: 3
+    third_year_salary:
+      formula: "MAX(1.44 * prev_tag_salary, 1.20 * positional_FT_price, highest_positional_FT_amount)"
+  eft_details:
+    initial_salary: "NEFT value (higher of ADL Cap % * Avg Top 5 salaries at position EOY, or 120% of prev salary)"
+    july_1_update: "Higher of Avg Top 5 current salaries at position (incl. all NEFTs) or initial NEFT value"
+    contract_years: 1
+    auction: "Player does NOT enter auction; exclusive rights retained"
+  neft_details:
+    initial_salary: "Higher of ADL Cap % * Avg Top 5 salaries at position EOY, or 120% of prev salary"
+    auction_opening_bid: "Higher of (SD Min - $100k rounded up to $100k) or (Initial Salary rounded down to $100k)"
+    compensation_required: "Two 1st round picks (1st must be current year, own or better; 2nd any current/next year 1st)"
+    match_window_hours: 48
+    contract_salary_formula: "high_bid * (1 - 0.05 * (contract_years - 1))"
+    contract_years: "GM's choice, up to 6 years"
+  tt_details:
+    initial_salary: "Higher of ADL Cap % * Avg Top 10 salaries at position EOY, or 120% of prev salary"
+    auction_opening_bid: "Higher of (SD Min - $100k rounded up to $100k) or (Initial Salary rounded down to $100k)"
+    compensation_required: "None"
+    match_window_hours: 48
+    contract_salary_formula: "high_bid * (1 - 0.05 * (contract_years - 1))"
+    contract_years: "GM's choice, up to 6 years"
+    no_match_consequence: "GM cannot sign the player and receives no compensation"
+
+transition_tag_rules:
+  description: "See franchise_tag_rules.tt_details above"
+  notes: "Transition Tag is one of the three Franchise Tag options"
+
+rfa_tender_rules:
+  description: "Rules governing Restricted Free Agent tenders"
+  quantity_per_team: 2
+  quantity_note: "These 2 tenders may be used for either RFA or ERFA tags"
+  eligible_players: "Players with 0 remaining contract years who meet RFA eligibility rules"
+  tag_options:
+    frfa:
+      name: "First Round RFA"
+      opening_bid: "MAX(NFL FRFA price, 2.20 * prev_salary), rounded down to nearest $100k"
+      compensation: "1st round draft pick"
+    srfa:
+      name: "Second Round RFA"
+      opening_bid: "MAX(NFL SRFA price, 1.65 * prev_salary), rounded down to nearest $100k"
+      compensation: "2nd round draft pick"
+    orfa:
+      name: "Original Round RFA"
+      opening_bid: "MAX(NFL ORFA price, 1.10 * prev_salary), rounded down to nearest $100k"
+      compensation: "Draft pick equivalent to player's ADL draft position mapped to current draft structure"
+    rrfa:
+      name: "Right-of-Refusal RFA"
+      opening_bid: "NFL RRFA price, rounded down to nearest $100k"
+      compensation: "None"
+  eligibility_restrictions:
+    contract_must_not_include:
+      year_2021_or_earlier: ["EFT", "NEFT", "TT", "NEFToff", "TToff", "FRFA", "SRFA", "ORFA", "RRFA", "B/R", "EXT", "5YO"]
+    contract_must_not_be: "Multi-year UFA from 2023 or earlier"
+  contract_salary: "high_bid (no multi-year discount; RFA salary equals the winning bid regardless of years)"
+  match_window_hours: 48
+  no_bid_result: "Original GM retains player at RFA tag salary, contract length of their choosing"
+  contract_signing_deadline: "Start of B/R Auction (or ADL Rookie Draft if match occurs)"
+  default_contract_years: 1
+  auction_type: "Standard bids (no proxy), with bid comments required for compensation"
+
+erfa_tender_rules:
+  description: "Exclusive Rights Free Agent tender rules"
+  quantity_per_team: 2
+  quantity_note: "Shares the 2-tender allotment with RFA tenders"
+  eligible_players: >
+    Players with 0 remaining contract years who signed their previous contract
+    at or below the ADL veteran minimum salary in one of the previous two league years.
+    Players whose expired contracts are ERFA contracts are not eligible.
+  salary:
+    formula: "MAX(veteran_minimum, 1.10 * prev_salary)"
+    veteran_minimum_2025: 1.0
+  contract_years: 1
+  auction: "Player does NOT enter auction; exclusive rights retained"
+
+buyout_restructure_rules:
+  description: "Rules governing the Buyout/Restructure tool"
+  quantity_per_team: 1
+  eligible_players: >
+    Any player with any contract. Players on Drafted Rookie or UDFA contracts
+    are ineligible until the final year of their contract (including 5th year if 5YO exercised).
+  process:
+    - "GM declares B/R via Message Board by mid-April deadline"
+    - "Current contract is voided without Salary Cap Penalty"
+    - "Player enters B/R Auction with former team's bid at SD minimum ($1.9m in 2025)"
+    - "B/R Auction uses standard bids (no proxy), bid comments required (declaring contract years)"
+  original_gm_options:
+    retain_restructure:
+      description: "Re-sign player using high-bid to determine new salary structure"
+      salary: "High bid * (1 - 0.05 * (years - 1)), never below SD minimum"
+      contract_years: "GM's choice"
+    retain_revert:
+      description: "Revert player's contract to exact pre-B/R status (salary, years, type)"
+      penalty: "None"
+    revert_transfer:
+      description: "Revert contract and release to high bidder, with or without trade compensation"
+      restriction: "Prohibited for tagged players on expired contracts"
+    buyout_transfer:
+      description: "Release player to high bidder using high-bid salary structure"
+      salary: "High bid * (1 - 0.05 * (years_declared_in_bid - 1))"
+  decision_window_hours: 48
+  default_if_no_action: "Buyout/Transfer without compensation"
+  cap_penalty:
+    description: >
+      If Restructure or Buyout chosen, penalty on a virtual contract worth
+      (initial_salary - new_salary), assessed at previous contract's years and
+      guarantee level (FG or SD). Penalty cannot be negative.
+    revert_penalty: "None"
+
+in_season_extension_rules:
+  description: "In-season EXT signing rules"
+  window: "Between Week 1 kickoff and Week 16 kickoff of that player's game"
+  formulas: "Same as offseason EXTs (see extensions.yaml)"
+  week_coding: >
+    Most recent week the player's NFL franchise has kicked off, or if on Bye,
+    the most recent week in which two NFL games have kicked off. Never exceeds 17.
+  cooldown: >
+    A player who received an oEXT cannot receive an iEXT in the same offseason/in-season cycle.
+    A player who received an iEXT must wait until the next in-season window.
+
+fifth_year_option_rules:
+  description: "5th Year Option for 1st round drafted rookies"
+  eligible_players: "First-round drafted rookies only, exercised in the player's 4th season"
+  deadline: "July 1 of the rookie's fourth season"
+  declaration: "Must declare via Message Board; immediately Fully Guaranteed and irreversible"
+  salary_tiers:
+    top_87_5_percentile: "NEFT price in player's 4th season"
+    75_to_87_5_percentile: "TT price in player's 4th season"
+    25_to_75_percentile: "TT price using 3rd-20th highest salaries instead of 1st-10th"
+    bottom_25_percentile: "TT price using 3rd-25th highest salaries instead of 1st-10th"
+  percentile_basis: "ADL-wide Total Starter Points relative to PR Starter Floor in prior season"
+  notation: "Appended '+' to contract status (e.g. 1.05+)"
+  guarantee_level: "Fully Guaranteed"
+  interaction_with_ext: "If extended after 5YO exercised, 5YO year and salary roll into EXT but EXT retains SD status"
