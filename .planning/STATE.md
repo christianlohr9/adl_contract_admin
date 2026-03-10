@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 3 of 8 (MFL API Integration)
-Plan: 2 of 3 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-10 — Completed 03-02-PLAN.md
+Last activity: 2026-03-10 — Completed 03-03-PLAN.md
 
-Progress: ████████░░ 32%
+Progress: █████████░ 36%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 4 min
-- Total execution time: 36 min
+- Total execution time: 40 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: ████████░░ 32%
 |-------|-------|-------|----------|
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
-| 3 - MFL API Integration | 2 | 6 min | 3 min |
+| 3 - MFL API Integration | 3 | 10 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (3 min), 02-02 (5 min), 02-03 (6 min), 03-01 (4 min), 03-02 (2 min)
+- Last 5 plans: 02-02 (5 min), 02-03 (6 min), 03-01 (4 min), 03-02 (2 min), 03-03 (4 min)
 - Trend: —
 
 ## Accumulated Context
@@ -61,6 +61,9 @@ Recent decisions affecting current work:
 | 03-02 | SyncResult dataclass in team_sync.py, reused by player_sync | Standard return type for all sync services |
 | 03-02 | Player sync fetches all existing into memory lookup | O(1) matching for batch upserts |
 | 03-02 | Neither sync service commits transactions | Caller controls transaction boundaries |
+| 03-03 | ContractType set to NG placeholder for all contracts | Phase 4 contract engine will classify NG/SD/FG properly |
+| 03-03 | Salary parsed via float(Decimal(str)) | Preserve precision during conversion, match Contract model float field |
+| 03-03 | sync_historical_scores uses async context manager factory | Year-scoped MFL clients need separate instances per season |
 
 ### Deferred Issues
 
@@ -73,5 +76,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-10
-Stopped at: Completed 03-02-PLAN.md
-Resume file: None — ready for 03-03-PLAN.md
+Stopped at: Completed 03-03-PLAN.md
+Resume file: None — ready for 03-04-PLAN.md
