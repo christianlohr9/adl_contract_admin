@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
 - [x] **Phase 2: Foundation** — Complete
 - [x] **Phase 3: MFL API Integration** — Complete
-- [ ] **Phase 4: Contract Engine** - Port EPV logic, build all contract tools
+- [x] **Phase 4: Contract Engine** — Complete
 - [ ] **Phase 5: Salary Cap & Validation** - Cap penalties and eligibility checks
 - [ ] **Phase 6: API Layer** - FastAPI REST endpoints for all resources
 - [ ] **Phase 7: Frontend Placeholder** - React/TypeScript scaffold with routing
@@ -72,7 +72,7 @@ Plans:
 - [x] 04-01: Port EPV calculation logic to new service layer
 - [x] 04-02: Extensions engine (X-A/B)
 - [x] 04-03: Franchise/transition tags (X-C) and ERFA tenders (X-D)
-- [ ] 04-04: Buyouts and restructures (X-E)
+- [x] 04-04: Buyouts and restructures (X-E)
 
 ### Phase 5: Salary Cap & Validation
 **Goal**: Implement salary cap penalty calculations (NG/SD/FG contract types) and contract eligibility validation against bylaws rules
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
 | 2. Foundation | 3/3 | Complete | 2026-03-10 |
 | 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
-| 4. Contract Engine | 3/4 | In progress | - |
+| 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
 | 5. Salary Cap & Validation | 0/2 | Not started | - |
 | 6. API Layer | 0/3 | Not started | - |
 | 7. Frontend Placeholder | 0/2 | Not started | - |

@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 4 in progress — Contract Engine
+**Current focus:** Phase 4 complete — Contract Engine
 
 ## Current Position
 
 Phase: 4 of 8 (Contract Engine)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-03-11 — Completed 04-03-PLAN.md
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-03-11 — Completed 04-04-PLAN.md
 
-Progress: █████████████░░░░░░░ 52%
+Progress: ██████████████░░░░░░ 56%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 4 min
-- Total execution time: 54 min
+- Total execution time: 58 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: █████████████░░░░░░░ 52%
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
-| 4 - Contract Engine | 3 | 10 min | 3 min |
+| 4 - Contract Engine | 4 | 14 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (4 min), 03-04 (4 min), 04-01 (4 min), 04-02 (2 min), 04-03 (4 min)
+- Last 5 plans: 03-04 (4 min), 04-01 (4 min), 04-02 (2 min), 04-03 (4 min), 04-04 (4 min)
 - Trend: —
 
 ## Accumulated Context
@@ -77,6 +77,9 @@ Recent decisions affecting current work:
 | 04-02 | Total value uses compound growth on smoothed salary | Consistent with salary smoothing formula |
 | 04-03 | NFL RFA prices left as parameters with defaults | External values not yet in constants — non-blocking |
 | 04-03 | Tag salary uses AVG(Top-N) vs 1.20x prev MAX | Cap% treated as positional average per bylaws guidance |
+| 04-04 | All B/R, 5YO, PPE in single buyouts.py module | Complementary contract tools, self-contained |
+| 04-04 | Modified TT reuses franchise_tags helpers with custom rank ranges | Avoids duplicating salary averaging logic |
+| 04-04 | Starter percentile from PlayerScore YTD points | Consistent scoring source for percentile tiers |
 
 ### Deferred Issues
 
@@ -89,5 +92,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 04-03-PLAN.md
+Stopped at: Completed 04-04-PLAN.md (Phase 4 complete)
 Resume file: None
