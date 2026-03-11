@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Contract Engine** — Complete
 - [x] **Phase 5: Salary Cap & Validation** — Complete
 - [x] **Phase 6: API Layer** — Complete
-- [ ] **Phase 7: Frontend Placeholder** - React/TypeScript scaffold with routing
+- [ ] **Phase 7: Frontend Placeholder** - React/TypeScript scaffold with routing (in progress)
 - [ ] **Phase 8: Frontend UI** - Functional UI for contract tools and dashboards
 
 ## Phase Details
@@ -102,7 +102,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 07-01: React scaffold with routing and layout
+- [x] 07-01: React scaffold with routing and layout
 - [ ] 07-02: Placeholder pages for all views
 
 ### Phase 8: Frontend UI
@@ -131,5 +131,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
 | 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
 | 6. API Layer | 3/3 | Complete | 2026-03-11 |
-| 7. Frontend Placeholder | 0/2 | Not started | - |
+| 7. Frontend Placeholder | 1/2 | In progress | - |
 | 8. Frontend UI | 0/4 | Not started | - |

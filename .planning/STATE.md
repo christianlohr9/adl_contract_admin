@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 6 complete — API layer done, ready for Phase 7
+**Current focus:** Phase 7 in progress — Frontend placeholder scaffold
 
 ## Current Position
 
-Phase: 6 of 8 (API Layer)
-Plan: 3 of 3 in current phase
-Status: Phase complete
-Last activity: 2026-03-11 — Completed 06-03-PLAN.md
+Phase: 7 of 8 (Frontend Placeholder)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-11 — Completed 07-01-PLAN.md
 
-Progress: ███████████████████░ 76%
+Progress: ████████████████████░ 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
+- Total plans completed: 20
 - Average duration: 4 min
-- Total execution time: 82 min
+- Total execution time: 87 min
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: ███████████████████░ 76%
 | 4 - Contract Engine | 4 | 14 min | 4 min |
 | 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
 | 6 - API Layer | 3 | 9 min | 3 min |
+| 7 - Frontend Placeholder | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (6 min), 05-02 (6 min), 06-01 (3 min), 06-02 (3 min), 06-03 (3 min)
+- Last 5 plans: 05-02 (6 min), 06-01 (3 min), 06-02 (3 min), 06-03 (3 min), 07-01 (5 min)
 - Trend: —
 
 ## Accumulated Context
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 | 06-02 | Per-tool error isolation in bundled endpoint | Each service wrapped in try/except so one failure doesn't block others |
 | 06-03 | PenaltyResultSchema mirrors actual dataclass fields | Plan said to check dataclass and mirror it — actual fields differ from plan's simplified version |
 | 06-03 | Snapshot endpoint on teams router | Team-scoped endpoint, consistent with existing team routes |
+| 07-01 | Tailwind v4 CSS-first config (no tailwind.config.js) | v4 uses @import "tailwindcss" and @theme in CSS |
+| 07-01 | shadcn/ui v4 uses Base UI render prop (not Radix asChild) | New shadcn version changed component API |
+| 07-01 | Force-tracked frontend/src/lib/ past root .gitignore lib/ rule | Python convention in root gitignore conflicts with frontend lib/ |
 
 ### Deferred Issues
 
@@ -106,5 +110,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 06-03-PLAN.md — Phase 6 complete
+Stopped at: Completed 07-01-PLAN.md — 1 of 2 plans done in Phase 7
 Resume file: None
