@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 4 of 8 (Contract Engine)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-11 — Completed 04-01-PLAN.md
+Last activity: 2026-03-11 — Completed 04-02-PLAN.md
 
-Progress: ███████████░░░░░░░░░ 44%
+Progress: ████████████░░░░░░░░ 48%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 4 min
-- Total execution time: 48 min
+- Total execution time: 50 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: ███████████░░░░░░░░░ 44%
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
-| 4 - Contract Engine | 1 | 4 min | 4 min |
+| 4 - Contract Engine | 2 | 6 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (4 min), 03-02 (2 min), 03-03 (4 min), 03-04 (4 min), 04-01 (4 min)
+- Last 5 plans: 03-02 (2 min), 03-03 (4 min), 03-04 (4 min), 04-01 (4 min), 04-02 (2 min)
 - Trend: —
 
 ## Accumulated Context
@@ -72,6 +72,9 @@ Recent decisions affecting current work:
 | 04-01 | Salaries in millions throughout (0.01 = $10k) | Matches Contract model Numeric(5,2) |
 | 04-01 | Year fallback for season lookups | Returns latest available if requested year missing |
 | 04-01 | _sal_at_rank clamps to list bounds | Avoids index errors on out-of-range rank |
+| 04-02 | Combined eligibility + options in single file | Self-contained tool per CONTEXT.md |
+| 04-02 | 5YO detection via '+' or '5YO' in designation | Contract designation string convention |
+| 04-02 | Total value uses compound growth on smoothed salary | Consistent with salary smoothing formula |
 
 ### Deferred Issues
 
@@ -84,5 +87,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 04-01-PLAN.md
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
