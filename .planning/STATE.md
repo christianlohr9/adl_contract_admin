@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 4 of 8 (Contract Engine)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-11 — Completed 04-02-PLAN.md
+Last activity: 2026-03-11 — Completed 04-03-PLAN.md
 
-Progress: ████████████░░░░░░░░ 48%
+Progress: █████████████░░░░░░░ 52%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 4 min
-- Total execution time: 50 min
+- Total execution time: 54 min
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: ████████████░░░░░░░░ 48%
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
-| 4 - Contract Engine | 2 | 6 min | 3 min |
+| 4 - Contract Engine | 3 | 10 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (2 min), 03-03 (4 min), 03-04 (4 min), 04-01 (4 min), 04-02 (2 min)
+- Last 5 plans: 03-03 (4 min), 03-04 (4 min), 04-01 (4 min), 04-02 (2 min), 04-03 (4 min)
 - Trend: —
 
 ## Accumulated Context
@@ -75,6 +75,8 @@ Recent decisions affecting current work:
 | 04-02 | Combined eligibility + options in single file | Self-contained tool per CONTEXT.md |
 | 04-02 | 5YO detection via '+' or '5YO' in designation | Contract designation string convention |
 | 04-02 | Total value uses compound growth on smoothed salary | Consistent with salary smoothing formula |
+| 04-03 | NFL RFA prices left as parameters with defaults | External values not yet in constants — non-blocking |
+| 04-03 | Tag salary uses AVG(Top-N) vs 1.20x prev MAX | Cap% treated as positional average per bylaws guidance |
 
 ### Deferred Issues
 
@@ -87,5 +89,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 04-02-PLAN.md
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None

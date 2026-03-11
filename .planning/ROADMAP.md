@@ -71,7 +71,7 @@ Plans:
 Plans:
 - [x] 04-01: Port EPV calculation logic to new service layer
 - [x] 04-02: Extensions engine (X-A/B)
-- [ ] 04-03: Franchise/transition tags (X-C) and ERFA tenders (X-D)
+- [x] 04-03: Franchise/transition tags (X-C) and ERFA tenders (X-D)
 - [ ] 04-04: Buyouts and restructures (X-E)
 
 ### Phase 5: Salary Cap & Validation
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
 | 2. Foundation | 3/3 | Complete | 2026-03-10 |
 | 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
-| 4. Contract Engine | 2/4 | In progress | - |
+| 4. Contract Engine | 3/4 | In progress | - |
 | 5. Salary Cap & Validation | 0/2 | Not started | - |
 | 6. API Layer | 0/3 | Not started | - |
 | 7. Frontend Placeholder | 0/2 | Not started | - |
