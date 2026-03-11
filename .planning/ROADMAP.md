@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Foundation** — Complete
 - [x] **Phase 3: MFL API Integration** — Complete
 - [x] **Phase 4: Contract Engine** — Complete
-- [ ] **Phase 5: Salary Cap & Validation** - Cap penalties and eligibility checks
+- [x] **Phase 5: Salary Cap & Validation** — Complete
 - [ ] **Phase 6: API Layer** - FastAPI REST endpoints for all resources
 - [ ] **Phase 7: Frontend Placeholder** - React/TypeScript scaffold with routing
 - [ ] **Phase 8: Frontend UI** - Functional UI for contract tools and dashboards
@@ -82,7 +82,7 @@ Plans:
 
 Plans:
 - [x] 05-01: Salary cap penalty calculations (NG/SD/FG)
-- [ ] 05-02: Contract eligibility validation
+- [x] 05-02: Contract eligibility validation
 
 ### Phase 6: API Layer
 **Goal**: Build FastAPI REST endpoints for players, teams, contracts, extensions, and salary cap
@@ -129,7 +129,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Foundation | 3/3 | Complete | 2026-03-10 |
 | 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
 | 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
-| 5. Salary Cap & Validation | 1/2 | In progress | - |
+| 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
 | 6. API Layer | 0/3 | Not started | - |
 | 7. Frontend Placeholder | 0/2 | Not started | - |
 | 8. Frontend UI | 0/4 | Not started | - |

@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 5 in progress — Salary Cap & Validation
+**Current focus:** Phase 5 complete — ready for Phase 6: API Layer
 
 ## Current Position
 
 Phase: 5 of 8 (Salary Cap & Validation)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-11 — Completed 05-01-FIX.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-11 — Completed 05-02-PLAN.md
 
-Progress: ████████████████░░░░ 60%
+Progress: █████████████████░░░ 65%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: 4 min
-- Total execution time: 67 min
+- Total plans completed: 16
+- Average duration: 5 min
+- Total execution time: 73 min
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: ████████████████░░░░ 60%
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
 | 4 - Contract Engine | 4 | 14 min | 4 min |
-| 5 - Salary Cap & Validation | 1+fix | 9 min | - |
+| 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (4 min), 04-02 (2 min), 04-03 (4 min), 04-04 (4 min), 05-01 (6 min)
+- Last 5 plans: 04-02 (2 min), 04-03 (4 min), 04-04 (4 min), 05-01 (6 min), 05-02 (6 min)
 - Trend: —
 
 ## Accumulated Context
@@ -84,6 +84,9 @@ Recent decisions affecting current work:
 | 05-01 | FG multi-year split uses ceil_10k/floor_10k (not 100k) | Bylaws example requires 10k precision matching cap_penalty_rounding |
 | 05-01 | Draft round passed from Player model to classifier | More reliable than designation-only parsing |
 | 05-01-FIX | Regex patterns use uppercase (OFF, IO) since classifier uppercases designation | Avoids case mismatch between stored designation and regex |
+| 05-02 | Deferred imports in allotment checks to avoid circular deps | eligibility.py and allotments.py cross-reference each other |
+| 05-02 | team_id resolved from player's contract record | Previous season for expired-contract actions, current for active |
+| 05-02 | RFA and ERFA tenders share single "tender" allotment type | Matches bylaws limit of 2 shared tenders |
 
 ### Deferred Issues
 
@@ -96,5 +99,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 05-01-FIX.md (UAT fixes for classifier regex)
+Stopped at: Completed 05-02-PLAN.md (eligibility validation & allotment tracking)
 Resume file: None
