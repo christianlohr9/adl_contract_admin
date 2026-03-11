@@ -92,7 +92,7 @@ Plans:
 
 Plans:
 - [x] 06-01: Player and team endpoints
-- [ ] 06-02: Contract and extension endpoints
+- [x] 06-02: Contract and extension endpoints
 - [ ] 06-03: Salary cap endpoints
 
 ### Phase 7: Frontend Placeholder
@@ -130,6 +130,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
 | 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
 | 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
-| 6. API Layer | 1/3 | In progress | - |
+| 6. API Layer | 2/3 | In progress | - |
 | 7. Frontend Placeholder | 0/2 | Not started | - |
 | 8. Frontend UI | 0/4 | Not started | - |
