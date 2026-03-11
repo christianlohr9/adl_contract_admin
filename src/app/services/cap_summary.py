@@ -78,7 +78,7 @@ async def get_player_cap_detail(
             Contract.status == ContractStatus.ACTIVE,
         )
     )
-    contract = (await session.execute(stmt)).scalar_one_or_none()
+    contract = (await session.execute(stmt)).scalars().first()
     if contract is None:
         return None
 

@@ -1,7 +1,5 @@
 """Pydantic response schemas for teams."""
 
-from __future__ import annotations
-
 from pydantic import BaseModel, ConfigDict
 
 

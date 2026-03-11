@@ -4,14 +4,9 @@ Mirrors service-layer dataclasses for JSON serialization of eligibility checks,
 extensions, franchise tags, tenders, buyouts, 5th Year Options, and PPE.
 """
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
-
-if TYPE_CHECKING:
-    from decimal import Decimal
 
 
 # ---------------------------------------------------------------------------

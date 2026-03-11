@@ -1,14 +1,9 @@
 """Pydantic response schemas for players."""
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+import datetime
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
-
-if TYPE_CHECKING:
-    import datetime
-    from decimal import Decimal
 
 
 class PlayerSchema(BaseModel):

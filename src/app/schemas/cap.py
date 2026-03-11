@@ -4,14 +4,9 @@ Mirrors service-layer dataclasses (PenaltyResult, PlayerCapDetail,
 TeamCapSummary) for JSON serialization of cap endpoints.
 """
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
-
-if TYPE_CHECKING:
-    from decimal import Decimal
 
 
 # ---------------------------------------------------------------------------

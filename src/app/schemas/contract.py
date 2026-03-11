@@ -1,13 +1,8 @@
 """Pydantic response schemas for contracts and roster entries."""
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
-
-if TYPE_CHECKING:
-    from decimal import Decimal
 
 
 class ContractSchema(BaseModel):
