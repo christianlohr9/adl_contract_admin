@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Contract Engine** — Complete
 - [x] **Phase 5: Salary Cap & Validation** — Complete
 - [x] **Phase 6: API Layer** — Complete
-- [ ] **Phase 7: Frontend Placeholder** - React/TypeScript scaffold with routing (in progress)
+- [x] **Phase 7: Frontend Placeholder** — Complete
 - [ ] **Phase 8: Frontend UI** - Functional UI for contract tools and dashboards
 
 ## Phase Details
@@ -103,7 +103,7 @@ Plans:
 
 Plans:
 - [x] 07-01: React scaffold with routing and layout
-- [ ] 07-02: Placeholder pages for all views
+- [x] 07-02: Placeholder pages for all views
 
 ### Phase 8: Frontend UI
 **Goal**: Build functional React UI — contract tools forms, salary cap views, team dashboards, player search, and data tables for all 32 GMs
@@ -131,5 +131,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
 | 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
 | 6. API Layer | 3/3 | Complete | 2026-03-11 |
-| 7. Frontend Placeholder | 1/2 | In progress | - |
+| 7. Frontend Placeholder | 2/2 | Complete | 2026-03-11 |
 | 8. Frontend UI | 0/4 | Not started | - |
