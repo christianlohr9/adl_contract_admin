@@ -81,7 +81,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 05-01: Salary cap penalty calculations (NG/SD/FG)
+- [x] 05-01: Salary cap penalty calculations (NG/SD/FG)
 - [ ] 05-02: Contract eligibility validation
 
 ### Phase 6: API Layer
@@ -129,7 +129,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Foundation | 3/3 | Complete | 2026-03-10 |
 | 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
 | 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
-| 5. Salary Cap & Validation | 0/2 | Not started | - |
+| 5. Salary Cap & Validation | 1/2 | In progress | - |
 | 6. API Layer | 0/3 | Not started | - |
 | 7. Frontend Placeholder | 0/2 | Not started | - |
 | 8. Frontend UI | 0/4 | Not started | - |

@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 4 complete — Contract Engine
+**Current focus:** Phase 5 in progress — Salary Cap & Validation
 
 ## Current Position
 
-Phase: 4 of 8 (Contract Engine)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-03-11 — Completed 04-04-PLAN.md
+Phase: 5 of 8 (Salary Cap & Validation)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-11 — Completed 05-01-PLAN.md
 
-Progress: ██████████████░░░░░░ 56%
+Progress: ████████████████░░░░ 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 4 min
-- Total execution time: 58 min
+- Total execution time: 64 min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: ██████████████░░░░░░ 56%
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
 | 4 - Contract Engine | 4 | 14 min | 4 min |
+| 5 - Salary Cap & Validation | 1 | 6 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (4 min), 04-01 (4 min), 04-02 (2 min), 04-03 (4 min), 04-04 (4 min)
+- Last 5 plans: 04-01 (4 min), 04-02 (2 min), 04-03 (4 min), 04-04 (4 min), 05-01 (6 min)
 - Trend: —
 
 ## Accumulated Context
@@ -80,6 +81,8 @@ Recent decisions affecting current work:
 | 04-04 | All B/R, 5YO, PPE in single buyouts.py module | Complementary contract tools, self-contained |
 | 04-04 | Modified TT reuses franchise_tags helpers with custom rank ranges | Avoids duplicating salary averaging logic |
 | 04-04 | Starter percentile from PlayerScore YTD points | Consistent scoring source for percentile tiers |
+| 05-01 | FG multi-year split uses ceil_10k/floor_10k (not 100k) | Bylaws example requires 10k precision matching cap_penalty_rounding |
+| 05-01 | Draft round passed from Player model to classifier | More reliable than designation-only parsing |
 
 ### Deferred Issues
 
@@ -92,5 +95,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 04-04-PLAN.md (Phase 4 complete)
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
