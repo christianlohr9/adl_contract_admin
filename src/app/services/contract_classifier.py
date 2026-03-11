@@ -13,8 +13,8 @@ from app.services.rules import get_sd_minimum
 
 # Patterns for designation parsing
 _DRAFT_PICK_RE = re.compile(r"\b(\d{4})\s+(\d)\.(\d+)\b")  # e.g. "2021 1.02" or "2024 2.15"
-_TAG_RE = re.compile(r"\b(EFT|NEFT|TT)\b")  # Franchise/transition tags (word boundary)
-_EXT_RE = re.compile(r"\bEXT\b")  # Extension contracts
+_TAG_RE = re.compile(r"\b(EFT|NEFT|TT)(\d+|OFF)?\b")  # Tags + variants: EFT1, NEFTOFF, TTOFF
+_EXT_RE = re.compile(r"\b[IO]?EXT\b")  # Extensions: EXT, IEXT, OEXT
 
 
 def classify_contract_type(
