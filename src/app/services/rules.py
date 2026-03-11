@@ -85,6 +85,16 @@ def floor_100k(amount: Decimal) -> Decimal:
     return amount.quantize(Decimal("0.1"), rounding=ROUND_FLOOR)
 
 
+def ceil_10k(amount: Decimal) -> Decimal:
+    """Ceil to $10k (0.01 in millions)."""
+    return amount.quantize(Decimal("0.01"), rounding=ROUND_CEILING)
+
+
+def floor_10k(amount: Decimal) -> Decimal:
+    """Floor to $10k (0.01 in millions)."""
+    return amount.quantize(Decimal("0.01"), rounding=ROUND_FLOOR)
+
+
 def ceil_100k(amount: Decimal) -> Decimal:
     """Ceil to $100k (0.1 in millions)."""
     return amount.quantize(Decimal("0.1"), rounding=ROUND_CEILING)
@@ -134,6 +144,13 @@ def get_salary_growth_rate() -> Decimal:
     return Decimal(str(c["salary_growth_rate"]))
 
 
+@lru_cache(maxsize=1)
+def get_cap_penalty_rates() -> dict:
+    """Return cap penalty rates from salary_cap.json ``cap_penalty_rates``."""
+    c = get_salary_cap_constants()
+    return c["cap_penalty_rates"]
+
+
 # Suppress unused import warning — math is used by round_to_nearest_4's round()
 __all__ = [
     "load_constants",
@@ -145,6 +162,8 @@ __all__ = [
     "get_free_agency_formulas",
     "round_to_10k",
     "round_to_100k",
+    "ceil_10k",
+    "floor_10k",
     "floor_100k",
     "ceil_100k",
     "round_to_nearest_4",
@@ -152,4 +171,5 @@ __all__ = [
     "get_rookie_minimum",
     "get_sd_minimum",
     "get_salary_growth_rate",
+    "get_cap_penalty_rates",
 ]
