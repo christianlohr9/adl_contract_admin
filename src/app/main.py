@@ -15,6 +15,7 @@ from sqlalchemy import text
 from app.api.players import router as players_router
 from app.api.sync import router as sync_router
 from app.api.teams import router as teams_router
+from app.api.tools import router as tools_router
 from app.core.config import settings
 from app.core.db import SessionDep, engine
 
@@ -53,6 +54,7 @@ app = FastAPI(title="ADL Contract Admin", lifespan=lifespan)
 app.include_router(sync_router)
 app.include_router(teams_router)
 app.include_router(players_router)
+app.include_router(tools_router)
 
 
 @app.get("/health")
