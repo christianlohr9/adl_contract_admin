@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 from fastapi import FastAPI
 from sqlalchemy import text
 
+from app.api.cap import router as cap_router
 from app.api.players import router as players_router
 from app.api.sync import router as sync_router
 from app.api.teams import router as teams_router
@@ -55,6 +56,7 @@ app.include_router(sync_router)
 app.include_router(teams_router)
 app.include_router(players_router)
 app.include_router(tools_router)
+app.include_router(cap_router)
 
 
 @app.get("/health")
