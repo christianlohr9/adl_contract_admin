@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 6 in progress — executing API layer
+**Current focus:** Phase 6 complete — API layer done, ready for Phase 7
 
 ## Current Position
 
 Phase: 6 of 8 (API Layer)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-03-11 — Completed 06-02-PLAN.md
+Plan: 3 of 3 in current phase
+Status: Phase complete
+Last activity: 2026-03-11 — Completed 06-03-PLAN.md
 
-Progress: ██████████████████░░ 72%
+Progress: ███████████████████░ 76%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 4 min
-- Total execution time: 79 min
+- Total execution time: 82 min
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: ██████████████████░░ 72%
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
 | 4 - Contract Engine | 4 | 14 min | 4 min |
 | 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
+| 6 - API Layer | 3 | 9 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-04 (4 min), 05-01 (6 min), 05-02 (6 min), 06-01 (3 min), 06-02 (3 min)
+- Last 5 plans: 05-01 (6 min), 05-02 (6 min), 06-01 (3 min), 06-02 (3 min), 06-03 (3 min)
 - Trend: —
 
 ## Accumulated Context
@@ -91,6 +92,8 @@ Recent decisions affecting current work:
 | 06-01 | Search route before {player_id} in players router | Prevent FastAPI path parameter conflicts |
 | 06-02 | Used /{player_id}/all for bundled endpoint | Avoids path conflicts with sub-routes like /extensions, /tags |
 | 06-02 | Per-tool error isolation in bundled endpoint | Each service wrapped in try/except so one failure doesn't block others |
+| 06-03 | PenaltyResultSchema mirrors actual dataclass fields | Plan said to check dataclass and mirror it — actual fields differ from plan's simplified version |
+| 06-03 | Snapshot endpoint on teams router | Team-scoped endpoint, consistent with existing team routes |
 
 ### Deferred Issues
 
@@ -103,5 +106,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 06-02-PLAN.md
-Resume file: .planning/phases/06-api-layer/06-03-PLAN.md
+Stopped at: Completed 06-03-PLAN.md — Phase 6 complete
+Resume file: None
