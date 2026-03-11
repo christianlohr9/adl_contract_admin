@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 3 complete — ready for Phase 4 (Contract Engine)
+**Current focus:** Phase 4 in progress — Contract Engine
 
 ## Current Position
 
-Phase: 3 of 8 (MFL API Integration)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-03-10 — Completed 03-04-PLAN.md
+Phase: 4 of 8 (Contract Engine)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-03-11 — Completed 04-01-PLAN.md
 
-Progress: ██████████░░░░░░░░░░ 40%
+Progress: ███████████░░░░░░░░░ 44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 4 min
-- Total execution time: 44 min
+- Total execution time: 48 min
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: ██████████░░░░░░░░░░ 40%
 | 1 - Rules Extraction | 3 | 16 min | 5 min |
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
+| 4 - Contract Engine | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (6 min), 03-01 (4 min), 03-02 (2 min), 03-03 (4 min), 03-04 (4 min)
+- Last 5 plans: 03-01 (4 min), 03-02 (2 min), 03-03 (4 min), 03-04 (4 min), 04-01 (4 min)
 - Trend: —
 
 ## Accumulated Context
@@ -68,6 +69,9 @@ Recent decisions affecting current work:
 | 03-04 | BackgroundTasks for manual sync trigger | Non-blocking 202 response, appropriate for one-off triggered tasks |
 | 03-04 | Single transaction for full sync atomicity | All four sync steps committed together or rolled back together |
 | 03-04 | No sync on startup | Only on schedule interval or manual trigger to avoid blocking app start |
+| 04-01 | Salaries in millions throughout (0.01 = $10k) | Matches Contract model Numeric(5,2) |
+| 04-01 | Year fallback for season lookups | Returns latest available if requested year missing |
+| 04-01 | _sal_at_rank clamps to list bounds | Avoids index errors on out-of-range rank |
 
 ### Deferred Issues
 
@@ -79,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-10
-Stopped at: Completed 03-04-PLAN.md — Phase 3 complete
-Resume file: None — ready for Phase 4 planning
+Last session: 2026-03-11
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None
