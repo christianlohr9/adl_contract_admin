@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 Phase: 5 of 8 (Salary Cap & Validation)
 Plan: 1 of 2 in current phase
 Status: In progress
-Last activity: 2026-03-11 — Completed 05-01-PLAN.md
+Last activity: 2026-03-11 — Completed 05-01-FIX.md
 
 Progress: ████████████████░░░░ 60%
 
@@ -21,7 +21,7 @@ Progress: ████████████████░░░░ 60%
 **Velocity:**
 - Total plans completed: 15
 - Average duration: 4 min
-- Total execution time: 64 min
+- Total execution time: 67 min
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: ████████████████░░░░ 60%
 | 2 - Foundation | 3 | 14 min | 5 min |
 | 3 - MFL API Integration | 4 | 14 min | 4 min |
 | 4 - Contract Engine | 4 | 14 min | 4 min |
-| 5 - Salary Cap & Validation | 1 | 6 min | 6 min |
+| 5 - Salary Cap & Validation | 1+fix | 9 min | - |
 
 **Recent Trend:**
 - Last 5 plans: 04-01 (4 min), 04-02 (2 min), 04-03 (4 min), 04-04 (4 min), 05-01 (6 min)
@@ -83,6 +83,7 @@ Recent decisions affecting current work:
 | 04-04 | Starter percentile from PlayerScore YTD points | Consistent scoring source for percentile tiers |
 | 05-01 | FG multi-year split uses ceil_10k/floor_10k (not 100k) | Bylaws example requires 10k precision matching cap_penalty_rounding |
 | 05-01 | Draft round passed from Player model to classifier | More reliable than designation-only parsing |
+| 05-01-FIX | Regex patterns use uppercase (OFF, IO) since classifier uppercases designation | Avoids case mismatch between stored designation and regex |
 
 ### Deferred Issues
 
@@ -95,5 +96,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 05-01-PLAN.md
+Stopped at: Completed 05-01-FIX.md (UAT fixes for classifier regex)
 Resume file: None
