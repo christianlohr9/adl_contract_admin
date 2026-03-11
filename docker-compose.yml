@@ -31,15 +31,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql+asyncpg://adl:adl_dev@db:5432/adl
-      DEBUG: "true"
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     command: >
       sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ./src:/app/src
+      - ./rules:/app/rules
       - ./migrations:/app/migrations
       - ./alembic.ini:/app/alembic.ini
 

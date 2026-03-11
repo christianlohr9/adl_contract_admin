@@ -10,10 +10,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 
 from app.mfl.models import MFLRostersResponse
-from app.models.contract import Contract, ContractStatus, ContractType
+from app.models.contract import Contract, ContractStatus
 from app.models.player import Player
 from app.models.roster import RosterEntry, RosterStatus
 from app.models.team import Team
+from app.services.contract_classifier import classify_contract_type
 from app.services.team_sync import SyncResult
 
 if TYPE_CHECKING:
@@ -80,9 +81,10 @@ async def sync_rosters(
     team_rows = (await session.execute(select(Team))).scalars().all()
     team_lookup: dict[str, int] = {t.franchise_id: t.id for t in team_rows}
 
-    # Build lookup: mfl_id -> Player.id
+    # Build lookups: mfl_id -> Player.id and mfl_id -> Player object
     player_rows = (await session.execute(select(Player))).scalars().all()
     player_lookup: dict[int, int] = {p.mfl_id: p.id for p in player_rows}
+    player_lookup_objs: dict[int, Player] = {p.mfl_id: p for p in player_rows}
 
     logger.info(
         "Roster sync: %d teams, %d players in lookup, %d franchises from MFL",
@@ -138,10 +140,17 @@ async def sync_rosters(
                 designation = roster_player.contract_info
                 signed_season = _parse_signed_season(designation, season)
 
-                # TODO(phase-4): ContractType classification requires bylaws rules
-                # (rookie draft position, salary thresholds). Set all to NG as
-                # placeholder — the contract engine in Phase 4 will classify properly.
-                contract_type = ContractType.NG
+                # Resolve draft round: prefer Player model, fall back to designation
+                player_row = player_lookup_objs.get(mfl_id)
+                p_draft_round = player_row.draft_round if player_row else None
+
+                contract_type = classify_contract_type(
+                    salary=Decimal(roster_player.salary),
+                    designation=designation,
+                    signed_season=signed_season,
+                    season=season,
+                    draft_round=p_draft_round,
+                )
 
                 contract_stmt = select(Contract).where(
                     Contract.team_id == team_id,
