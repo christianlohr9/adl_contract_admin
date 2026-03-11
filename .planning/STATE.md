@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 5 complete — ready for Phase 6: API Layer
+**Current focus:** Phase 6 in progress — executing API layer
 
 ## Current Position
 
-Phase: 5 of 8 (Salary Cap & Validation)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-11 — Completed 05-02-PLAN.md
+Phase: 6 of 8 (API Layer)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-03-11 — Completed 06-01-PLAN.md
 
-Progress: █████████████████░░░ 65%
+Progress: █████████████████░░░ 68%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
-- Average duration: 5 min
-- Total execution time: 73 min
+- Total plans completed: 17
+- Average duration: 4 min
+- Total execution time: 76 min
 
 **By Phase:**
 
@@ -34,7 +34,7 @@ Progress: █████████████████░░░ 65%
 | 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (2 min), 04-03 (4 min), 04-04 (4 min), 05-01 (6 min), 05-02 (6 min)
+- Last 5 plans: 04-03 (4 min), 04-04 (4 min), 05-01 (6 min), 05-02 (6 min), 06-01 (3 min)
 - Trend: —
 
 ## Accumulated Context
@@ -87,6 +87,8 @@ Recent decisions affecting current work:
 | 05-02 | Deferred imports in allotment checks to avoid circular deps | eligibility.py and allotments.py cross-reference each other |
 | 05-02 | team_id resolved from player's contract record | Previous season for expired-contract actions, current for active |
 | 05-02 | RFA and ERFA tenders share single "tender" allotment type | Matches bylaws limit of 2 shared tenders |
+| 06-01 | Decimal for salary fields in Pydantic schemas | Match Numeric model columns, avoid float rounding |
+| 06-01 | Search route before {player_id} in players router | Prevent FastAPI path parameter conflicts |
 
 ### Deferred Issues
 
@@ -99,5 +101,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-11
-Stopped at: Completed 05-02-PLAN.md (eligibility validation & allotment tracking)
-Resume file: None
+Stopped at: Completed 06-01-PLAN.md
+Resume file: .planning/phases/06-api-layer/06-02-PLAN.md
