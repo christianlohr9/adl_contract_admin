@@ -140,7 +140,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: Window status service and eligibility integration
+- [x] 10-01: Window status service and eligibility integration
 - [ ] 10-02: API response enhancement with window status
 
 #### Phase 11: Roster-Wide Eligibility API
@@ -187,7 +187,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Frontend Placeholder | v1.0 | 2/2 | Complete | 2026-03-11 |
 | 8. Frontend UI | v1.0 | 4/4 | Complete | 2026-03-12 |
 | 9. League Calendar Data Model | v1.1 | 2/2 | Complete | 2026-03-12 |
-| 10. Period Detection & Date-Aware Eligibility | v1.1 | 0/? | Not started | - |
+| 10. Period Detection & Date-Aware Eligibility | v1.1 | 1/2 | In progress | - |
 | 11. Roster-Wide Eligibility API | v1.1 | 0/? | Not started | - |
 | 12. Contract Management Dashboard | v1.1 | 0/? | Not started | - |
 | 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 0/? | Not started | - |
