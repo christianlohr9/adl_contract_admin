@@ -2,8 +2,8 @@
  * Format a salary stored in millions to a display string matching the MFL platform convention.
  * e.g. 40.93 -> "$40.93", 0.75 -> "$0.75", 0.01 -> "$0.01"
  */
-export function formatSalary(millions: number): string {
-  return `$${millions.toFixed(2)}`;
+export function formatSalary(millions: number | string): string {
+  return `$${Number(millions).toFixed(2)}`;
 }
 
 /**
