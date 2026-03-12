@@ -10,6 +10,7 @@ and checks allotment limits via the allotments service.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -40,6 +41,8 @@ class EligibilityResult:
     reason: str | None = None
     rule_citation: str | None = None
     prerequisites: list[str] = field(default_factory=list)
+    window_status: str | None = None
+    window_closes: date | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -136,6 +139,35 @@ async def check_eligibility(
             reason=f"Unknown action type: {action}. Valid actions: {sorted(_VALID_ACTIONS)}",
         )
 
+    # Window gating — check if the action's calendar window is open
+    from app.services.window_status import get_window_status
+
+    window = await get_window_status(session, season, action)
+
+    if window.status == "unconfigured":
+        return EligibilityResult(
+            action=action,
+            eligible=False,
+            reason=window.reason,
+            rule_citation=(
+                "No season calendar configured — commissioner must set "
+                "dates before contract tools are available"
+            ),
+            window_status=window.status,
+            window_closes=window.closes,
+        )
+
+    if window.status == "closed":
+        return EligibilityResult(
+            action=action,
+            eligible=False,
+            reason=window.reason,
+            rule_citation="Contract action window has closed for this season",
+            window_status=window.status,
+            window_closes=window.closes,
+        )
+
+    # Window is open — proceed to player-level eligibility checks
     dispatch = {
         ACTION_EXTENSION: _check_extension,
         ACTION_FRANCHISE_TAG: _check_franchise_tag,
@@ -147,7 +179,10 @@ async def check_eligibility(
     }
 
     checker = dispatch[action]
-    return await checker(session, player_id, season)
+    result = await checker(session, player_id, season)
+    result.window_status = window.status
+    result.window_closes = window.closes
+    return result
 
 
 # ---------------------------------------------------------------------------
