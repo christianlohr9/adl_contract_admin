@@ -13,6 +13,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app.api.calendar import router as calendar_router
 from app.api.cap import router as cap_router
 from app.api.players import router as players_router
 from app.api.sync import router as sync_router
@@ -60,6 +61,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(calendar_router)
 app.include_router(sync_router)
 app.include_router(teams_router)
 app.include_router(players_router)

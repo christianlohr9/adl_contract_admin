@@ -202,6 +202,48 @@ export interface PlayerToolsSchema {
 }
 
 // ---------------------------------------------------------------------------
+// Calendar schemas (from calendar.py)
+// ---------------------------------------------------------------------------
+
+export interface SeasonCalendarSchema {
+  id: number;
+  season: number;
+
+  // Deadlines
+  oext_deadline: string | null;
+  tag_deadline: string | null;
+  tender_deadline: string | null;
+  br_deadline: string | null;
+  fyo_deadline: string | null;
+  rookie_signing_deadline: string | null;
+  salary_rankings_date: string | null;
+
+  // Auction windows
+  rf_auction_start: string | null;
+  rf_auction_end: string | null;
+  ft_auction_start: string | null;
+  ft_auction_end: string | null;
+  rfa_auction_start: string | null;
+  rfa_auction_end: string | null;
+  br_auction_start: string | null;
+  br_auction_end: string | null;
+  rookie_draft_start: string | null;
+  rookie_draft_end: string | null;
+  udfa_auction_start: string | null;
+  udfa_auction_end: string | null;
+  ufa_auction_start: string | null;
+
+  // Season markers
+  iext_window_start: string | null;
+  iext_window_end: string | null;
+  regular_season_start: string | null;
+  regular_season_end: string | null;
+
+  created_at: string;
+  updated_at: string | null;
+}
+
+// ---------------------------------------------------------------------------
 // Cap schemas (from cap.py)
 // ---------------------------------------------------------------------------
 
