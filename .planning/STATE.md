@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 8 in progress — Frontend UI data-fetching infrastructure built
+**Current focus:** Milestone v1.1 — League Calendar & Contract Management
 
 ## Current Position
 
-Phase: 8 of 8 (Frontend UI)
-Plan: 4 of 4 in current phase
-Status: Phase complete
-Last activity: 2026-03-12 — Completed 08-04-PLAN.md
+Phase: 9 of 13 (League Calendar Data Model)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-03-12 — Milestone v1.1 created
 
-Progress: █████████████████████████ 100%
+Progress: ████████████████░░░░░░░░░ 62% (8/13 phases)
 
 ## Performance Metrics
 
@@ -111,14 +111,19 @@ Recent decisions affecting current work:
 
 ### Deferred Issues
 
-- ISS-001: Extension window awareness — league calendar for offseason/in-season signing periods
+- ISS-001: Extension window awareness — league calendar for offseason/in-season signing periods (**Addressed by v1.1 milestone**)
 
 ### Blockers/Concerns
 
-None yet.
+None.
+
+### Roadmap Evolution
+
+- v1.0 MVP shipped: 8 phases (1-8), foundation through functional UI, completed 2026-03-12
+- Milestone v1.1 created: League Calendar & Contract Management, 5 phases (Phase 9-13)
 
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 08-04-PLAN.md — Phase 8 complete (4/4 plans), all phases done
+Stopped at: Milestone v1.1 initialization
 Resume file: None

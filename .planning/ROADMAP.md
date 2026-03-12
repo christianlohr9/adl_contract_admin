@@ -8,6 +8,11 @@ Transform the ADL's Google Sheet-based contract administration into a proper web
 
 None
 
+## Milestones
+
+- ✅ **v1.0 MVP** - Phases 1-8 (shipped 2026-03-12)
+- 🚧 **v1.1 League Calendar & Contract Management** - Phases 9-13 (in progress)
+
 ## Phases
 
 **Phase Numbering:**
@@ -16,22 +21,14 @@ None
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Rules Extraction** - Parse bylaws into structured docs, constants, and formulas
-- [x] **Phase 2: Foundation** — Complete
-- [x] **Phase 3: MFL API Integration** — Complete
-- [x] **Phase 4: Contract Engine** — Complete
-- [x] **Phase 5: Salary Cap & Validation** — Complete
-- [x] **Phase 6: API Layer** — Complete
-- [x] **Phase 7: Frontend Placeholder** — Complete
-- [x] **Phase 8: Frontend UI** — Complete
-
-## Phase Details
+<details>
+<summary>✅ v1.0 MVP (Phases 1-8) - SHIPPED 2026-03-12</summary>
 
 ### Phase 1: Rules Extraction
 **Goal**: Parse the ADL Bylaws into structured, machine-readable formats — markdown docs in `rules/docs/`, JSON constants in `rules/constants/`, YAML formulas in `rules/formulas/`
 **Depends on**: Nothing (first phase)
 **Research**: Unlikely (internal document parsing, established patterns)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [x] 01-01: Verify rule constants against bylaws
@@ -42,7 +39,7 @@ Plans:
 **Goal**: Set up the new project structure — archive old Taipy app, scaffold FastAPI backend, define PostgreSQL schema with SQLAlchemy models and Alembic migrations
 **Depends on**: Phase 1 (need rule constants/formulas to inform schema design)
 **Research**: Unlikely (standard project setup, established tech stack)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [x] 02-01: Archive old app, create new project structure
@@ -54,7 +51,7 @@ Plans:
 **Depends on**: Phase 2 (need DB models to sync into)
 **Research**: Likely (external API, technology choice)
 **Research topics**: MFL API documentation, direct HTTP vs ffscrapr/R approach, authentication method, available endpoints for franchises/rosters/scores
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
 - [x] 03-01: MFL API client and response models
@@ -66,7 +63,7 @@ Plans:
 **Goal**: Port EPV calculation logic from old codebase and build the full contract tools engine — extensions (X-A/B), franchise/transition tags (X-C), ERFA tenders (X-D), buyouts/restructures (X-E)
 **Depends on**: Phase 2 (need models), Phase 1 (need rule formulas/constants)
 **Research**: Unlikely (porting existing logic from old codebase)
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
 - [x] 04-01: Port EPV calculation logic to new service layer
@@ -78,7 +75,7 @@ Plans:
 **Goal**: Implement salary cap penalty calculations (NG/SD/FG contract types) and contract eligibility validation against bylaws rules
 **Depends on**: Phase 4 (need contract engine), Phase 1 (need rule constants)
 **Research**: Unlikely (rules derived from bylaws, internal logic)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [x] 05-01: Salary cap penalty calculations (NG/SD/FG)
@@ -88,7 +85,7 @@ Plans:
 **Goal**: Build FastAPI REST endpoints for players, teams, contracts, extensions, and salary cap
 **Depends on**: Phase 4, Phase 5 (need contract engine and cap logic)
 **Research**: Unlikely (standard FastAPI patterns)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [x] 06-01: Player and team endpoints
@@ -99,7 +96,7 @@ Plans:
 **Goal**: Scaffold React/TypeScript frontend with routing, layout shell, and placeholder pages for all major views
 **Depends on**: Phase 6 (need API to define page structure)
 **Research**: Unlikely (standard React scaffold)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [x] 07-01: React scaffold with routing and layout
@@ -110,7 +107,7 @@ Plans:
 **Depends on**: Phase 6 (need working API), Phase 7 (need scaffold)
 **Research**: Likely (UI/UX decisions, component library choice)
 **Research topics**: React component library selection, data table library, dashboard layout patterns, form handling for contract tools
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
 - [x] 08-01: Component library setup and shared components
@@ -118,18 +115,77 @@ Plans:
 - [x] 08-03: Player detail page with contract tools
 - [x] 08-04: Salary cap and dashboard views
 
+</details>
+
+## Phase Details
+
+### 🚧 v1.1 League Calendar & Contract Management (In Progress)
+
+**Milestone Goal:** Add date-aware contract management with roster-wide visibility into all available actions, resolving ISS-001 (extension window awareness)
+
+#### Phase 9: League Calendar Data Model
+**Goal**: Admin-configured season dates per year — oEXT deadline, tag/tender deadlines, B/R deadline, 5YO deadline, iEXT window, all auction dates. Stored as manual config with CRUD endpoints.
+**Depends on**: v1.0 complete
+**Research**: Unlikely (internal data model, standard CRUD)
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: TBD (run /gsd:plan-phase 9 to break down)
+
+#### Phase 10: Period Detection & Date-Aware Eligibility
+**Goal**: Backend logic to determine current league period from configured dates, gate contract tools by window, enforce date constraints in eligibility checks.
+**Depends on**: Phase 9
+**Research**: Unlikely (internal business logic, extends existing eligibility services)
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01: TBD (run /gsd:plan-phase 10 to break down)
+
+#### Phase 11: Roster-Wide Eligibility API
+**Goal**: New endpoint returning contract action eligibility summary for all players on a team — tag candidates, tender candidates, extension-eligible, B/R candidates, 5YO/PPE eligible — with calculated values.
+**Depends on**: Phase 10
+**Research**: Unlikely (aggregates existing per-player endpoints, internal patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 11-01: TBD (run /gsd:plan-phase 11 to break down)
+
+#### Phase 12: Contract Management Dashboard
+**Goal**: Frontend roster view grouped by action type (tags, tenders, extensions, B/R, 5YO/PPE) with inline calculations. Compare candidates side-by-side without clicking into individual players.
+**Depends on**: Phase 11
+**Research**: Unlikely (follows existing frontend patterns from Phase 8)
+**Plans**: TBD
+
+Plans:
+- [ ] 12-01: TBD (run /gsd:plan-phase 12 to break down)
+
+#### Phase 13: Calendar/Timeline & Deadline Countdowns
+**Goal**: Dedicated calendar page showing all league dates/periods/auction sequence on a visual timeline, plus dashboard countdown widgets and period indicators.
+**Depends on**: Phase 9
+**Research**: Likely (timeline/calendar visualization library selection)
+**Research topics**: React timeline/calendar components, visual period rendering approaches
+**Plans**: TBD
+
+Plans:
+- [ ] 13-01: TBD (run /gsd:plan-phase 13 to break down)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 13
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Rules Extraction | 3/3 | Complete | 2026-03-10 |
-| 2. Foundation | 3/3 | Complete | 2026-03-10 |
-| 3. MFL API Integration | 4/4 | Complete | 2026-03-10 |
-| 4. Contract Engine | 4/4 | Complete | 2026-03-11 |
-| 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
-| 6. API Layer | 3/3 | Complete | 2026-03-11 |
-| 7. Frontend Placeholder | 2/2 | Complete | 2026-03-11 |
-| 8. Frontend UI | 4/4 | Complete | 2026-03-12 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Rules Extraction | v1.0 | 3/3 | Complete | 2026-03-10 |
+| 2. Foundation | v1.0 | 3/3 | Complete | 2026-03-10 |
+| 3. MFL API Integration | v1.0 | 4/4 | Complete | 2026-03-10 |
+| 4. Contract Engine | v1.0 | 4/4 | Complete | 2026-03-11 |
+| 5. Salary Cap & Validation | v1.0 | 2/2 | Complete | 2026-03-11 |
+| 6. API Layer | v1.0 | 3/3 | Complete | 2026-03-11 |
+| 7. Frontend Placeholder | v1.0 | 2/2 | Complete | 2026-03-11 |
+| 8. Frontend UI | v1.0 | 4/4 | Complete | 2026-03-12 |
+| 9. League Calendar Data Model | v1.1 | 0/? | Not started | - |
+| 10. Period Detection & Date-Aware Eligibility | v1.1 | 0/? | Not started | - |
+| 11. Roster-Wide Eligibility API | v1.1 | 0/? | Not started | - |
+| 12. Contract Management Dashboard | v1.1 | 0/? | Not started | - |
+| 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 0/? | Not started | - |
