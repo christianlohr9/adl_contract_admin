@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Current Position
 
-Phase: 9 of 13 (League Calendar Data Model)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-12 — Completed 09-01-PLAN.md
+Phase: 10 of 13 (Period Detection & Date-Aware Eligibility)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-03-12 — Completed 09-02-PLAN.md (Phase 9 complete)
 
-Progress: ████████████████░░░░░░░░░ 64% (26/40 plans)
+Progress: █████████████████░░░░░░░░ 68% (27/40 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
+- Total plans completed: 27
 - Average duration: 6 min
-- Total execution time: 145 min
+- Total execution time: 158 min
 
 **By Phase:**
 
@@ -36,10 +36,10 @@ Progress: ████████████████░░░░░░░�
 | 7 - Frontend Placeholder | 2 | 13 min | 7 min |
 | 8 - Frontend UI | 4 | 45 min | 11 min |
 
-| 9 - League Calendar Data Model | 1 | 5 min | 5 min |
+| 9 - League Calendar Data Model | 2 | 18 min | 9 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-01 (5 min), 08-02 (27 min), 08-03 (tbd), 08-04 (13 min), 09-01 (5 min)
+- Last 5 plans: 08-02 (27 min), 08-03 (tbd), 08-04 (13 min), 09-01 (5 min), 09-02 (13 min)
 - Trend: —
 
 ## Accumulated Context
@@ -113,6 +113,8 @@ Recent decisions affecting current work:
 | 09-01 | All 27 date fields nullable — commissioner fills progressively | Dates set throughout offseason, not all at once |
 | 09-01 | PUT uses setattr loop on non-None fields for partial updates | Partial updates without nulling others |
 | 09-01 | 409 Conflict on duplicate season POST | Consistent with unique constraint |
+| 09-02 | Native date inputs for admin calendar form | No date picker library needed for single-user admin |
+| 09-02 | calendarExists priority over isNewSeason in save logic | Prevents 409 on existing seasons |
 
 ### Deferred Issues
 
@@ -130,5 +132,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 09-01-PLAN.md
+Stopped at: Completed 09-02-PLAN.md — Phase 9 complete
 Resume file: None
