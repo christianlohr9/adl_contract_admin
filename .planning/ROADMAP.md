@@ -137,10 +137,11 @@ Plans:
 **Goal**: Backend logic to determine current league period from configured dates, gate contract tools by window, enforce date constraints in eligibility checks.
 **Depends on**: Phase 9
 **Research**: Unlikely (internal business logic, extends existing eligibility services)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: TBD (run /gsd:plan-phase 10 to break down)
+- [ ] 10-01: Window status service and eligibility integration
+- [ ] 10-02: API response enhancement with window status
 
 #### Phase 11: Roster-Wide Eligibility API
 **Goal**: New endpoint returning contract action eligibility summary for all players on a team — tag candidates, tender candidates, extension-eligible, B/R candidates, 5YO/PPE eligible — with calculated values.
