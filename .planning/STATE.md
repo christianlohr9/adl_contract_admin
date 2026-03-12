@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 
 ## Current Position
 
-Phase: 10 of 13 (Period Detection & Date-Aware Eligibility)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-12 — Completed 10-01-PLAN.md
+Phase: 10 of 13 (Period Detection & Date-Aware Eligibility) — COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase 10 complete
+Last activity: 2026-03-12 — Completed 10-02-PLAN.md
 
-Progress: █████████████████░░░░░░░ 70% (28/40 plans)
+Progress: █████████████████░░░░░░░ 75% (30/40 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 28
+- Total plans completed: 30
 - Average duration: 6 min
-- Total execution time: 160 min
+- Total execution time: 165 min
 
 **By Phase:**
 
@@ -37,9 +37,10 @@ Progress: █████████████████░░░░░░�
 | 8 - Frontend UI | 4 | 45 min | 11 min |
 
 | 9 - League Calendar Data Model | 2 | 18 min | 9 min |
+| 10 - Period Detection & Eligibility | 2 | 5 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-03 (tbd), 08-04 (13 min), 09-01 (5 min), 09-02 (13 min), 10-01 (2 min)
+- Last 5 plans: 08-04 (13 min), 09-01 (5 min), 09-02 (13 min), 10-01 (2 min), 10-02 (3 min)
 - Trend: —
 
 ## Accumulated Context
@@ -115,10 +116,15 @@ Recent decisions affecting current work:
 | 09-01 | 409 Conflict on duplicate season POST | Consistent with unique constraint |
 | 09-02 | Native date inputs for admin calendar form | No date picker library needed for single-user admin |
 | 09-02 | calendarExists priority over isNewSeason in save logic | Prevents 409 on existing seasons |
+| 10-01 | PPE always-open, no deadline window | Performance-based, not a deadline action |
+| 10-01 | Extension dual-window: oEXT deadline OR iEXT start/end | Either open = available |
+| 10-01 | Deferred import of get_window_status in check_eligibility | Avoid circular dependencies |
+| 10-02 | Window statuses in bundled endpoint only, not individual tools | Individual endpoints return calculations, not eligibility |
+| 10-02 | Per-tool error isolation for window status fetch | Consistent with existing bundled endpoint pattern |
 
 ### Deferred Issues
 
-- ISS-001: Extension window awareness — league calendar for offseason/in-season signing periods (**Addressed by v1.1 milestone**)
+- ISS-001: Extension window awareness — league calendar for offseason/in-season signing periods (**Resolved at backend level — Phase 10 complete**)
 
 ### Blockers/Concerns
 
@@ -132,5 +138,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 10-01-PLAN.md
+Stopped at: Completed 10-02-PLAN.md — Phase 10 complete
 Resume file: None
