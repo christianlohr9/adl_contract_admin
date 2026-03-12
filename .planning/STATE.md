@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 9 of 13 (League Calendar Data Model)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-03-12 — Milestone v1.1 created
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-12 — Completed 09-01-PLAN.md
 
-Progress: ████████████████░░░░░░░░░ 62% (8/13 phases)
+Progress: ████████████████░░░░░░░░░ 64% (26/40 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25
+- Total plans completed: 26
 - Average duration: 6 min
-- Total execution time: 140 min
+- Total execution time: 145 min
 
 **By Phase:**
 
@@ -36,8 +36,10 @@ Progress: ████████████████░░░░░░░�
 | 7 - Frontend Placeholder | 2 | 13 min | 7 min |
 | 8 - Frontend UI | 4 | 45 min | 11 min |
 
+| 9 - League Calendar Data Model | 1 | 5 min | 5 min |
+
 **Recent Trend:**
-- Last 5 plans: 07-02 (8 min), 08-01 (5 min), 08-02 (27 min), 08-03 (tbd), 08-04 (13 min)
+- Last 5 plans: 08-01 (5 min), 08-02 (27 min), 08-03 (tbd), 08-04 (13 min), 09-01 (5 min)
 - Trend: —
 
 ## Accumulated Context
@@ -108,6 +110,9 @@ Recent decisions affecting current work:
 | 08-04 | Fixed chart height 120px instead of aspect-video | Single stacked bar doesn't need 16:9 ratio |
 | 08-04 | Free agents (years_remaining=0) as top-priority action items | Offseason: FA can be tagged/tendered, most urgent actions |
 | 08-04 | Tags/tenders prioritized above buyouts in action items | Aligns with offseason workflow priority |
+| 09-01 | All 27 date fields nullable — commissioner fills progressively | Dates set throughout offseason, not all at once |
+| 09-01 | PUT uses setattr loop on non-None fields for partial updates | Partial updates without nulling others |
+| 09-01 | 409 Conflict on duplicate season POST | Consistent with unique constraint |
 
 ### Deferred Issues
 
@@ -125,5 +130,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Milestone v1.1 initialization
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None

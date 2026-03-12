@@ -127,10 +127,11 @@ Plans:
 **Goal**: Admin-configured season dates per year — oEXT deadline, tag/tender deadlines, B/R deadline, 5YO deadline, iEXT window, all auction dates. Stored as manual config with CRUD endpoints.
 **Depends on**: v1.0 complete
 **Research**: Unlikely (internal data model, standard CRUD)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 09-01: TBD (run /gsd:plan-phase 9 to break down)
+- [x] 09-01: SeasonCalendar model, migration, and CRUD endpoints
+- [ ] 09-02: TBD
 
 #### Phase 10: Period Detection & Date-Aware Eligibility
 **Goal**: Backend logic to determine current league period from configured dates, gate contract tools by window, enforce date constraints in eligibility checks.
@@ -184,7 +185,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. API Layer | v1.0 | 3/3 | Complete | 2026-03-11 |
 | 7. Frontend Placeholder | v1.0 | 2/2 | Complete | 2026-03-11 |
 | 8. Frontend UI | v1.0 | 4/4 | Complete | 2026-03-12 |
-| 9. League Calendar Data Model | v1.1 | 0/? | Not started | - |
+| 9. League Calendar Data Model | v1.1 | 1/2 | In progress | - |
 | 10. Period Detection & Date-Aware Eligibility | v1.1 | 0/? | Not started | - |
 | 11. Roster-Wide Eligibility API | v1.1 | 0/? | Not started | - |
 | 12. Contract Management Dashboard | v1.1 | 0/? | Not started | - |
