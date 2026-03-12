@@ -186,7 +186,7 @@ async def check_tag_eligibility(
         select(Contract)
         .where(
             Contract.player_id == player_id,
-            Contract.season == season - 1,
+            Contract.season == season,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -295,12 +295,12 @@ async def calculate_franchise_tags(
             consecutive_tag_count=0,
         )
 
-    # Load previous contract
+    # Load previous contract (stored in current season with years_remaining=0)
     contract_result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
-            Contract.season == season - 1,
+            Contract.season == season,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
