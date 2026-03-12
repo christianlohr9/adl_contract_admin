@@ -10,7 +10,6 @@ and checks allotment limits via the allotments service.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -24,6 +23,8 @@ from app.services.rules import get_contract_constants
 from app.services.tenders import check_erfa_eligibility, check_rfa_eligibility
 
 if TYPE_CHECKING:
+    from datetime import date
+
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
