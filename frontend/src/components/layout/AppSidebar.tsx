@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { PlayerSearch } from "@/components/player/PlayerSearch"
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -24,10 +25,13 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-3 space-y-3">
         <span className="text-lg font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
           ADL Contract Admin
         </span>
+        <div className="group-data-[collapsible=icon]:hidden">
+          <PlayerSearch />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
