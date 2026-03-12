@@ -23,7 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Salary Cap & Validation** — Complete
 - [x] **Phase 6: API Layer** — Complete
 - [x] **Phase 7: Frontend Placeholder** — Complete
-- [ ] **Phase 8: Frontend UI** - Functional UI for contract tools and dashboards
+- [x] **Phase 8: Frontend UI** — Complete
 
 ## Phase Details
 
@@ -113,10 +113,10 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: Component library setup and shared components
-- [ ] 08-02: Contract tools UI (extensions, tags, tenders, buyouts)
-- [ ] 08-03: Salary cap and team dashboard views
-- [ ] 08-04: Player search and data tables
+- [x] 08-01: Component library setup and shared components
+- [x] 08-02: Roster browsing and player search
+- [x] 08-03: Player detail page with contract tools
+- [x] 08-04: Salary cap and dashboard views
 
 ## Progress
 
@@ -132,4 +132,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
 | 6. API Layer | 3/3 | Complete | 2026-03-11 |
 | 7. Frontend Placeholder | 2/2 | Complete | 2026-03-11 |
-| 8. Frontend UI | 2/4 | In progress | - |
+| 8. Frontend UI | 4/4 | Complete | 2026-03-12 |

@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 8 of 8 (Frontend UI)
-Plan: 2 of 4 in current phase
-Status: In progress
-Last activity: 2026-03-12 — Completed 08-02-PLAN.md
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-03-12 — Completed 08-04-PLAN.md
 
-Progress: ███████████████████████ 92%
+Progress: █████████████████████████ 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
+- Total plans completed: 25
 - Average duration: 6 min
-- Total execution time: 127 min
+- Total execution time: 140 min
 
 **By Phase:**
 
@@ -34,10 +34,10 @@ Progress: ███████████████████████ 
 | 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
 | 6 - API Layer | 3 | 9 min | 3 min |
 | 7 - Frontend Placeholder | 2 | 13 min | 7 min |
-| 8 - Frontend UI | 2 | 32 min | 16 min |
+| 8 - Frontend UI | 4 | 45 min | 11 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-03 (3 min), 07-01 (5 min), 07-02 (8 min), 08-01 (5 min), 08-02 (27 min)
+- Last 5 plans: 07-02 (8 min), 08-01 (5 min), 08-02 (27 min), 08-03 (tbd), 08-04 (13 min)
 - Trend: —
 
 ## Accumulated Context
@@ -105,10 +105,13 @@ Recent decisions affecting current work:
 | 08-02 | Salary displayed in millions matching MFL platform ($40.93) | User feedback — platform convention, not expanded USD |
 | 08-02 | CORS middleware restricted to localhost:5173 | Required for frontend-backend dev communication |
 | 08-02 | nuqs with react-router/v7 adapter for URL state | Filter persistence across navigation |
+| 08-04 | Fixed chart height 120px instead of aspect-video | Single stacked bar doesn't need 16:9 ratio |
+| 08-04 | Free agents (years_remaining=0) as top-priority action items | Offseason: FA can be tagged/tendered, most urgent actions |
+| 08-04 | Tags/tenders prioritized above buyouts in action items | Aligns with offseason workflow priority |
 
 ### Deferred Issues
 
-None yet.
+- ISS-001: Extension window awareness — league calendar for offseason/in-season signing periods
 
 ### Blockers/Concerns
 
@@ -117,5 +120,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 08-02-PLAN.md — Phase 8 in progress (2/4 plans)
+Stopped at: Completed 08-04-PLAN.md — Phase 8 complete (4/4 plans), all phases done
 Resume file: None
