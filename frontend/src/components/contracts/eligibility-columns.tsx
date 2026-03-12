@@ -71,11 +71,9 @@ export function getEligibilityColumns(
     {
       accessorKey: "current_salary",
       header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="Salary"
-          className="justify-end"
-        />
+        <div className="flex justify-end">
+          <DataTableColumnHeader column={column} title="Salary" />
+        </div>
       ),
       cell: ({ row }) => {
         const salary = row.getValue<number | null>("current_salary");
@@ -97,11 +95,9 @@ export function getEligibilityColumns(
     columns.push({
       accessorKey: col.accessorKey,
       header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title={col.header}
-          className="justify-end"
-        />
+        <div className="flex justify-end">
+          <DataTableColumnHeader column={column} title={col.header} />
+        </div>
       ),
       cell: ({ row }) => {
         const value = row.getValue<number | null>(col.accessorKey);
