@@ -8,6 +8,7 @@ from app.models.player import Player
 from app.models.player_score import PlayerScore
 from app.models.roster import RosterEntry, RosterStatus
 from app.models.salary_cap import SalaryCapSnapshot
+from app.models.season_calendar import SeasonCalendar
 from app.models.team import Team
 from app.models.transaction import Transaction, TransactionType
 
@@ -24,6 +25,7 @@ __all__ = [
     "RosterEntry",
     "RosterStatus",
     "SalaryCapSnapshot",
+    "SeasonCalendar",
     "Team",
     "Transaction",
     "TransactionType",
