@@ -202,6 +202,40 @@ export interface PlayerToolsSchema {
 }
 
 // ---------------------------------------------------------------------------
+// Roster eligibility schemas (from roster_eligibility.py)
+// ---------------------------------------------------------------------------
+
+export interface WindowStatusSchema {
+  action: string;
+  status: "open" | "closed" | "unconfigured";
+  opens: string | null;
+  closes: string | null;
+  reason: string | null;
+}
+
+export interface PlayerActionSummarySchema {
+  player_id: number;
+  player_name: string;
+  position: string;
+  current_salary: number | null;
+  headline_value: number | null;
+  headline_label: string;
+}
+
+export interface ActionGroupSchema {
+  action: string;
+  window_closes: string | null;
+  players: PlayerActionSummarySchema[];
+}
+
+export interface RosterEligibilitySchema {
+  team_id: number;
+  season: number;
+  action_groups: ActionGroupSchema[];
+  window_statuses: Record<string, WindowStatusSchema>;
+}
+
+// ---------------------------------------------------------------------------
 // Calendar schemas (from calendar.py)
 // ---------------------------------------------------------------------------
 

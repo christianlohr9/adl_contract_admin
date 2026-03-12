@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-import { Home, Users, DollarSign, Calendar } from "lucide-react"
+import { Home, Users, DollarSign, FileText, Calendar } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +18,7 @@ const navItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "Roster", url: "/roster", icon: Users },
   { title: "Salary Cap", url: "/cap", icon: DollarSign },
+  { title: "Contracts", url: "/contracts", icon: FileText },
   { title: "Calendar", url: "/calendar", icon: Calendar },
 ]
 
