@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Phase 7 complete — Frontend placeholder scaffold done
+**Current focus:** Phase 8 in progress — Frontend UI data-fetching infrastructure built
 
 ## Current Position
 
-Phase: 7 of 8 (Frontend Placeholder)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-11 — Completed 07-02-PLAN.md
+Phase: 8 of 8 (Frontend UI)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-03-12 — Completed 08-01-PLAN.md
 
-Progress: █████████████████████ 84%
+Progress: ██████████████████████ 88%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: 5 min
-- Total execution time: 95 min
+- Total execution time: 100 min
 
 **By Phase:**
 
@@ -34,9 +34,10 @@ Progress: █████████████████████ 84%
 | 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
 | 6 - API Layer | 3 | 9 min | 3 min |
 | 7 - Frontend Placeholder | 2 | 13 min | 7 min |
+| 8 - Frontend UI | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-01 (3 min), 06-02 (3 min), 06-03 (3 min), 07-01 (5 min), 07-02 (8 min)
+- Last 5 plans: 06-02 (3 min), 06-03 (3 min), 07-01 (5 min), 07-02 (8 min), 08-01 (5 min)
 - Trend: —
 
 ## Accumulated Context
@@ -99,6 +100,8 @@ Recent decisions affecting current work:
 | 07-01 | shadcn/ui v4 uses Base UI render prop (not Radix asChild) | New shadcn version changed component API |
 | 07-01 | Force-tracked frontend/src/lib/ past root .gitignore lib/ rule | Python convention in root gitignore conflicts with frontend lib/ |
 | 07-02 | 6 contract tool tabs: Extensions, Tags, Tenders, Buyout, 5YO, PPE | Matches bylaws sections X-A/B through X-E plus 5YO and PPE |
+| 08-01 | BrowserRouter moved from App.tsx to main.tsx | QueryClientProvider needs to wrap everything |
+| 08-01 | Query key convention: [entity, id, sub-resource] | Consistent cache invalidation pattern |
 
 ### Deferred Issues
 
@@ -110,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-11
-Stopped at: Completed 07-02-PLAN.md — Phase 7 complete (2/2 plans)
+Last session: 2026-03-12
+Stopped at: Completed 08-01-PLAN.md — Phase 8 in progress (1/4 plans)
 Resume file: None
