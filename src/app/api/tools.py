@@ -21,6 +21,7 @@ from app.schemas.tools import (
     PPESchema,
     TagResultSchema,
     TenderResultSchema,
+    WindowStatusSchema,
 )
 from app.services.buyouts import calculate_5yo, calculate_buyout, calculate_ppe
 from app.services.eligibility import (
@@ -30,6 +31,7 @@ from app.services.eligibility import (
 from app.services.extensions import calculate_extensions
 from app.services.franchise_tags import calculate_franchise_tags
 from app.services.tenders import calculate_tenders
+from app.services.window_status import get_all_window_statuses
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +125,17 @@ async def get_all_tools(
     except Exception:
         logger.exception("Error calculating PPE for player %d", player_id)
 
+    # Window statuses
+    window_statuses: dict[str, WindowStatusSchema] | None = None
+    try:
+        raw_statuses = await get_all_window_statuses(session, season)
+        window_statuses = {
+            k: WindowStatusSchema.model_validate(v, from_attributes=True)
+            for k, v in raw_statuses.items()
+        }
+    except Exception:
+        logger.exception("Error fetching window statuses")
+
     return PlayerToolsSchema(
         player_id=player.id,
         player_name=player.name,
@@ -134,6 +147,7 @@ async def get_all_tools(
         buyout=buyout,
         fifth_year_option=fifth_year_option,
         ppe=ppe,
+        window_statuses=window_statuses,
     )
 
 

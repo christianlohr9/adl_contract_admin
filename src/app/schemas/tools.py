@@ -4,6 +4,7 @@ Mirrors service-layer dataclasses for JSON serialization of eligibility checks,
 extensions, franchise tags, tenders, buyouts, 5th Year Options, and PPE.
 """
 
+from datetime import date
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
@@ -24,6 +25,25 @@ class EligibilitySchema(BaseModel):
     reason: str | None = None
     rule_citation: str | None = None
     prerequisites: list[str] = []
+    window_status: str | None = None  # "open", "closed", "unconfigured"
+    window_closes: date | None = None
+
+
+# ---------------------------------------------------------------------------
+# Window Status
+# ---------------------------------------------------------------------------
+
+
+class WindowStatusSchema(BaseModel):
+    """Status of a contract action's window for a given season."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    action: str
+    status: str  # "open", "closed", "unconfigured"
+    opens: date | None = None
+    closes: date | None = None
+    reason: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -226,3 +246,4 @@ class PlayerToolsSchema(BaseModel):
     buyout: BuyoutResultSchema | None = None
     fifth_year_option: FifthYearOptionSchema | None = None
     ppe: PPESchema | None = None
+    window_statuses: dict[str, WindowStatusSchema] | None = None
