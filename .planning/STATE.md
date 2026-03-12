@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 8 of 8 (Frontend UI)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-12 — Completed 08-01-PLAN.md
+Last activity: 2026-03-12 — Completed 08-02-PLAN.md
 
-Progress: ██████████████████████ 88%
+Progress: ███████████████████████ 92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
-- Average duration: 5 min
-- Total execution time: 100 min
+- Total plans completed: 23
+- Average duration: 6 min
+- Total execution time: 127 min
 
 **By Phase:**
 
@@ -34,10 +34,10 @@ Progress: ██████████████████████ 88%
 | 5 - Salary Cap & Validation | 2+fix | 15 min | 5 min |
 | 6 - API Layer | 3 | 9 min | 3 min |
 | 7 - Frontend Placeholder | 2 | 13 min | 7 min |
-| 8 - Frontend UI | 1 | 5 min | 5 min |
+| 8 - Frontend UI | 2 | 32 min | 16 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-02 (3 min), 06-03 (3 min), 07-01 (5 min), 07-02 (8 min), 08-01 (5 min)
+- Last 5 plans: 06-03 (3 min), 07-01 (5 min), 07-02 (8 min), 08-01 (5 min), 08-02 (27 min)
 - Trend: —
 
 ## Accumulated Context
@@ -102,6 +102,9 @@ Recent decisions affecting current work:
 | 07-02 | 6 contract tool tabs: Extensions, Tags, Tenders, Buyout, 5YO, PPE | Matches bylaws sections X-A/B through X-E plus 5YO and PPE |
 | 08-01 | BrowserRouter moved from App.tsx to main.tsx | QueryClientProvider needs to wrap everything |
 | 08-01 | Query key convention: [entity, id, sub-resource] | Consistent cache invalidation pattern |
+| 08-02 | Salary displayed in millions matching MFL platform ($40.93) | User feedback — platform convention, not expanded USD |
+| 08-02 | CORS middleware restricted to localhost:5173 | Required for frontend-backend dev communication |
+| 08-02 | nuqs with react-router/v7 adapter for URL state | Filter persistence across navigation |
 
 ### Deferred Issues
 
@@ -114,5 +117,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-12
-Stopped at: Completed 08-01-PLAN.md — Phase 8 in progress (1/4 plans)
+Stopped at: Completed 08-02-PLAN.md — Phase 8 in progress (2/4 plans)
 Resume file: None

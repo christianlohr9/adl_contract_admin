@@ -132,4 +132,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Salary Cap & Validation | 2/2 | Complete | 2026-03-11 |
 | 6. API Layer | 3/3 | Complete | 2026-03-11 |
 | 7. Frontend Placeholder | 2/2 | Complete | 2026-03-11 |
-| 8. Frontend UI | 1/4 | In progress | - |
+| 8. Frontend UI | 2/4 | In progress | - |
