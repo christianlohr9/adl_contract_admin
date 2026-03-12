@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { WindowStatusBar } from "@/components/contracts/WindowStatusBar";
+import { DeadlineCountdown } from "@/components/contracts/DeadlineCountdown";
 import { DataTable } from "@/components/data-table/DataTable";
 import { useEligibilityTable } from "@/components/contracts/useEligibilityTable";
 import { getEligibilityColumns } from "@/components/contracts/eligibility-columns";
@@ -116,7 +116,7 @@ export function ContractManagementPage() {
         </div>
       ) : eligibility ? (
         <>
-          <WindowStatusBar windowStatuses={eligibility.window_statuses} />
+          <DeadlineCountdown windowStatuses={eligibility.window_statuses} actionGroups={eligibility.action_groups} />
 
           {!hasOpenWindows ? (
             <Card>
