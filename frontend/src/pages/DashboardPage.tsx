@@ -1,70 +1,92 @@
+import { parseAsInteger, useQueryState } from "nuqs";
+import { useTeams, useTeamSnapshot } from "@/api/queries/teams";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ActionItems } from "@/components/dashboard/ActionItems";
+import { CapOverview } from "@/components/dashboard/CapOverview";
+import { RosterSummary } from "@/components/dashboard/RosterSummary";
 
 export function DashboardPage() {
+  const { data: teams, isLoading: teamsLoading } = useTeams();
+
+  const [teamId, setTeamId] = useQueryState(
+    "team",
+    parseAsInteger.withDefault(0),
+  );
+
+  const selectedTeamId = teamId > 0 ? teamId : teams?.[0]?.id ?? 0;
+
+  const { data: snapshot, isLoading: snapshotLoading } =
+    useTeamSnapshot(selectedTeamId);
+
+  function handleTeamChange(value: number | null) {
+    if (value != null) {
+      setTeamId(value);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground mt-2">
-          GM action center — what can you do right now?
+          GM action center — what needs your attention?
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Actions</CardTitle>
-            <CardDescription>
-              Contract tools ready for your team
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">
-              Extensions, tags, and tenders available to your team this season.
-              Phase 8 will populate this with actionable items pulled from
-              GET /api/teams/:teamId/snapshot.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Cap Summary</CardTitle>
-            <CardDescription>
-              Salary cap at a glance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">
-              Total cap, used cap, dead money, and remaining space.
-              Phase 8 will render a cap bar chart and key figures from
-              GET /api/cap/teams/:teamId.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Roster Overview</CardTitle>
-            <CardDescription>
-              Team roster snapshot
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm">
-              Roster count, pending transactions, and recent changes.
-              Phase 8 will show roster size, IR count, and pending moves from
-              GET /api/teams/:teamId/roster.
-            </p>
-          </CardContent>
-        </Card>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium">Team</label>
+          {teamsLoading ? (
+            <Skeleton className="h-8 w-48" />
+          ) : (
+            <Select value={selectedTeamId} onValueChange={handleTeamChange}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select a team" />
+              </SelectTrigger>
+              <SelectContent>
+                {teams?.map((team) => (
+                  <SelectItem key={team.id} value={team.id}>
+                    {team.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
       </div>
+
+      {snapshotLoading && selectedTeamId > 0 ? (
+        <div className="space-y-4">
+          <Skeleton className="h-48" />
+          <div className="grid gap-4 md:grid-cols-2">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+        </div>
+      ) : snapshot ? (
+        <>
+          <ActionItems
+            roster={snapshot.roster}
+            allotments={snapshot.allotments}
+          />
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <CapOverview cap={snapshot.cap} />
+            <RosterSummary roster={snapshot.roster} />
+          </div>
+        </>
+      ) : selectedTeamId > 0 ? (
+        <div className="rounded-md border p-8 text-center text-muted-foreground">
+          No data available
+        </div>
+      ) : null}
     </div>
-  )
+  );
 }
