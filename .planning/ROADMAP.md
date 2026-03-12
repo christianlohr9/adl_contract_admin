@@ -160,7 +160,7 @@ Plans:
 
 Plans:
 - [x] 12-01: API integration, page shell, and window status bar
-- [ ] 12-02: Unified data table with action columns and eligible-only toggle
+- [x] 12-02: Unified data table with action columns and eligible-only toggle
 
 #### Phase 13: Calendar/Timeline & Deadline Countdowns
 **Goal**: Dedicated calendar page showing all league dates/periods/auction sequence on a visual timeline, plus dashboard countdown widgets and period indicators.
@@ -190,5 +190,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. League Calendar Data Model | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 10. Period Detection & Date-Aware Eligibility | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 11. Roster-Wide Eligibility API | v1.1 | 1/1 | Complete | 2026-03-12 |
-| 12. Contract Management Dashboard | v1.1 | 1/2 | In progress | - |
+| 12. Contract Management Dashboard | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 0/? | Not started | - |
