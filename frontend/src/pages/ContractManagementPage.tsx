@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { WindowStatusBar } from "@/components/contracts/WindowStatusBar";
 
 export function ContractManagementPage() {
   const { data: teams, isLoading: teamsLoading } = useTeams();
@@ -66,7 +67,7 @@ export function ContractManagementPage() {
       {eligibilityLoading && selectedTeamId > 0 ? (
         <Skeleton className="h-32 w-full" />
       ) : eligibility ? (
-        <div>{/* WindowStatusBar will be added in Task 2 */}</div>
+        <WindowStatusBar windowStatuses={eligibility.window_statuses} />
       ) : null}
     </div>
   );
