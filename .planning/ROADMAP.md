@@ -147,10 +147,10 @@ Plans:
 **Goal**: New endpoint returning contract action eligibility summary for all players on a team — tag candidates, tender candidates, extension-eligible, B/R candidates, 5YO/PPE eligible — with calculated values.
 **Depends on**: Phase 10
 **Research**: Unlikely (aggregates existing per-player endpoints, internal patterns)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 11-01: TBD (run /gsd:plan-phase 11 to break down)
+- [ ] 11-01: Roster eligibility service, schemas, and endpoint
 
 #### Phase 12: Contract Management Dashboard
 **Goal**: Frontend roster view grouped by action type (tags, tenders, extensions, B/R, 5YO/PPE) with inline calculations. Compare candidates side-by-side without clicking into individual players.
