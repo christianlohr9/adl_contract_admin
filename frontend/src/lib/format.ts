@@ -1,15 +1,9 @@
-const usdFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
 /**
- * Format a salary stored in millions to a display string.
- * e.g. 0.75 -> "$750,000", 0.01 -> "$10,000"
+ * Format a salary stored in millions to a display string matching the MFL platform convention.
+ * e.g. 40.93 -> "$40.93", 0.75 -> "$0.75", 0.01 -> "$0.01"
  */
 export function formatSalary(millions: number): string {
-  return usdFormatter.format(millions * 1_000_000);
+  return `$${millions.toFixed(2)}`;
 }
 
 /**

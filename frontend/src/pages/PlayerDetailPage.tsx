@@ -1,4 +1,6 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -49,9 +51,20 @@ const CONTRACT_TOOLS = [
 
 export function PlayerDetailPage() {
   const { playerId } = useParams<{ playerId: string }>()
+  const navigate = useNavigate()
 
   return (
     <div className="space-y-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate(-1)}
+        className="gap-1"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Roster
+      </Button>
+
       {/* Player header */}
       <Card>
         <CardHeader>
