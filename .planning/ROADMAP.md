@@ -170,7 +170,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 13-01: TBD (run /gsd:plan-phase 13 to break down)
+- [x] 13-01: Fix ISS-002 tag/tender eligibility season queries
+- [ ] 13-02: TBD
 
 ## Progress
 
@@ -191,4 +192,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 10. Period Detection & Date-Aware Eligibility | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 11. Roster-Wide Eligibility API | v1.1 | 1/1 | Complete | 2026-03-12 |
 | 12. Contract Management Dashboard | v1.1 | 2/2 | Complete | 2026-03-12 |
-| 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 0/? | Not started | - |
+| 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 1/2 | In progress | - |

@@ -13,16 +13,15 @@ Enhancements discovered during execution. Not critical - address in future phase
 - **Effort:** Medium — requires a league calendar/period system and conditional logic in the dashboard action items
 - **Suggested phase:** Future milestone — league calendar system
 
-### ISS-002: Franchise tag / tender eligibility checks query wrong season for expired contracts
+### ~~ISS-002: Franchise tag / tender eligibility checks query wrong season for expired contracts~~ — **RESOLVED**
 
 - **Discovered:** Phase 12-02 checkpoint verification (2026-03-12)
-- **Type:** Bug / Data Model Mismatch
-- **Description:** `check_tag_eligibility` (franchise_tags.py:185), `check_erfa_eligibility`, and `check_rfa_eligibility` all look for a contract in `season - 1` to find expired contracts (years_remaining=0). However, the MFL sync stores all contracts in the *current* season (2026), not the previous season. This means these eligibility checks always return "No previous contract found" and zero players appear as tag/tender eligible, even though 26 out of 45 Jets players have expired contracts (years_remaining=0) in season 2026. The franchise_tag column appears in the dashboard (window is open) but all cells show "—" because no action_group is built.
-- **Example:** Bolton, Nick (player_id=1893, Jets) has a 2026 contract with years_remaining=0, salary=8.03, type=SD. `check_tag_eligibility(session, 1893, 2026)` queries `Contract.season == 2025` which returns nothing → "No previous contract found". The fix should query `Contract.season == season` with `Contract.years_remaining == 0` instead of `Contract.season == season - 1`.
-- **Impact:** High — franchise tags, ERFA tenders, and RFA tenders are completely broken; no players show values for these actions
-- **Effort:** Low — fix the season query in each eligibility checker (franchise_tags.py, tenders.py)
-- **Suggested phase:** Phase 13 or hotfix — this is a functional bug, not an enhancement
+- **Resolved:** Phase 13-01 (2026-03-12)
+- **Resolution:** Fixed season queries in franchise_tags.py and tenders.py
 
 ## Closed Enhancements
 
-[None yet]
+### ISS-002: Franchise tag / tender eligibility checks query wrong season for expired contracts — **RESOLVED in Phase 13-01**
+
+- **Fixed:** 2026-03-12
+- **Resolution:** Changed all eligibility queries from `Contract.season == season - 1` to `Contract.season == season`, and adjusted contract age calculations. See 13-01-SUMMARY.md.
