@@ -159,12 +159,12 @@ async def check_erfa_eligibility(
       in one of the previous two league years
     - Previous contract must NOT be an ERFA contract itself
     """
-    # Load the most recent contract (previous season)
+    # Load the most recent contract (stored in current season, expired = years_remaining == 0)
     result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
-            Contract.season == season - 1,
+            Contract.season == season,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -226,12 +226,12 @@ async def check_rfa_eligibility(
     - Contract must not include ineligible types from 2021 or earlier
     - Must not be a multi-year UFA from 2023 or earlier
     """
-    # Load the most recent contract (previous season)
+    # Load the most recent contract (stored in current season, expired = years_remaining == 0)
     result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
-            Contract.season == season - 1,
+            Contract.season == season,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -248,7 +248,7 @@ async def check_rfa_eligibility(
     signed_season = contract.signed_season
 
     # Contract must not be 4+ years old
-    contract_age = (season - 1) - signed_season + 1
+    contract_age = season - signed_season
     if contract_age >= 4:
         return False, "Contract is 4+ years old"
 
@@ -266,7 +266,7 @@ async def check_rfa_eligibility(
         # Check if the original contract was multi-year.
         # Original length = (season - 1) - signed_season + 1
         # (years_remaining is 0 since contract is expired)
-        original_length = (season - 1) - signed_season + 1
+        original_length = season - signed_season
         if original_length > 1:
             return False, "Multi-year UFA contract from 2023 or earlier"
 
@@ -303,12 +303,12 @@ async def calculate_tenders(
             ineligibility_reasons=["Player not found"],
         )
 
-    # Load previous contract
+    # Load previous contract (stored in current season with years_remaining=0)
     contract_result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
-            Contract.season == season - 1,
+            Contract.season == season,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
