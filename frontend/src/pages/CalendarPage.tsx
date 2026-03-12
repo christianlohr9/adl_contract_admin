@@ -221,9 +221,10 @@ export function CalendarPage() {
     const payload = buildPayload(season, form);
     setSuccessMessage("");
 
-    if (calendarExists && !isNewSeason) {
+    if (calendarExists) {
       updateMutation.mutate(payload, {
         onSuccess: () => {
+          setIsNewSeason(false);
           setSuccessMessage("Calendar updated successfully.");
         },
       });
