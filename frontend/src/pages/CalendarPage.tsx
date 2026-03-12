@@ -179,7 +179,6 @@ export function CalendarPage() {
     data: calendar,
     isLoading,
     isError,
-    error,
   } = useCalendar(season);
 
   const createMutation = useCreateCalendar();
