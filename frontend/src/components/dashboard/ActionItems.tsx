@@ -15,7 +15,7 @@ interface ActionItemsProps {
 
 interface ActionItem {
   id: string;
-  type: "expiring" | "allotment";
+  type: "free-agent" | "expiring" | "allotment";
   label: string;
   description: string;
   linkTo?: string;
@@ -25,7 +25,20 @@ interface ActionItem {
 export function ActionItems({ roster, allotments }: ActionItemsProps) {
   const items: ActionItem[] = [];
 
-  // Expiring contracts (1 year remaining)
+  // Free agents (years_remaining === 0) — can be tagged or tendered
+  const freeAgents = roster.filter((r) => r.years_remaining === 0);
+  for (const player of freeAgents) {
+    items.push({
+      id: `fa-${player.player_id}`,
+      type: "free-agent",
+      label: player.player_name,
+      description: `Free agent — eligible for tags & tenders`,
+      linkTo: `/roster/${player.player_id}`,
+      priority: 0,
+    });
+  }
+
+  // Expiring contracts (1 year remaining) — decision needed soon
   const expiring = roster.filter((r) => r.years_remaining === 1);
   for (const player of expiring) {
     items.push({
@@ -38,24 +51,14 @@ export function ActionItems({ roster, allotments }: ActionItemsProps) {
     });
   }
 
-  // Available allotments
+  // Available allotments — tags and tenders first
   if (allotments.franchise_tag > 0) {
     items.push({
       id: "allotment-franchise",
       type: "allotment",
       label: "Franchise Tags",
-      description: `${allotments.franchise_tag} franchise tag${allotments.franchise_tag > 1 ? "s" : ""} available`,
+      description: `${allotments.franchise_tag} franchise tag${allotments.franchise_tag > 1 ? "s" : ""} available to use`,
       priority: 2,
-    });
-  }
-
-  if (allotments.buyout_restructure > 0) {
-    items.push({
-      id: "allotment-buyout",
-      type: "allotment",
-      label: "Buyout/Restructure",
-      description: `${allotments.buyout_restructure} buyout/restructure${allotments.buyout_restructure > 1 ? "s" : ""} available`,
-      priority: 3,
     });
   }
 
@@ -64,8 +67,8 @@ export function ActionItems({ roster, allotments }: ActionItemsProps) {
       id: "allotment-tender",
       type: "allotment",
       label: "Tenders",
-      description: `${allotments.tender} tender${allotments.tender > 1 ? "s" : ""} available`,
-      priority: 4,
+      description: `${allotments.tender} tender${allotments.tender > 1 ? "s" : ""} available (RFA/ERFA)`,
+      priority: 3,
     });
   }
 
@@ -75,12 +78,34 @@ export function ActionItems({ roster, allotments }: ActionItemsProps) {
       type: "allotment",
       label: "July 1 Tenders",
       description: `${allotments.july_1_tender} July 1 tender${allotments.july_1_tender > 1 ? "s" : ""} available`,
+      priority: 4,
+    });
+  }
+
+  if (allotments.buyout_restructure > 0) {
+    items.push({
+      id: "allotment-buyout",
+      type: "allotment",
+      label: "Buyout/Restructure",
+      description: `${allotments.buyout_restructure} buyout/restructure${allotments.buyout_restructure > 1 ? "s" : ""} available`,
       priority: 5,
     });
   }
 
   // Sort by priority
   items.sort((a, b) => a.priority - b.priority);
+
+  const badgeVariant = (type: ActionItem["type"]) => {
+    if (type === "free-agent") return "default";
+    if (type === "expiring") return "destructive";
+    return "secondary";
+  };
+
+  const badgeLabel = (type: ActionItem["type"]) => {
+    if (type === "free-agent") return "Free Agent";
+    if (type === "expiring") return "Expiring";
+    return "Available";
+  };
 
   return (
     <Card>
@@ -109,12 +134,8 @@ export function ActionItems({ roster, allotments }: ActionItemsProps) {
                     ) : (
                       <span className="font-medium">{item.label}</span>
                     )}
-                    <Badge
-                      variant={
-                        item.type === "expiring" ? "destructive" : "secondary"
-                      }
-                    >
-                      {item.type === "expiring" ? "Expiring" : "Available"}
+                    <Badge variant={badgeVariant(item.type)}>
+                      {badgeLabel(item.type)}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">

@@ -37,7 +37,7 @@ export function CapChart({ salaryByType }: CapChartProps) {
   ];
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer config={chartConfig} className="h-[120px] w-full [&>div]:!aspect-auto">
       <BarChart data={data} layout="vertical">
         <CartesianGrid horizontal={false} />
         <XAxis type="number" tickFormatter={(v) => `$${v}`} />
