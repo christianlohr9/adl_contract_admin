@@ -29,3 +29,16 @@ class SyncTriggerResponse(BaseModel):
 
     message: str
     status: str
+
+
+class BackfillStatusSchema(BaseModel):
+    """Current historical backfill status response."""
+
+    in_progress: bool
+    scores_complete: bool
+    contracts_complete: bool
+    missing_score_years: list[int]
+    missing_contract_years: list[int]
+    started_at: datetime | None
+    completed_at: datetime | None
+    error: str | None

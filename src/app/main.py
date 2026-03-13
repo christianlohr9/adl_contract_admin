@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
@@ -28,10 +29,13 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Manage application startup and shutdown."""
+    backfill_task: asyncio.Task[None] | None = None
+
     if settings.sync_enabled:
         from apscheduler import AsyncScheduler
         from apscheduler.triggers.interval import IntervalTrigger
 
+        from app.services.historical_sync import run_historical_backfill
         from app.services.sync_orchestrator import run_full_sync
 
         async with AsyncScheduler() as scheduler:
@@ -46,9 +50,19 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
                 "APScheduler started: full sync every %d hours",
                 settings.sync_interval_hours,
             )
+
+            backfill_task = asyncio.create_task(
+                run_historical_backfill(settings)
+            )
+            logger.info("Historical backfill task launched in background")
+
             yield
     else:
         yield
+
+    if backfill_task and not backfill_task.done():
+        backfill_task.cancel()
+        logger.info("Historical backfill task cancelled on shutdown")
 
     await engine.dispose()
 
