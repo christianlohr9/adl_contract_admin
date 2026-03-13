@@ -11,7 +11,7 @@ None
 ## Milestones
 
 - ✅ **v1.0 MVP** - Phases 1-8 (shipped 2026-03-12)
-- 🚧 **v1.1 League Calendar & Contract Management** - Phases 9-13 (in progress)
+- ✅ **v1.1 League Calendar & Contract Management** - Phases 9-13 (shipped 2026-03-13)
 
 ## Phases
 
@@ -119,7 +119,7 @@ Plans:
 
 ## Phase Details
 
-### 🚧 v1.1 League Calendar & Contract Management (In Progress)
+### ✅ v1.1 League Calendar & Contract Management (Shipped 2026-03-13)
 
 **Milestone Goal:** Add date-aware contract management with roster-wide visibility into all available actions, resolving ISS-001 (extension window awareness)
 
@@ -171,7 +171,7 @@ Plans:
 
 Plans:
 - [x] 13-01: Fix ISS-002 tag/tender eligibility season queries
-- [ ] 13-02: TBD
+- [x] 13-02: Deadline countdown cards replacing WindowStatusBar
 
 ## Progress
 
@@ -192,4 +192,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 10. Period Detection & Date-Aware Eligibility | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 11. Roster-Wide Eligibility API | v1.1 | 1/1 | Complete | 2026-03-12 |
 | 12. Contract Management Dashboard | v1.1 | 2/2 | Complete | 2026-03-12 |
-| 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 1/2 | In progress | - |
+| 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 2/2 | Complete | 2026-03-13 |
