@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-13)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Planning next milestone
+**Current focus:** v1.2 Data Integrity & Eligibility Accuracy
 
 ## Current Position
 
-Phase: 13 of 13 complete — all milestones shipped
-Plan: N/A
-Status: Ready to plan next milestone
-Last activity: 2026-03-13 — v1.1 milestone complete
+Phase: 14 of 17 (Historical Data Imports)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-03-13 - Milestone v1.2 created
 
-Progress: █████████████████████ 100% (35/35 plans across v1.0 + v1.1)
+Progress: ░░░░░░░░░░ 0%
 
 ## Performance Metrics
 
@@ -50,10 +50,10 @@ None.
 
 - v1.0 MVP shipped: 8 phases (1-8), foundation through functional UI, completed 2026-03-12
 - v1.1 League Calendar & Contract Management shipped: 5 phases (9-13), completed 2026-03-13
-- Next milestone TBD — next phase starts at 14
+- v1.2 Data Integrity & Eligibility Accuracy created: 4 phases (14-17), data imports + eligibility audit
 
 ## Session Continuity
 
 Last session: 2026-03-13
-Stopped at: v1.1 milestone archived and tagged
+Stopped at: Milestone v1.2 initialization
 Resume file: None
