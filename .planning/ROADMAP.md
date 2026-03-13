@@ -12,7 +12,7 @@ None
 
 - ✅ **v1.0 MVP** - Phases 1-8 (shipped 2026-03-12)
 - ✅ [v1.1 League Calendar & Contract Management](milestones/v1.1-ROADMAP.md) (Phases 9-13) — SHIPPED 2026-03-13
-- 🚧 **v1.2 Data Integrity & Eligibility Accuracy** - Phases 14-17 (in progress)
+- ✅ [v1.2 Data Integrity & Eligibility Accuracy](milestones/v1.2-ROADMAP.md) (Phases 14-17) — SHIPPED 2026-03-13
 
 ## Phases
 
@@ -47,7 +47,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 </details>
 
-### 🚧 v1.2 Data Integrity & Eligibility Accuracy (In Progress)
+### ✅ v1.2 Data Integrity & Eligibility Accuracy — SHIPPED 2026-03-13
 
 **Milestone Goal:** Import missing historical data from MFL and systematically audit/fix all eligibility logic against bylaws to eliminate false positives and false negatives.
 
@@ -95,7 +95,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 17-01: TBD
+- [x] 17-01: Full Roster Validation (CLI sweep + validation report + regression check)
 
 ## Progress
 
@@ -120,4 +120,4 @@ Phases execute in numeric order. Next phase continues from 14.
 | 14. Historical Data Imports | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 15. Eligibility Audit & Fixes | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 16. NFL Kickoff Rule | v1.2 | 1/1 | Complete | 2026-03-13 |
-| 17. Regression Testing & Validation | v1.2 | 0/? | Not started | - |
+| 17. Regression Testing & Validation | v1.2 | 1/1 | Complete | 2026-03-13 |
