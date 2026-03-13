@@ -61,7 +61,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 14-01: Historical Sync Services (weekly scores + roster/contract sync + gap detection)
-- [ ] 14-02: Startup Backfill & Status Tracking (lifespan integration + status API)
+- [x] 14-02: Startup Backfill & Status Tracking (lifespan integration + status API)
 
 #### Phase 15: Eligibility Audit & Fixes
 
@@ -114,7 +114,7 @@ Phases execute in numeric order. Next phase continues from 14.
 | 11. Roster-Wide Eligibility API | v1.1 | 1/1 | Complete | 2026-03-12 |
 | 12. Contract Management Dashboard | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 2/2 | Complete | 2026-03-13 |
-| 14. Historical Data Imports | v1.2 | 1/2 | In progress | - |
+| 14. Historical Data Imports | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 15. Eligibility Audit & Fixes | v1.2 | 0/? | Not started | - |
 | 16. NFL Kickoff Rule | v1.2 | 0/? | Not started | - |
 | 17. Regression Testing & Validation | v1.2 | 0/? | Not started | - |
