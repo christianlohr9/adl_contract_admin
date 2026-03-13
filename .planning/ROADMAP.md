@@ -70,10 +70,11 @@ Plans:
 **Goal**: Systematically audit and fix all 7 contract action eligibility checks against bylaws and real MFL data
 **Depends on**: Phase 14
 **Research**: Unlikely (internal logic audit)
-**Plans**: TBD
+**Plans**: 2
 
 Plans:
-- [ ] 15-01: TBD
+- [ ] 15-01: Bylaw-to-Code Eligibility Audit (audit document + targeted test scenarios)
+- [ ] 15-02: Fix Eligibility Discrepancies & Validate (fixes + full roster sweep + human verify)
 
 #### Phase 16: NFL Kickoff Rule
 
