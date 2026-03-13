@@ -75,20 +75,32 @@ def calculate_erfa_salary(prev_salary: Decimal, season: int) -> Decimal:
 # RFA tender calculations
 # ---------------------------------------------------------------------------
 
-# TODO: NFL RFA prices are external values not yet in our constants.
-# These placeholder values should be replaced with actual NFL CBA prices
-# once they are added to contracts.json or a dedicated data source.
-_NFL_RFA_PRICES: dict[str, Decimal] = {
-    "FRFA": Decimal("0"),  # NFL First Round RFA price — placeholder
-    "SRFA": Decimal("0"),  # NFL Second Round RFA price — placeholder
-    "ORFA": Decimal("0"),  # NFL Original Round RFA price — placeholder
-    "RRFA": Decimal("0"),  # NFL Right-of-Refusal RFA price — placeholder
-}
+def _get_nfl_rfa_prices(season: int) -> dict[str, Decimal]:
+    """Load NFL RFA tender prices for the given season from contracts.json.
+
+    Falls back to the latest available year if the exact season is missing.
+    """
+    constants = get_contract_constants()
+    prices_by_year = constants.get("rfa_tenders", {}).get("nfl_rfa_prices_by_year", {})
+    key = str(season)
+    if key in prices_by_year:
+        raw = prices_by_year[key]
+    else:
+        # Fall back to the latest available year
+        if prices_by_year:
+            latest_key = max(prices_by_year.keys(), key=int)
+            raw = prices_by_year[latest_key]
+        else:
+            # Ultimate fallback — zeros (should not happen with proper config)
+            raw = {"FRFA": 0, "SRFA": 0, "ORFA": 0, "RRFA": 0}
+    return {k: Decimal(str(v)) for k, v in raw.items()}
 
 
 def calculate_frfa_bid(
     prev_salary: Decimal,
     nfl_frfa_price: Decimal | None = None,
+    *,
+    season: int = 2026,
 ) -> Decimal:
     """Calculate FRFA (First Round RFA) opening bid.
 
@@ -96,13 +108,15 @@ def calculate_frfa_bid(
     """
     constants = get_contract_constants()
     multiplier = Decimal(str(constants["rfa_tenders"]["frfa_salary_multiplier_vs_previous"]))
-    nfl_price = nfl_frfa_price if nfl_frfa_price is not None else _NFL_RFA_PRICES["FRFA"]
+    nfl_price = nfl_frfa_price if nfl_frfa_price is not None else _get_nfl_rfa_prices(season)["FRFA"]
     return floor_100k(max(nfl_price, multiplier * prev_salary))
 
 
 def calculate_srfa_bid(
     prev_salary: Decimal,
     nfl_srfa_price: Decimal | None = None,
+    *,
+    season: int = 2026,
 ) -> Decimal:
     """Calculate SRFA (Second Round RFA) opening bid.
 
@@ -110,13 +124,15 @@ def calculate_srfa_bid(
     """
     constants = get_contract_constants()
     multiplier = Decimal(str(constants["rfa_tenders"]["srfa_salary_multiplier_vs_previous"]))
-    nfl_price = nfl_srfa_price if nfl_srfa_price is not None else _NFL_RFA_PRICES["SRFA"]
+    nfl_price = nfl_srfa_price if nfl_srfa_price is not None else _get_nfl_rfa_prices(season)["SRFA"]
     return floor_100k(max(nfl_price, multiplier * prev_salary))
 
 
 def calculate_orfa_bid(
     prev_salary: Decimal,
     nfl_orfa_price: Decimal | None = None,
+    *,
+    season: int = 2026,
 ) -> Decimal:
     """Calculate ORFA (Original Round RFA) opening bid.
 
@@ -124,18 +140,20 @@ def calculate_orfa_bid(
     """
     constants = get_contract_constants()
     multiplier = Decimal(str(constants["rfa_tenders"]["orfa_salary_multiplier_vs_previous"]))
-    nfl_price = nfl_orfa_price if nfl_orfa_price is not None else _NFL_RFA_PRICES["ORFA"]
+    nfl_price = nfl_orfa_price if nfl_orfa_price is not None else _get_nfl_rfa_prices(season)["ORFA"]
     return floor_100k(max(nfl_price, multiplier * prev_salary))
 
 
 def calculate_rrfa_bid(
     nfl_rrfa_price: Decimal | None = None,
+    *,
+    season: int = 2026,
 ) -> Decimal:
     """Calculate RRFA (Right-of-Refusal RFA) opening bid.
 
     Formula: FLOOR_100K(NFL_RRFA_price)
     """
-    nfl_price = nfl_rrfa_price if nfl_rrfa_price is not None else _NFL_RFA_PRICES["RRFA"]
+    nfl_price = nfl_rrfa_price if nfl_rrfa_price is not None else _get_nfl_rfa_prices(season)["RRFA"]
     return floor_100k(nfl_price)
 
 
@@ -159,12 +177,14 @@ async def check_erfa_eligibility(
       in one of the previous two league years
     - Previous contract must NOT be an ERFA contract itself
     """
-    # Load the most recent contract (stored in current season, expired = years_remaining == 0)
+    # Load expired contract (years_remaining == 0) — explicitly filter to avoid
+    # picking an active contract when multiple exist per player/season (Q3-D fix)
     result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.years_remaining == 0,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -172,10 +192,7 @@ async def check_erfa_eligibility(
     contract = result.scalar_one_or_none()
 
     if contract is None:
-        return False, "No previous contract found"
-
-    if contract.years_remaining > 0:
-        return False, "Player still has years remaining on contract"
+        return False, "No expired contract found (player may still have years remaining)"
 
     # Check if the expired contract is itself an ERFA contract
     desig = contract.designation or ""
@@ -226,12 +243,14 @@ async def check_rfa_eligibility(
     - Contract must not include ineligible types from 2021 or earlier
     - Must not be a multi-year UFA from 2023 or earlier
     """
-    # Load the most recent contract (stored in current season, expired = years_remaining == 0)
+    # Load expired contract (years_remaining == 0) — explicitly filter to avoid
+    # picking an active contract when multiple exist per player/season (Q3-D fix)
     result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.years_remaining == 0,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -239,10 +258,7 @@ async def check_rfa_eligibility(
     contract = result.scalar_one_or_none()
 
     if contract is None:
-        return False, "No previous contract found"
-
-    if contract.years_remaining > 0:
-        return False, "Player still has years remaining on contract"
+        return False, "No expired contract found (player may still have years remaining)"
 
     desig = contract.designation or ""
     signed_season = contract.signed_season
@@ -261,12 +277,36 @@ async def check_rfa_eligibility(
                     f"Contract includes ineligible type '{ineligible_type}' from {signed_season}",
                 )
 
-    # Must not be a multi-year UFA from 2023 or earlier
+    # Universal rule (R10-D fix): "a player's expiring contract must not be...
+    # a previous RFA contract" — applies regardless of signed year.
+    # The bylaws opening paragraph states this as a universal condition.
+    _RFA_DESIGNATIONS = ("FRFA", "SRFA", "ORFA", "RRFA")
+    for rfa_type in _RFA_DESIGNATIONS:
+        if rfa_type in desig:
+            return (
+                False,
+                f"Contract is a previous RFA contract ('{rfa_type}')",
+            )
+
+    # Must not be a multi-year UFA from 2023 or earlier (R4-D fix)
     if signed_season <= 2023 and "UFA" in desig:
-        # Check if the original contract was multi-year.
-        # Original length = (season - 1) - signed_season + 1
-        # (years_remaining is 0 since contract is expired)
-        original_length = season - signed_season
+        # Look up the original contract at signed_season to get original years_remaining.
+        # This avoids the off-by-N error of using (season - signed_season) which
+        # conflates carried-forward seasons with original contract length.
+        orig_result = await session.execute(
+            select(Contract.years_remaining)
+            .where(
+                Contract.player_id == player_id,
+                Contract.signed_season == signed_season,
+                Contract.season == signed_season,
+            )
+            .limit(1)
+        )
+        orig_years = orig_result.scalar_one_or_none()
+        # If we can find the original contract, use its years_remaining as original length.
+        # If not found (data gap), fall back to contract_age which may over-count but
+        # errs on the side of blocking (safer).
+        original_length = orig_years if orig_years is not None else (season - signed_season)
         if original_length > 1:
             return False, "Multi-year UFA contract from 2023 or earlier"
 
@@ -303,12 +343,14 @@ async def calculate_tenders(
             ineligibility_reasons=["Player not found"],
         )
 
-    # Load previous contract (stored in current season with years_remaining=0)
+    # Load previous expired contract (years_remaining=0) — explicitly filter
+    # to avoid picking wrong contract when multiple exist (Q3-D fix)
     contract_result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.years_remaining == 0,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -340,25 +382,25 @@ async def calculate_tenders(
         rfa_options = [
             TenderOption(
                 tender_type="FRFA",
-                salary=calculate_frfa_bid(prev_salary),
+                salary=calculate_frfa_bid(prev_salary, season=season),
                 contract_years=1,
                 compensation="1st round draft pick",
             ),
             TenderOption(
                 tender_type="SRFA",
-                salary=calculate_srfa_bid(prev_salary),
+                salary=calculate_srfa_bid(prev_salary, season=season),
                 contract_years=1,
                 compensation="2nd round draft pick",
             ),
             TenderOption(
                 tender_type="ORFA",
-                salary=calculate_orfa_bid(prev_salary),
+                salary=calculate_orfa_bid(prev_salary, season=season),
                 contract_years=1,
                 compensation="Draft pick per ADL draft position",
             ),
             TenderOption(
                 tender_type="RRFA",
-                salary=calculate_rrfa_bid(),
+                salary=calculate_rrfa_bid(season=season),
                 contract_years=1,
                 compensation="None",
             ),

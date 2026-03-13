@@ -64,6 +64,17 @@ class FranchiseTagResult:
 # ---------------------------------------------------------------------------
 
 
+def _resolve_position_filter(position: str):
+    """Return a SQLAlchemy filter for position, grouping PK/PN into 'Kicker/Punter'.
+
+    Bylaws: "Kickers and Punters are grouped into a single 'Kicker/Punter'
+    position category" for franchise tag and 5YO salary calculations.
+    """
+    if position in ("PK", "PN"):
+        return Player.position.in_(["PK", "PN"])
+    return Player.position == position
+
+
 async def _get_top_n_positional_salaries(
     session: AsyncSession,
     position: str,
@@ -73,12 +84,14 @@ async def _get_top_n_positional_salaries(
     """Fetch the top N salaries at a position for a given season (end-of-year).
 
     Uses the previous season's salary data (season - 1).
+    PK and PN are grouped into a single "Kicker/Punter" category per bylaws.
     """
+    pos_filter = _resolve_position_filter(position)
     result = await session.execute(
         select(Contract.salary)
         .join(Player, Player.id == Contract.player_id)
         .where(
-            Player.position == position,
+            pos_filter,
             Contract.season == season - 1,
         )
         .order_by(Contract.salary.desc())
@@ -181,12 +194,15 @@ async def check_tag_eligibility(
     constants = get_contract_constants()
     max_consecutive = constants["franchise_tags"]["max_consecutive_neft_eft_tags"]
 
-    # Player must have a contract with 0 remaining years (expired)
+    # Player must have an expired contract (years_remaining == 0).
+    # Query explicitly for expired contracts to avoid picking up an active
+    # contract when multiple contracts exist for the same player/season (Q2-D fix).
     result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.years_remaining == 0,
         )
         .order_by(Contract.salary.desc())
         .limit(1)
@@ -194,10 +210,7 @@ async def check_tag_eligibility(
     contract = result.scalar_one_or_none()
 
     if contract is None:
-        return False, "No previous contract found"
-
-    if contract.years_remaining > 0:
-        return False, "Player still has years remaining on contract"
+        return False, "No expired contract found (player may still have years remaining)"
 
     # Check consecutive tag limit for EFT/NEFT
     consecutive = await get_consecutive_tag_count(session, player_id, season)
@@ -246,12 +259,13 @@ async def _calculate_third_tag_salary(
     option_b = positional_pct * positional_ft
 
     # Highest positional FT amount — look for existing franchise tag salaries
-    # at this position in the current season
+    # at this position in the current season (PK/PN grouped per bylaws)
+    pos_filter = _resolve_position_filter(position)
     result = await session.execute(
         select(func.max(Contract.salary))
         .join(Player, Player.id == Contract.player_id)
         .where(
-            Player.position == position,
+            pos_filter,
             Contract.season == season,
             Contract.designation.contains("EFT")
             | Contract.designation.contains("NEFT"),
@@ -296,11 +310,13 @@ async def calculate_franchise_tags(
         )
 
     # Load previous contract (stored in current season with years_remaining=0)
+    # Explicitly filter for expired contracts to avoid picking wrong contract (Q2-D fix)
     contract_result = await session.execute(
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.years_remaining == 0,
         )
         .order_by(Contract.salary.desc())
         .limit(1)

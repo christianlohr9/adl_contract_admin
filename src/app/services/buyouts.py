@@ -27,7 +27,11 @@ from app.services.rules import (
     get_sd_minimum,
     round_to_10k,
 )
-from app.services.tenders import calculate_orfa_bid, calculate_srfa_bid
+from app.services.tenders import (
+    calculate_orfa_bid,
+    calculate_srfa_bid,
+    _get_nfl_rfa_prices,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -137,12 +141,26 @@ def calculate_br_salary_tiers(
 def _build_gm_options(
     opening_bid: Decimal,
     sd_minimum: Decimal,
+    *,
+    prior_designation: str = "",
+    prior_years_remaining: int = -1,
 ) -> list[BuyoutOption]:
-    """Build all 4 GM options from buyout_restructure_rules."""
+    """Build GM options from buyout_restructure_rules.
+
+    Bylaws (B6-M): "Revert/Transfer... [This option is prohibited for tagged
+    players on expired contracts]". If the prior contract was a franchise tag
+    (EFT/NEFT/TT) AND was expired (years_remaining == 0), revert_transfer is excluded.
+    """
     # Default salary at 1-year contract (no discount)
     default_salary = calculate_br_salary(opening_bid, contract_years=1, sd_minimum=sd_minimum)
 
-    return [
+    # Check if revert/transfer is prohibited (tagged player on expired contract)
+    is_tagged = any(
+        tag in prior_designation for tag in ("EFT", "NEFT", "TT")
+    )
+    revert_transfer_prohibited = is_tagged and prior_years_remaining == 0
+
+    options = [
         BuyoutOption(
             action="retain_restructure",
             description="Re-sign player using high-bid to determine new salary structure",
@@ -155,22 +173,31 @@ def _build_gm_options(
             salary=None,
             contract_years=None,
         ),
-        BuyoutOption(
-            action="revert_transfer",
-            description=(
-                "Revert contract and release to high bidder, "
-                "with or without trade compensation"
-            ),
-            salary=None,
-            contract_years=None,
-        ),
+    ]
+
+    if not revert_transfer_prohibited:
+        options.append(
+            BuyoutOption(
+                action="revert_transfer",
+                description=(
+                    "Revert contract and release to high bidder, "
+                    "with or without trade compensation"
+                ),
+                salary=None,
+                contract_years=None,
+            )
+        )
+
+    options.append(
         BuyoutOption(
             action="buyout_transfer",
             description="Release player to high bidder at new salary structure",
             salary=default_salary,
             contract_years=1,
-        ),
-    ]
+        )
+    )
+
+    return options
 
 
 # ---------------------------------------------------------------------------
@@ -301,7 +328,12 @@ async def calculate_buyout(
     sd_minimum = get_sd_minimum(season)
     opening_bid = calculate_br_opening_bid(season)
     salary_tiers = calculate_br_salary_tiers(opening_bid, sd_minimum)
-    gm_options = _build_gm_options(opening_bid, sd_minimum)
+    gm_options = _build_gm_options(
+        opening_bid,
+        sd_minimum,
+        prior_designation=contract.designation or "" if contract else "",
+        prior_years_remaining=contract.years_remaining if contract else -1,
+    )
 
     return BuyoutResult(
         player_id=player_id,
@@ -341,6 +373,61 @@ class FifthYearOptionResult:
 # ---------------------------------------------------------------------------
 
 
+async def _calculate_pr_starter_floor(
+    session: AsyncSession,
+    position: str,
+    season: int,
+) -> int:
+    """Calculate the PR Starter Floor for a position in a given season.
+
+    Bylaws formula:
+        PR Starter Floor = ROUND_TO_NEAREST_4(
+            (Total Position ADL Starts in Prior League Year)
+            / (ADL Weeks Played x 2)
+            * Missed_Start_Inflation_Rate
+        )
+
+    "Total Position ADL Starts" = count of weekly score entries at this position.
+    "ADL Weeks Played" = number of distinct weeks with scores.
+    The factor of 2 accounts for 2 conferences.
+    Missed_Start_Inflation_Rate ~ 1.005 per bylaws.
+    """
+    from sqlalchemy import func as sqla_func
+
+    from app.services.rules import round_to_nearest_4
+
+    # Count total weekly score entries (not YTD) at this position for the season
+    total_starts_result = await session.execute(
+        select(sqla_func.count(PlayerScore.id))
+        .join(Player, Player.id == PlayerScore.player_id)
+        .where(
+            Player.position == position,
+            PlayerScore.season == season,
+            PlayerScore.week != "YTD",
+        )
+    )
+    total_starts = total_starts_result.scalar_one() or 0
+
+    # Count distinct weeks played
+    weeks_result = await session.execute(
+        select(sqla_func.count(sqla_func.distinct(PlayerScore.week)))
+        .where(
+            PlayerScore.season == season,
+            PlayerScore.week != "YTD",
+        )
+    )
+    weeks_played = weeks_result.scalar_one() or 1  # avoid division by zero
+
+    missed_start_inflation = 1.005
+    denominator = weeks_played * 2  # 2 conferences
+
+    if denominator == 0:
+        return 4  # minimum fallback
+
+    raw_floor = (total_starts / denominator) * missed_start_inflation
+    return max(4, round_to_nearest_4(int(round(raw_floor))))
+
+
 async def calculate_starter_percentile(
     session: AsyncSession,
     player_id: int,
@@ -350,12 +437,15 @@ async def calculate_starter_percentile(
     """Calculate a player's percentile among starters at their position.
 
     Gets total YTD points for all players at position, ranks them, and
-    returns the target player's percentile (0.0 to 1.0) among those who
-    scored above the PR Starter Floor threshold.
+    returns the target player's percentile (0.0 to 1.0) among those at
+    or above the PR Starter Floor.
+
+    Y7-D/P7-D fix: Uses PR Starter Floor to determine the pool size
+    instead of counting all scored players.
 
     Returns ``None`` if the player has no scores for the season.
     """
-    # Get all YTD scores at this position for the season
+    # Get all YTD scores at this position for the season, descending
     result = await session.execute(
         select(
             PlayerScore.player_id,
@@ -374,32 +464,14 @@ async def calculate_starter_percentile(
     if not all_scores:
         return None
 
-    # PR Starter Floor: for now, use total starters available.
-    # The starter floor is typically the number of starting roster spots at a position.
-    # We approximate it by using the count of players with scores, capped at a
-    # reasonable number per the league structure. The bylaws formula is complex
-    # (total position ADL starts / weeks / 2 * inflation), so we use the count of
-    # scored players as the pool and rank within it.
-    # Find the target player's score
-    target_points: float | None = None
-    for row in all_scores:
-        if row.player_id == player_id:
-            target_points = float(row.points)
-            break
+    # Calculate PR Starter Floor for this position and season
+    starter_floor = await _calculate_pr_starter_floor(session, position, season)
 
-    if target_points is None:
-        return None
+    # The starter floor caps the pool: only the top N players count as "starters"
+    # where N = starter_floor. Players ranked below this are below the floor.
+    total_starters = min(starter_floor, len(all_scores))
 
-    # Count how many players scored at or above the target player
-    total_starters = len(all_scores)
-    rank = 1
-    for row in all_scores:
-        if float(row.points) > target_points:
-            rank += 1
-        else:
-            break
-
-    # Recount properly: rank is position in descending order
+    # Find the target player's rank (1-based, descending by points)
     rank = 0
     for i, row in enumerate(all_scores):
         if row.player_id == player_id:
@@ -407,9 +479,14 @@ async def calculate_starter_percentile(
             break
 
     if rank == 0:
-        return None
+        return None  # Player has no score
 
-    # Percentile: (total_starters - rank) / (total_starters - 1) if > 1 player
+    # If player ranks below the starter floor, they are below the floor
+    # (0th percentile effectively)
+    if rank > total_starters:
+        return 0.0
+
+    # Percentile: (total_starters - rank) / (total_starters - 1) if > 1 starter
     if total_starters <= 1:
         return 1.0
 
@@ -744,15 +821,21 @@ async def calculate_ppe(
 
     prev_salary = Decimal(str(contract.salary))
 
-    # Determine escalator level and salary
+    # Determine escalator level and salary (P4-D fix: use tag prices, not bid functions)
+    # Bylaws: "SRFA tag price" / "ORFA tag price" — these are the raw
+    # MAX(NFL_price, multiplier * prev_salary) values without floor_100k rounding.
+    nfl_prices = _get_nfl_rfa_prices(season)
+    constants = get_contract_constants()
     if percentile >= 0.75:
         # Level 3: SRFA tag price
         escalator_level = "level_3"
-        escalator_salary = calculate_srfa_bid(prev_salary)
+        srfa_multiplier = Decimal(str(constants["rfa_tenders"]["srfa_salary_multiplier_vs_previous"]))
+        escalator_salary = round_to_10k(max(nfl_prices["SRFA"], srfa_multiplier * prev_salary))
     else:
         # Level 1-2: ORFA tag price
         escalator_level = "level_1_2"
-        escalator_salary = calculate_orfa_bid(prev_salary)
+        orfa_multiplier = Decimal(str(constants["rfa_tenders"]["orfa_salary_multiplier_vs_previous"]))
+        escalator_salary = round_to_10k(max(nfl_prices["ORFA"], orfa_multiplier * prev_salary))
 
     # If current salary is higher, player keeps current salary
     if current_salary > escalator_salary:

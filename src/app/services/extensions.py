@@ -162,22 +162,27 @@ async def check_extension_eligibility(
             "Player has 2+ years remaining on contract (must be in final year or expired)",
         )
 
-    # Rule: Players on rookie contracts signed for less than max years are ineligible
-    # Check if designation looks like a draft pick (e.g. "2021 1.02")
+    # Rule: Players on rookie/UDFA contracts signed for less than max years are ineligible
+    # Bylaws: "3 for UDFA and 4 for drafted rookies"
     desig = contract.designation or ""
     is_rookie_contract = any(
         f"{contract.signed_season} {pick}" in desig
         for pick in [f"{r}." for r in range(1, 6)]
     )
-    if is_rookie_contract:
+    is_udfa_contract = "UDFA" in desig
+
+    if is_rookie_contract or is_udfa_contract:
         rookie_limits = constants["contract_year_limits"]
-        max_rookie_years = rookie_limits.get("drafted_rookie_all_rounds", {}).get("max", 4)
+        if is_udfa_contract:
+            max_rookie_years = rookie_limits.get("udfa", {}).get("max", 3)
+        else:
+            max_rookie_years = rookie_limits.get("drafted_rookie_all_rounds", {}).get("max", 4)
         # Calculate original contract length from signed_season
         original_years = season - contract.signed_season + contract.years_remaining
         if original_years < max_rookie_years:
             return (
                 False,
-                "Players on rookie contracts signed for less than max years are ineligible",
+                "Players on rookie/UDFA contracts signed for less than max years are ineligible",
             )
 
     # Rule: EXT cannot cause total years to exceed 6
@@ -185,6 +190,9 @@ async def check_extension_eligibility(
         return False, f"Contract already at maximum {max_years} years"
 
     # Rule: Players who received an EXT in current or prior window
+    # E3-D note: This query works correctly when EXT creates a new contract row
+    # with signed_season set to the season the EXT was applied. If the system
+    # ever modifies contracts in-place, this check would need revision.
     ext_check = await session.execute(
         select(Contract.id)
         .where(

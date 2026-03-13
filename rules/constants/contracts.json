@@ -102,7 +102,11 @@
     "frfa_salary_multiplier_vs_previous": 2.2,
     "srfa_salary_multiplier_vs_previous": 1.65,
     "orfa_salary_multiplier_vs_previous": 1.1,
-    "match_window_hours": 48
+    "match_window_hours": 48,
+    "nfl_rfa_prices_by_year": {
+      "2025": { "FRFA": 7.605, "SRFA": 5.452, "ORFA": 3.450, "RRFA": 3.312 },
+      "2026": { "FRFA": 8.046, "SRFA": 5.767, "ORFA": 3.674, "RRFA": 3.520 }
+    }
   },
   "erfa_tenders": {
     "per_franchise_per_year": 2,
