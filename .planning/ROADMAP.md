@@ -60,7 +60,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 14-01: TBD (run /gsd:plan-phase 14 to break down)
+- [ ] 14-01: Historical Sync Services (weekly scores + roster/contract sync + gap detection)
+- [ ] 14-02: Startup Backfill & Status Tracking (lifespan integration + status API)
 
 #### Phase 15: Eligibility Audit & Fixes
 
