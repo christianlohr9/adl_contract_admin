@@ -6,7 +6,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import select
+from sqlalchemy import distinct, select
 
 from app.mfl.models import MFLPlayerScoresResponse
 from app.models.player import Player
@@ -124,15 +124,51 @@ async def sync_scores(
     return result
 
 
+# All expected weeks per season: YTD + weeks 1-17
+_ALL_WEEKS: set[str] = {"YTD"} | {str(w) for w in range(1, 18)}
+
+
+async def detect_score_gaps(
+    session: AsyncSession,
+    years: list[int],
+) -> dict[int, list[str]]:
+    """Detect missing (season, week) combos in the PlayerScore table.
+
+    For each year, checks which of the 18 expected weeks (YTD + 1-17)
+    have at least one PlayerScore record. Returns only years that have
+    missing weeks.
+
+    Args:
+        session: Async SQLAlchemy session.
+        years: List of season years to check.
+
+    Returns:
+        Dict mapping year to sorted list of missing week strings.
+        Years with no gaps are omitted from the result.
+    """
+    gaps: dict[int, list[str]] = {}
+    for year in years:
+        result = await session.execute(
+            select(distinct(PlayerScore.week)).where(PlayerScore.season == year)
+        )
+        existing_weeks = {row[0] for row in result}
+        missing = _ALL_WEEKS - existing_weeks
+        if missing:
+            # Sort numerically: YTD first, then 1-17
+            gaps[year] = sorted(missing, key=lambda w: (w != "YTD", int(w) if w != "YTD" else 0))
+    return gaps
+
+
 async def sync_historical_scores(
     client_factory: Callable[[int], Any],
     session: AsyncSession,
     years: list[int],
 ) -> dict[int, SyncResult]:
-    """Sync YTD scores for multiple historical seasons.
+    """Sync weekly scores (1-17) and YTD for multiple historical seasons.
 
+    Uses gap detection to skip weeks that already exist in the database.
     Creates a new MFLClient instance per year (MFL API URLs are year-scoped)
-    and syncs YTD totals for each.
+    and syncs each missing week sequentially with rate limiting.
 
     Args:
         client_factory: Callable that accepts a year (int) and returns an
@@ -141,22 +177,52 @@ async def sync_historical_scores(
         years: List of season years to sync.
 
     Returns:
-        Dict mapping year to its SyncResult.
+        Dict mapping year to its aggregated SyncResult.
     """
+    # Detect which weeks are missing before making any API calls
+    gaps = await detect_score_gaps(session, years)
+
+    if not gaps:
+        logger.info("Historical score sync: no gaps detected for years %s", years)
+        return {}
+
+    logger.info(
+        "Historical score sync: detected gaps in %d seasons: %s",
+        len(gaps),
+        {y: len(weeks) for y, weeks in gaps.items()},
+    )
+
     results: dict[int, SyncResult] = {}
 
     for year in years:
-        logger.info("Syncing historical scores for season %d", year)
+        missing_weeks = gaps.get(year)
+        if not missing_weeks:
+            continue
+
+        logger.info(
+            "Syncing %d missing weeks for season %d: %s",
+            len(missing_weeks),
+            year,
+            missing_weeks,
+        )
+
+        year_result = SyncResult()
         async with client_factory(year) as client:
-            results[year] = await sync_scores(
-                client, session, season=year, week="YTD"
-            )
-            # Respect rate limits between years
-            await asyncio.sleep(client._request_delay)  # noqa: SLF001
+            for week in missing_weeks:
+                week_result = await sync_scores(
+                    client, session, season=year, week=week
+                )
+                year_result.created += week_result.created
+                year_result.updated += week_result.updated
+                year_result.errors.extend(week_result.errors)
+                # Respect rate limits between requests
+                await asyncio.sleep(client._request_delay)  # noqa: SLF001
+
+        results[year] = year_result
 
     logger.info(
         "Historical score sync complete for %d seasons: %s",
-        len(years),
+        len(results),
         {y: f"{r.created}c/{r.updated}u/{len(r.errors)}e" for y, r in results.items()},
     )
     return results
