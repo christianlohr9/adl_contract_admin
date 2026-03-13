@@ -68,6 +68,8 @@ async def run_historical_backfill(settings: Settings) -> None:
             request_delay=settings.mfl_request_delay,
         )
 
+    errors: list[str] = []
+
     try:
         async with async_session() as session:
             # ── Detect gaps ──
@@ -92,24 +94,38 @@ async def run_historical_backfill(settings: Settings) -> None:
                 _backfill_status.completed_at = datetime.now(UTC)
                 return
 
-            # ── Sync missing scores ──
+            # ── Sync missing scores (per-year commit) ──
             if score_gaps:
                 logger.info(
                     "Historical backfill: syncing scores for %d seasons with gaps",
                     len(score_gaps),
                 )
-                years_with_gaps = sorted(score_gaps.keys())
-                await sync_historical_scores(
-                    client_factory=client_factory,
-                    session=session,
-                    years=years_with_gaps,
-                )
-                await session.commit()
-                logger.info("Historical backfill: score sync committed")
+                for year in sorted(score_gaps.keys()):
+                    try:
+                        await sync_historical_scores(
+                            client_factory=client_factory,
+                            session=session,
+                            years=[year],
+                        )
+                        await session.commit()
+                        _backfill_status.missing_score_years = [
+                            y for y in _backfill_status.missing_score_years
+                            if y != year
+                        ]
+                        logger.info(
+                            "Historical backfill: scores committed for season %d",
+                            year,
+                        )
+                    except Exception as exc:
+                        await session.rollback()
+                        logger.exception(
+                            "Score sync failed for season %d: %s", year, exc
+                        )
+                        errors.append(f"Scores {year}: {exc}")
 
             _backfill_status.scores_complete = True
 
-            # ── Sync missing contracts ──
+            # ── Sync missing contracts (per-year commit) ──
             if contract_gaps:
                 logger.info(
                     "Historical backfill: syncing contracts for %d seasons: %s",
@@ -117,18 +133,43 @@ async def run_historical_backfill(settings: Settings) -> None:
                     contract_gaps,
                 )
                 for year in contract_gaps:
-                    logger.info(
-                        "Historical backfill: syncing rosters for season %d", year
-                    )
-                    async with client_factory(year) as client:
-                        await sync_rosters(client, session, season=year)
-                        await asyncio.sleep(client._request_delay)  # noqa: SLF001
-                await session.commit()
-                logger.info("Historical backfill: contract sync committed")
+                    try:
+                        logger.info(
+                            "Historical backfill: syncing rosters for season %d",
+                            year,
+                        )
+                        async with client_factory(year) as client:
+                            await sync_rosters(client, session, season=year)
+                            await asyncio.sleep(client._request_delay)  # noqa: SLF001
+                        await session.commit()
+                        _backfill_status.missing_contract_years = [
+                            y for y in _backfill_status.missing_contract_years
+                            if y != year
+                        ]
+                        logger.info(
+                            "Historical backfill: contracts committed for season %d",
+                            year,
+                        )
+                    except Exception as exc:
+                        await session.rollback()
+                        logger.exception(
+                            "Contract sync failed for season %d: %s", year, exc
+                        )
+                        errors.append(f"Contracts {year}: {exc}")
 
             _backfill_status.contracts_complete = True
-            _backfill_status.completed_at = datetime.now(UTC)
-            logger.info("Historical backfill completed successfully")
+
+            if errors:
+                _backfill_status.error = (
+                    f"Partial backfill failure ({len(errors)} year(s)): "
+                    + "; ".join(errors)
+                )
+                logger.warning(
+                    "Historical backfill completed with errors: %s", errors
+                )
+            else:
+                _backfill_status.completed_at = datetime.now(UTC)
+                logger.info("Historical backfill completed successfully")
 
     except Exception as exc:
         error_msg = f"Historical backfill failed: {exc}"
