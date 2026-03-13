@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     mfl_password: str = ""
     mfl_base_url: str = "https://api.myfantasyleague.com"
     mfl_request_delay: float = 1.0
+    mfl_backfill_request_delay: float = 6.0
 
     # Sync scheduler configuration
     sync_interval_hours: int = 6

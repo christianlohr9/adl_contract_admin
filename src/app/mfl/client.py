@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import time
 from typing import Any, Self
 from xml.etree import ElementTree
 
 import httpx
 from tenacity import (
+    before_sleep_log,
     retry,
     retry_if_exception_type,
     stop_after_attempt,
@@ -16,6 +18,8 @@ from tenacity import (
 )
 
 from app.mfl.exceptions import MFLAPIError, MFLAuthError, MFLRateLimitError
+
+logger = logging.getLogger(__name__)
 
 
 class MFLClient:
@@ -129,7 +133,8 @@ class MFLClient:
     @retry(
         retry=retry_if_exception_type((httpx.HTTPStatusError, MFLRateLimitError)),
         wait=wait_exponential(multiplier=2, min=4, max=60),
-        stop=stop_after_attempt(7),
+        stop=stop_after_attempt(10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True,
     )
     async def _export_with_retry(self, type_: str, **params: Any) -> dict[str, Any]:
