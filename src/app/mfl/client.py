@@ -53,7 +53,7 @@ class MFLClient:
         self._last_request_at: float = 0.0
 
     async def __aenter__(self) -> Self:
-        self._http = httpx.AsyncClient(timeout=httpx.Timeout(30.0))
+        self._http = httpx.AsyncClient(timeout=httpx.Timeout(30.0), follow_redirects=True)
         await self._authenticate()
         return self
 
@@ -97,15 +97,16 @@ class MFLClient:
 
         try:
             root = ElementTree.fromstring(resp.text)  # noqa: S314
-            status = root.get("status", "")
-            if status == "OK":
+            # MFL returns <status MFL_USER_ID="...">OK</status>
+            # Tag name is "status", text content is "OK", MFL_USER_ID is an attribute
+            if root.tag == "status" and root.text and root.text.strip() == "OK":
                 cookie_value = root.get("MFL_USER_ID", "")
                 if not cookie_value:
                     msg = "Login response missing MFL_USER_ID cookie value"
                     raise MFLAuthError(msg)
                 self._cookie = cookie_value
             else:
-                error_msg = root.get("error", "Unknown login error")
+                error_msg = root.get("error", root.text or "Unknown login error")
                 raise MFLAuthError(error_msg)
         except ElementTree.ParseError as e:
             msg = f"Failed to parse login response XML: {e}"
@@ -126,9 +127,9 @@ class MFLClient:
         return await self._export_with_retry(type_, **params)
 
     @retry(
-        retry=retry_if_exception_type(httpx.HTTPStatusError),
-        wait=wait_exponential(multiplier=1, min=2, max=30),
-        stop=stop_after_attempt(5),
+        retry=retry_if_exception_type((httpx.HTTPStatusError, MFLRateLimitError)),
+        wait=wait_exponential(multiplier=2, min=4, max=60),
+        stop=stop_after_attempt(7),
         reraise=True,
     )
     async def _export_with_retry(self, type_: str, **params: Any) -> dict[str, Any]:
