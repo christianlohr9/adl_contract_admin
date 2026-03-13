@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -10,7 +11,7 @@ from typing import TYPE_CHECKING, Any
 from app.core.db import async_session
 from app.mfl.client import MFLClient
 from app.services.player_sync import sync_players
-from app.services.roster_sync import sync_rosters
+from app.services.roster_sync import detect_contract_gaps, sync_rosters
 from app.services.score_sync import sync_historical_scores, sync_scores
 from app.services.team_sync import SyncResult, sync_teams
 
@@ -142,6 +143,79 @@ async def run_historical_sync(settings: Settings) -> dict[int, Any]:
 
     except Exception as exc:
         error_msg = f"Historical sync failed: {exc}"
+        _sync_status.last_error = error_msg
+        logger.exception(error_msg)
+        raise
+
+    finally:
+        _sync_status.in_progress = False
+
+    return results
+
+
+async def run_historical_roster_sync(settings: Settings) -> dict[int, Any]:
+    """Sync rosters/contracts for historical seasons with gap detection.
+
+    Detects which historical years have no contract records and syncs
+    only those years. Creates a year-scoped MFLClient for each missing
+    year and calls sync_rosters() sequentially with rate limiting.
+
+    Args:
+        settings: Application settings with sync_historical_years list.
+
+    Returns:
+        Dict mapping year to result dict.
+    """
+    _sync_status.in_progress = True
+    _sync_status.last_error = None
+    results: dict[int, Any] = {}
+
+    def client_factory(year: int) -> MFLClient:
+        return MFLClient(
+            year=year,
+            league_id=settings.mfl_league_id,
+            base_url=settings.mfl_base_url,
+            api_key=settings.mfl_api_key,
+            username=settings.mfl_username,
+            password=settings.mfl_password,
+            request_delay=settings.mfl_request_delay,
+        )
+
+    try:
+        async with async_session() as session:
+            missing_years = await detect_contract_gaps(
+                session, settings.sync_historical_years
+            )
+
+            if not missing_years:
+                logger.info(
+                    "Historical roster sync: no gaps detected for years %s",
+                    settings.sync_historical_years,
+                )
+                return {}
+
+            logger.info(
+                "Historical roster sync: %d seasons need syncing: %s",
+                len(missing_years),
+                missing_years,
+            )
+
+            for year in missing_years:
+                logger.info("Syncing historical rosters for season %d", year)
+                async with client_factory(year) as client:
+                    sync_result = await sync_rosters(client, session, season=year)
+                    results[year] = _result_to_dict(sync_result)
+                    # Respect rate limits between years
+                    await asyncio.sleep(client._request_delay)  # noqa: SLF001
+
+            await session.commit()
+
+        _sync_status.last_sync = datetime.now(UTC)
+        _sync_status.last_result = {str(k): v for k, v in results.items()}
+        logger.info("Historical roster sync completed: %s", results)
+
+    except Exception as exc:
+        error_msg = f"Historical roster sync failed: {exc}"
         _sync_status.last_error = error_msg
         logger.exception(error_msg)
         raise

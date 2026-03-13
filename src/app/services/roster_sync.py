@@ -7,7 +7,7 @@ import re
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import select
+from sqlalchemy import distinct, select
 
 from app.mfl.models import MFLRostersResponse
 from app.models.contract import Contract, ContractStatus
@@ -218,3 +218,23 @@ async def sync_rosters(
         len(result.errors),
     )
     return result
+
+
+async def detect_contract_gaps(
+    session: AsyncSession,
+    years: list[int],
+) -> list[int]:
+    """Detect which seasons have no contract records.
+
+    Args:
+        session: Async SQLAlchemy session.
+        years: List of season years to check.
+
+    Returns:
+        List of years that have zero contract records (need syncing).
+    """
+    result = await session.execute(
+        select(distinct(Contract.season)).where(Contract.season.in_(years))
+    )
+    existing_seasons = {row[0] for row in result}
+    return [y for y in years if y not in existing_seasons]
