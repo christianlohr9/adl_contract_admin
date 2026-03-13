@@ -484,13 +484,135 @@ All allotment limits are correctly implemented.
 
 ## Runtime Test Results
 
-*Tests executed against live SQLite database on 2026-03-13*
+*Tests executed against live PostgreSQL database on 2026-03-13 via API endpoints*
 
 ### Test Setup
 
 ```
-Database: /Users/clohr/git/adl_contract_admin/adl_contract_admin.db
+Backend: FastAPI on http://localhost:8000
+Database: PostgreSQL (Docker: adl_contract_admin-db-1)
 Season: 2026
+Contracts in season: 1,549
+Season Calendar: oext_deadline=2026-02-27 (closed), tag_deadline=2026-04-01,
+                 tender_deadline=2026-04-30, br_deadline=2026-03-19, fyo_deadline=2026-03-19
 ```
 
-*(Runtime tests appended below after execution)*
+### Test Data Notes
+
+The database contains multiple contracts per player/season for some players (e.g., an old expired contract AND a newer active contract). The code queries with `ORDER BY salary DESC LIMIT 1`, which picks the highest-salary contract. This is relevant to tests involving players with multiple contracts.
+
+---
+
+### 1. Extension Edge Cases
+
+| # | Test Case | Player | Expected | Actual | Status |
+|---|-----------|--------|----------|--------|--------|
+| T1 | Player with years_remaining=1 | D'Andre Swift (1703) — 2024 UFA, salary $13.07M, yr=1 | Extension window closed (oext past) | `extension: eligible=false, reason="Both offseason and in-season extension windows are closed"` | **PASS** — window gating works correctly; player-level check not reached |
+| T2 | Player with years_remaining=2+ | CeeDee Lamb (1714) — 2024 NEFToff, salary $41.50M, yr=2 | Extension ineligible (2+ years) | `extension: eligible=false, reason="...windows are closed"` (window check preempts) | **PASS** — window gating fires first; other actions correctly show years_remaining ineligibility |
+| T3 | Player with EXT in designation | Devonte Wyatt (2075) — 2026 oEXT, yr=2 | Re-extension blocked | `extension: eligible=false, reason="...windows are closed"` (window preempts) | **PASS** — cannot confirm EXT blocking via API with closed windows; code review confirms logic at `extensions.py:188-198` |
+
+**Note:** Extension window is closed (oext_deadline=2026-02-27 < today=2026-03-13), so all extension tests return window-closed before reaching player-level eligibility. Player-level extension logic was verified via code review in Task 1.
+
+### 2. Franchise Tag Edge Cases
+
+| # | Test Case | Player | Expected | Actual | Status |
+|---|-----------|--------|----------|--------|--------|
+| T4 | Expired contract (yr=0), single contract | Lamar Jackson (1428) — 2025 NEFT, $39.55M, yr=0 | Tag eligible | `franchise_tag: eligible=true` | **PASS** |
+| T5 | Active contract (yr>0) | CeeDee Lamb (1714) — yr=2 | Tag ineligible | `franchise_tag: eligible=false, reason="Player still has years remaining"` | **PASS** |
+| T6 | Multiple contracts per season confuses tag query | Baker Mayfield (1426) — two 2026 contracts: (yr=0, $10.26M) + (yr=1, $22.96M) | Might pick wrong contract | `franchise_tag: eligible=false, reason="Player still has years remaining"` (picked $22.96M contract with yr=1) | **FAIL** — See T6-F below |
+| T7 | Tag salary calculation for EFT/NEFT/TT | Jackson (1428) — QB, prev=$39.55M | EFT/NEFT >= MAX(Top5_QB, 120% x $39.55=$47.46) | EFT=$47.46, NEFT=$47.46, TT=$47.46 | **PASS** — 120% floor dominated correctly |
+
+#### T6-F: Multiple contracts per player/season cause wrong contract selection
+
+**Root cause:** Mayfield has two contracts in season 2026: an expired 2021 EXT ($10.26M, yr=0) and an active 2024 iEXT ($22.96M, yr=1). The tag eligibility query at `franchise_tags.py:185-194` uses `ORDER BY salary DESC LIMIT 1`, which picks the $22.96M active contract. This makes the player appear ineligible for tags (yr=1) when he actually has an expired contract.
+
+**This confirms Q2-D:** Tag/tender queries should filter by `years_remaining=0` for expired-contract actions, or resolve which contract is the "current" one using status and years_remaining rather than just max salary.
+
+### 3. RFA/ERFA Edge Cases
+
+| # | Test Case | Player | Expected | Actual | Status |
+|---|-----------|--------|----------|--------|--------|
+| T8 | ERFA chaining blocked (expired ERFA contract) | Franklin-Myers (1501) — 2025 ERFA, yr=0 | ERFA ineligible | `erfa_tender: eligible=false, reason="Player's expired contract is an ERFA contract"` | **PASS** |
+| T9 | ERFA eligible player (low salary, recent signing) | N/A — no players with salary <= vet min + yr=0 + single contract in DB | Cannot test | N/A | **SKIP** — no qualifying test data; all low-salary expired contracts are ERFA or have multiple contracts |
+| T10 | RFA eligible (expired, non-premium, recent contract) | Franklin-Myers (1501) — 2025 ERFA, yr=0, signed 2025 | RFA eligible (ERFA is not in ineligible list for 2025) | `rfa_tender: eligible=true` | **PASS** |
+| T11 | RRFA bid returns $0 (placeholder NFL prices) | Franklin-Myers (1501) | RRFA bid should be real NFL price | `RRFA salary: $0.0` | **FAIL** — Confirms R9-D: RRFA bid is $0 due to placeholder NFL prices |
+
+### 4. Buyout/Restructure Edge Cases
+
+| # | Test Case | Player | Expected | Actual | Status |
+|---|-----------|--------|----------|--------|--------|
+| T12 | Rookie with yr=3 (not final year) | Phil Mafah (2778) — 2025 4.18, yr=3 | B/R ineligible | `buyout_restructure: eligible=false, reason="Players on Drafted Rookie or UDFA contracts are ineligible until the final year"` | **PASS** |
+| T13 | Expired contract with NEFT tag (revert/transfer prohibition) | Lamar Jackson (1428) — 2025 NEFT, yr=0 | revert_transfer should be prohibited | `revert_transfer: available` (all 4 GM options shown) | **FAIL** — Confirms B6-M: Revert/Transfer not prohibited for tagged players on expired contracts |
+| T14 | B/R for non-rookie active player | Jackson (1428) — yr=0 | B/R eligible | `buyout_restructure: eligible=true` | **PASS** |
+
+### 5. 5YO/PPE Edge Cases
+
+| # | Test Case | Player | Expected | Actual | Status |
+|---|-----------|--------|----------|--------|--------|
+| T15 | 1st round rookie in year 4 (5YO eligible) | Zay Flowers (2264) — 1st round, 2023 1.10, yr=1 | 5YO eligible | `fifth_year_option: eligible=true, salary=$40.21M, tier=top_87_5` | **PASS** |
+| T16 | 1st round rookie NOT in year 4 | Lamb (1714) — 1st round, yr=2 | 5YO ineligible | `fifth_year_option: eligible=false, reason="Player is in year 3..."` | **PASS** |
+| T17 | Rounds 2-5 rookie in year 4 (PPE eligible) | Trenton Simpson (2303) — 3rd round, 2023, yr=1 | PPE eligible | `ppe: eligible=true, salary=$1.5M, level=level_1_2` | **PASS** |
+| T18 | Round 1 player (PPE ineligible) | Lamb (1714) — 1st round | PPE ineligible | `ppe: eligible=false, reason="Player was drafted in round 1..."` | **PASS** |
+| T19 | PPE escalator salary calculation | Simpson (2303) — prev $1.41M | ORFA price = floor_100k(1.1 x $1.41) = floor_100k($1.551) = $1.5M | `escalator_salary: $1.5M` | **PASS** — but uses bid function (floor_100k) instead of tag price; see P4-D |
+
+### 6. PK/PN Position Grouping
+
+| # | Test Case | Player | Expected | Actual | Status |
+|---|-----------|--------|----------|--------|--------|
+| T20 | PK franchise tag salary | Zane Gonzalez (1405) — PK, yr=0 | Should use combined PK+PN salary pool (79 players) | Uses PK-only pool (42 players): EFT=$2.40M, TT=$2.12M | **FAIL** — Confirms F6-M: PK not grouped with PN for tag salary |
+
+### 7. Window Gating
+
+| # | Test Case | Expected | Actual | Status |
+|---|-----------|----------|--------|--------|
+| T21 | Extension window (oext closed 2/27) | Closed | `window_status: "closed"` | **PASS** |
+| T22 | Franchise tag window (deadline 4/1) | Open | `window_status: "open", window_closes: "2026-04-01"` | **PASS** |
+| T23 | Tender window (deadline 4/30) | Open | `window_status: "open", window_closes: "2026-04-30"` | **PASS** |
+| T24 | B/R window (deadline 3/19) | Open | `window_status: "open", window_closes: "2026-03-19"` | **PASS** |
+| T25 | 5YO window (deadline 3/19) | Open | `window_status: "open", window_closes: "2026-03-19"` | **PASS** |
+| T26 | PPE (always open) | Open | `window_status: "open", window_closes: null` | **PASS** |
+
+---
+
+### Runtime Test Summary
+
+| Status | Count |
+|--------|-------|
+| **PASS** | 20 |
+| **FAIL** | 4 |
+| **SKIP** | 1 |
+
+### Runtime Failures Catalog
+
+| Test | Issue | Audit Link | Severity |
+|------|-------|------------|----------|
+| T6-F | Multiple contracts per player/season causes wrong contract selection for tag eligibility | Q2-D | **High** |
+| T11-F | RRFA opening bid is $0.0 due to placeholder NFL prices | R9-D | **Critical** |
+| T13-F | Revert/Transfer option available for tagged players on expired contracts (bylaws prohibits it) | B6-M | **Medium** |
+| T20-F | PK tag salary uses PK-only pool instead of combined PK+PN "Kicker/Punter" pool | F6-M | **High** |
+
+---
+
+## Final Tally
+
+### Code Review Findings
+- **41 MATCH** | **12 DISCREPANCY** | **3 MISSING**
+
+### Runtime Test Results
+- **20 PASS** | **4 FAIL** | **1 SKIP**
+
+### Priority Fix List for Plan 15-02
+
+1. **Critical:** R9-D — RRFA bid always $0 (add real NFL RFA prices)
+2. **High:** Q2-D/T6-F — Multiple contracts per player/season cause wrong contract selection
+3. **High:** F6-M/T20-F — PK/PN not grouped for tag/5YO salary calculations
+4. **High:** Y7-D/P7-D — Percentile calculation missing PR Starter Floor
+5. **High:** E2-D — UDFA extension max-years check missing
+6. **High:** R4-D — Multi-year UFA original_length calculation incorrect
+7. **High:** R6-D — NFL RFA prices are all $0 placeholders (affects all RFA bids)
+8. **Medium:** B6-M/T13-F — Revert/Transfer not prohibited for tagged expired contracts
+9. **Medium:** E3-D — EXT re-extension blocking depends on contract storage pattern
+10. **Medium:** R10-D — "Previous RFA contract" rule may not apply post-2021
+11. **Medium:** A2-D — ERFA salary comparison may use escalated salary
+12. **Medium:** P4-D — PPE uses bid functions instead of tag price functions
+13. **Low:** F10-D — Tag salary uses current position, not position at deadline
