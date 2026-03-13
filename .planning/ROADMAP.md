@@ -63,6 +63,7 @@ Plans:
 - [x] 14-01: Historical Sync Services (weekly scores + roster/contract sync + gap detection)
 - [x] 14-02: Startup Backfill & Status Tracking (lifespan integration + status API)
 - [x] 14-FIX: Rate limit retry + backfill resilience (UAT-001, UAT-002)
+- [x] 14-FIX2: Rate limit compliance + status fix (UAT-003, UAT-004)
 
 #### Phase 15: Eligibility Audit & Fixes
 
