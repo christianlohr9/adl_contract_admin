@@ -74,7 +74,7 @@ Plans:
 
 Plans:
 - [x] 15-01: Bylaw-to-Code Eligibility Audit (audit document + targeted test scenarios)
-- [ ] 15-02: Fix Eligibility Discrepancies & Validate (fixes + full roster sweep + human verify)
+- [x] 15-02: Fix Eligibility Discrepancies & Validate (fixes + full roster sweep + human verify)
 
 #### Phase 16: NFL Kickoff Rule
 
@@ -118,6 +118,6 @@ Phases execute in numeric order. Next phase continues from 14.
 | 12. Contract Management Dashboard | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 2/2 | Complete | 2026-03-13 |
 | 14. Historical Data Imports | v1.2 | 2/2 | Complete | 2026-03-13 |
-| 15. Eligibility Audit & Fixes | v1.2 | 1/2 | In progress | - |
+| 15. Eligibility Audit & Fixes | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 16. NFL Kickoff Rule | v1.2 | 0/? | Not started | - |
 | 17. Regression Testing & Validation | v1.2 | 0/? | Not started | - |
