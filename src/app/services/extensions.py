@@ -9,10 +9,13 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
+from datetime import date
+
 from sqlalchemy import select
 
 from app.models.contract import Contract
 from app.models.player import Player
+from app.models.season_calendar import SeasonCalendar
 from app.services.epv import EPVResult, calculate_epv, is_robust_season
 from app.services.rules import (
     get_contract_constants,
@@ -184,6 +187,25 @@ async def check_extension_eligibility(
                 False,
                 "Players on rookie/UDFA contracts signed for less than max years are ineligible",
             )
+
+        # Rule: Rookie/UDFA in final year cannot extend before NFL kickoff
+        if contract.years_remaining <= 1:
+            cal_result = await session.execute(
+                select(SeasonCalendar).where(SeasonCalendar.season == season)
+            )
+            calendar = cal_result.scalar_one_or_none()
+            if calendar is None or calendar.regular_season_start is None:
+                return (
+                    False,
+                    "Rookie/UDFA extension requires NFL season start date "
+                    "(not yet configured in league calendar)",
+                )
+            if date.today() < calendar.regular_season_start:
+                return (
+                    False,
+                    "Rookie/UDFA extension unavailable until NFL kickoff "
+                    f"({calendar.regular_season_start.strftime('%b %d, %Y')})",
+                )
 
     # Rule: EXT cannot cause total years to exceed 6
     if contract.years_remaining >= max_years:
