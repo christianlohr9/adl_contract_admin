@@ -65,7 +65,7 @@ async def run_historical_backfill(settings: Settings) -> None:
             api_key=settings.mfl_api_key,
             username=settings.mfl_username,
             password=settings.mfl_password,
-            request_delay=settings.mfl_request_delay,
+            request_delay=settings.mfl_backfill_request_delay,  # slower for bulk
         )
 
     errors: list[str] = []
@@ -116,6 +116,7 @@ async def run_historical_backfill(settings: Settings) -> None:
                             "Historical backfill: scores committed for season %d",
                             year,
                         )
+                        await asyncio.sleep(30)  # cooldown between years to reset rate limit window
                     except Exception as exc:
                         await session.rollback()
                         logger.exception(
@@ -150,6 +151,7 @@ async def run_historical_backfill(settings: Settings) -> None:
                             "Historical backfill: contracts committed for season %d",
                             year,
                         )
+                        await asyncio.sleep(30)  # cooldown between years to reset rate limit window
                     except Exception as exc:
                         await session.rollback()
                         logger.exception(
@@ -159,6 +161,7 @@ async def run_historical_backfill(settings: Settings) -> None:
 
             _backfill_status.contracts_complete = True
 
+            _backfill_status.completed_at = datetime.now(UTC)
             if errors:
                 _backfill_status.error = (
                     f"Partial backfill failure ({len(errors)} year(s)): "
@@ -168,7 +171,6 @@ async def run_historical_backfill(settings: Settings) -> None:
                     "Historical backfill completed with errors: %s", errors
                 )
             else:
-                _backfill_status.completed_at = datetime.now(UTC)
                 logger.info("Historical backfill completed successfully")
 
     except Exception as exc:
