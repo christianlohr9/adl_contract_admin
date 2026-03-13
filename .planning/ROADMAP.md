@@ -14,6 +14,10 @@ None
 - ✅ [v1.1 League Calendar & Contract Management](milestones/v1.1-ROADMAP.md) (Phases 9-13) — SHIPPED 2026-03-13
 - ✅ [v1.2 Data Integrity & Eligibility Accuracy](milestones/v1.2-ROADMAP.md) (Phases 14-17) — SHIPPED 2026-03-13
 
+## Current Milestone
+
+None — planning next milestone.
+
 ## Phases
 
 **Phase Numbering:**
@@ -47,60 +51,20 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 </details>
 
-### ✅ v1.2 Data Integrity & Eligibility Accuracy — SHIPPED 2026-03-13
+<details>
+<summary>✅ v1.2 Data Integrity & Eligibility Accuracy (Phases 14-17) — SHIPPED 2026-03-13</summary>
 
-**Milestone Goal:** Import missing historical data from MFL and systematically audit/fix all eligibility logic against bylaws to eliminate false positives and false negatives.
+- [x] Phase 14: Historical Data Imports (4/4 plans) — completed 2026-03-13
+- [x] Phase 15: Eligibility Audit & Fixes (2/2 plans) — completed 2026-03-13
+- [x] Phase 16: NFL Kickoff Rule (1/1 plan) — completed 2026-03-13
+- [x] Phase 17: Regression Testing & Validation (1/1 plan) — completed 2026-03-13
 
-#### Phase 14: Historical Data Imports
-
-**Goal**: Pull past-season player scores and contract history from MFL API to enable accurate eligibility checks
-**Depends on**: Previous milestone complete
-**Research**: Likely (MFL API historical data endpoints)
-**Research topics**: MFL API endpoints for historical scores and prior-season contract data
-**Plans**: TBD
-
-Plans:
-- [x] 14-01: Historical Sync Services (weekly scores + roster/contract sync + gap detection)
-- [x] 14-02: Startup Backfill & Status Tracking (lifespan integration + status API)
-- [x] 14-FIX: Rate limit retry + backfill resilience (UAT-001, UAT-002)
-- [x] 14-FIX2: Rate limit compliance + status fix (UAT-003, UAT-004)
-
-#### Phase 15: Eligibility Audit & Fixes
-
-**Goal**: Systematically audit and fix all 7 contract action eligibility checks against bylaws and real MFL data
-**Depends on**: Phase 14
-**Research**: Unlikely (internal logic audit)
-**Plans**: 2
-
-Plans:
-- [x] 15-01: Bylaw-to-Code Eligibility Audit (audit document + targeted test scenarios)
-- [x] 15-02: Fix Eligibility Discrepancies & Validate (fixes + full roster sweep + human verify)
-
-#### Phase 16: NFL Kickoff Rule
-
-**Goal**: Integrate external NFL schedule data for kickoff-based eligibility gating (UAT-001)
-**Depends on**: Phase 15
-**Research**: Likely (external NFL schedule API/data source)
-**Research topics**: NFL schedule data sources, API options for kickoff dates
-**Plans**: TBD
-
-Plans:
-- [x] 16-01: NFL Kickoff Eligibility Gate (kickoff check + tests + UAT-001 resolution)
-
-#### Phase 17: Regression Testing & Validation
-
-**Goal**: End-to-end eligibility verification across all 7 contract actions with real roster data
-**Depends on**: Phase 16
-**Research**: Unlikely (internal testing patterns)
-**Plans**: TBD
-
-Plans:
-- [x] 17-01: Full Roster Validation (CLI sweep + validation report + regression check)
+</details>
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order. Next phase continues from 14.
+Phases execute in numeric order. Next phase continues from 18.
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -117,7 +81,7 @@ Phases execute in numeric order. Next phase continues from 14.
 | 11. Roster-Wide Eligibility API | v1.1 | 1/1 | Complete | 2026-03-12 |
 | 12. Contract Management Dashboard | v1.1 | 2/2 | Complete | 2026-03-12 |
 | 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 2/2 | Complete | 2026-03-13 |
-| 14. Historical Data Imports | v1.2 | 2/2 | Complete | 2026-03-13 |
+| 14. Historical Data Imports | v1.2 | 4/4 | Complete | 2026-03-13 |
 | 15. Eligibility Audit & Fixes | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 16. NFL Kickoff Rule | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Regression Testing & Validation | v1.2 | 1/1 | Complete | 2026-03-13 |

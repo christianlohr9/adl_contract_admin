@@ -28,12 +28,14 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 - ✓ Roster-wide eligibility API aggregating all contract actions — v1.1
 - ✓ Contract Management Dashboard with dynamic eligibility table — v1.1
 - ✓ Deadline countdown cards with urgency awareness — v1.1
+- ✓ Historical player score import pipeline (multi-season, gap detection) — v1.2
+- ✓ Multi-season contract history import with startup backfill — v1.2
+- ✓ Comprehensive eligibility audit and fix (12 discrepancies, 3 missing implementations) — v1.2
+- ✓ NFL kickoff eligibility rule for Drafted Rookie/UDFA contracts — v1.2
+- ✓ Full regression validation: 879 players, 0 anomalies across 32 teams — v1.2
 
 ### Active
 
-- [ ] Historical player score import pipeline (multi-season)
-- [ ] Multi-season contract history import
-- [ ] NFL kickoff eligibility rule for Drafted Rookie/UDFA contracts
 - [ ] Calendar timeline visualization (visual period rendering)
 
 ### Out of Scope
@@ -45,20 +47,21 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 
 ## Context
 
-- **Shipped v1.0 + v1.1**: Full-stack app with 14,964 LOC (8,282 Python + 6,682 TypeScript)
+- **Shipped v1.0 + v1.1 + v1.2**: Full-stack app with ~16,404 LOC (9,722 Python + 6,682 TypeScript)
 - **Tech stack**: Python/FastAPI/PostgreSQL/SQLAlchemy/Alembic backend; React/TypeScript/Vite/shadcn-ui frontend; MD/JSON/YAML for rule data
 - **Bylaws source of truth**: `Analytics Dynasty League Bylaws 2025.md` — all rules derived from this document
 - **League**: 32 teams, 2 conferences, MFL league ID 60206
 - **MFL API**: Direct HTTP via httpx (replaced R/ffscrapr approach)
 - **Database**: PostgreSQL with Docker Compose (dev on port 5432, test on 5433)
 - **Old codebase**: Archived to `archive/` — EPV logic fully ported
-- **Known data gaps**: Historical player scores and multi-season contract data not yet imported
+- **Historical data**: Multi-season player scores (weeks 1-17 + YTD) and contract history imported via startup backfill with gap detection
+- **Eligibility accuracy**: All 7 contract action eligibility checks audited and validated against bylaws — 879 players, 0 anomalies
 
 ## Constraints
 
 - **Bylaws authority**: All contract rules, formulas, and constants MUST be derived from the bylaws document. If a rule is unclear, mark TODO — never guess.
 - **Tech stack**: Python/FastAPI/PostgreSQL/SQLAlchemy/Alembic backend; React/TypeScript frontend; MD/JSON/YAML for rule data
-- **Phase numbering**: Next phase starts at 14 (continuing from v1.1)
+- **Phase numbering**: Next phase starts at 18 (continuing from v1.2)
 
 ## Key Decisions
 
@@ -70,6 +73,12 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 | Rules in MD/JSON/YAML | Separates human-readable docs from machine-readable config; enables non-code rule updates | ✓ Good |
 | No auth in v1 | 32 GMs need access; auth adds complexity without blocking core value | ✓ Good |
 | Direct HTTP for MFL API | Eliminated R/rpy2/ffscrapr dependency; httpx provides async HTTP with redirect handling | ✓ Good |
+| Gap detection before fetch | Query DB for existing data, compute missing set, fetch only gaps — prevents redundant API calls | ✓ Good |
+| asyncio.create_task for startup backfill | Non-blocking one-shot task, simpler than APScheduler | ✓ Good |
+| Audit-first approach for eligibility | Catalog all discrepancies before fixing — prevents whack-a-mole | ✓ Good |
+| Active-contract check for tags/tenders | Prevents false positives when player has been re-signed on expired contract | ✓ Good |
+| Kickoff check in rookie/UDFA block only | Veterans unaffected, conservative NULL handling blocks with clear message | ✓ Good |
+| Direct DB access for CLI validation | Faster than HTTP API, doesn't require running server | ✓ Good |
 | uv for package management | Faster, modern, single tool for deps+venvs | ✓ Good |
 | APScheduler 4.x for async scheduling | v3.x lacks async support needed for FastAPI integration | ✓ Good |
 | Tailwind v4 CSS-first config | Modern approach, no config file needed | ✓ Good |
@@ -79,4 +88,4 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 | Dynamic eligibility columns by window status | Only shows relevant contract actions, reduces noise | ✓ Good |
 
 ---
-*Last updated: 2026-03-13 after v1.1 milestone*
+*Last updated: 2026-03-13 after v1.2 milestone*

@@ -1,5 +1,33 @@
 # Project Milestones: ADL Contract Admin
 
+## v1.2 Data Integrity & Eligibility Accuracy (Shipped: 2026-03-13)
+
+**Delivered:** Historical data imports, systematic eligibility audit fixing 12 discrepancies, NFL kickoff rule, and full regression validation with 0 anomalies across 879 players
+
+**Phases completed:** 14-17 (8 plans total)
+
+**Key accomplishments:**
+
+- Historical data import pipeline with gap detection for multi-season player scores and contracts
+- Non-blocking startup backfill with adaptive rate limiting and status tracking API
+- Comprehensive bylaw-to-code eligibility audit identifying 12 discrepancies and 3 missing implementations
+- Fixed all eligibility discrepancies: UDFA max-years, PK/PN grouping, NFL RFA prices, re-signed player checks, PR Starter Floor
+- NFL kickoff eligibility gate for rookie/UDFA final-year extensions (resolving UAT-001)
+- Full regression validation: 879 players, 6,153 checks, 0 anomalies across all 32 teams
+
+**Stats:**
+
+- 39 files created/modified
+- ~16,404 lines of code (9,722 Python + 6,682 TypeScript)
+- 4 phases, 8 plans, ~53 min execution time
+- 1 day (2026-03-13)
+
+**Git range:** `feat(14-01)` → `feat(17-01)`
+
+**What's next:** TBD — discuss next milestone goals
+
+---
+
 ## v1.1 League Calendar & Contract Management (Shipped: 2026-03-13)
 
 **Delivered:** Date-aware contract management with roster-wide eligibility visibility, deadline countdowns, and admin-configurable league calendar
