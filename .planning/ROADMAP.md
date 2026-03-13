@@ -62,6 +62,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 14-01: Historical Sync Services (weekly scores + roster/contract sync + gap detection)
 - [x] 14-02: Startup Backfill & Status Tracking (lifespan integration + status API)
+- [x] 14-FIX: Rate limit retry + backfill resilience (UAT-001, UAT-002)
 
 #### Phase 15: Eligibility Audit & Fixes
 
