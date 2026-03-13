@@ -194,7 +194,8 @@ async def check_tag_eligibility(
     constants = get_contract_constants()
     max_consecutive = constants["franchise_tags"]["max_consecutive_neft_eft_tags"]
 
-    # Player must have an expired contract (years_remaining == 0).
+    # Player must have an expired contract (years_remaining == 0) and must NOT
+    # also have an active contract (which would mean they've already been re-signed).
     # Query explicitly for expired contracts to avoid picking up an active
     # contract when multiple contracts exist for the same player/season (Q2-D fix).
     result = await session.execute(
@@ -211,6 +212,20 @@ async def check_tag_eligibility(
 
     if contract is None:
         return False, "No expired contract found (player may still have years remaining)"
+
+    # If the player also has an active contract with years > 0, they've been
+    # re-signed and are no longer eligible for a tag on the old expired contract.
+    active_check = await session.execute(
+        select(Contract.id)
+        .where(
+            Contract.player_id == player_id,
+            Contract.season == season,
+            Contract.years_remaining > 0,
+        )
+        .limit(1)
+    )
+    if active_check.scalar_one_or_none() is not None:
+        return False, "Player has an active contract (already re-signed this season)"
 
     # Check consecutive tag limit for EFT/NEFT
     consecutive = await get_consecutive_tag_count(session, player_id, season)

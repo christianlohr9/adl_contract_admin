@@ -173,6 +173,7 @@ async def check_erfa_eligibility(
 
     Eligibility rules:
     - Player must have 0 years remaining (expired contract)
+    - Must not also have an active contract (already re-signed)
     - Previous contract must have been signed at or below the veteran minimum
       in one of the previous two league years
     - Previous contract must NOT be an ERFA contract itself
@@ -193,6 +194,19 @@ async def check_erfa_eligibility(
 
     if contract is None:
         return False, "No expired contract found (player may still have years remaining)"
+
+    # If the player also has an active contract, they've been re-signed
+    active_check = await session.execute(
+        select(Contract.id)
+        .where(
+            Contract.player_id == player_id,
+            Contract.season == season,
+            Contract.years_remaining > 0,
+        )
+        .limit(1)
+    )
+    if active_check.scalar_one_or_none() is not None:
+        return False, "Player has an active contract (already re-signed this season)"
 
     # Check if the expired contract is itself an ERFA contract
     desig = contract.designation or ""
@@ -239,9 +253,11 @@ async def check_rfa_eligibility(
 
     Eligibility rules:
     - Player must have 0 years remaining (expired contract)
+    - Must not also have an active contract (already re-signed)
     - Contract must not be 4+ years old
     - Contract must not include ineligible types from 2021 or earlier
     - Must not be a multi-year UFA from 2023 or earlier
+    - Must not be a previous RFA contract (universal rule)
     """
     # Load expired contract (years_remaining == 0) — explicitly filter to avoid
     # picking an active contract when multiple exist per player/season (Q3-D fix)
@@ -259,6 +275,19 @@ async def check_rfa_eligibility(
 
     if contract is None:
         return False, "No expired contract found (player may still have years remaining)"
+
+    # If the player also has an active contract, they've been re-signed
+    active_check = await session.execute(
+        select(Contract.id)
+        .where(
+            Contract.player_id == player_id,
+            Contract.season == season,
+            Contract.years_remaining > 0,
+        )
+        .limit(1)
+    )
+    if active_check.scalar_one_or_none() is not None:
+        return False, "Player has an active contract (already re-signed this season)"
 
     desig = contract.designation or ""
     signed_season = contract.signed_season
