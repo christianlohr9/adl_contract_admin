@@ -85,7 +85,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 16-01: TBD
+- [x] 16-01: NFL Kickoff Eligibility Gate (kickoff check + tests + UAT-001 resolution)
 
 #### Phase 17: Regression Testing & Validation
 
@@ -119,5 +119,5 @@ Phases execute in numeric order. Next phase continues from 14.
 | 13. Calendar/Timeline & Deadline Countdowns | v1.1 | 2/2 | Complete | 2026-03-13 |
 | 14. Historical Data Imports | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 15. Eligibility Audit & Fixes | v1.2 | 2/2 | Complete | 2026-03-13 |
-| 16. NFL Kickoff Rule | v1.2 | 0/? | Not started | - |
+| 16. NFL Kickoff Rule | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Regression Testing & Validation | v1.2 | 0/? | Not started | - |
