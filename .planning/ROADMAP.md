@@ -13,10 +13,11 @@ None
 - ✅ **v1.0 MVP** - Phases 1-8 (shipped 2026-03-12)
 - ✅ [v1.1 League Calendar & Contract Management](milestones/v1.1-ROADMAP.md) (Phases 9-13) — SHIPPED 2026-03-13
 - ✅ [v1.2 Data Integrity & Eligibility Accuracy](milestones/v1.2-ROADMAP.md) (Phases 14-17) — SHIPPED 2026-03-13
+- 🚧 **v1.3 Data Integrity 2** - Phases 18-23 (in progress)
 
 ## Current Milestone
 
-None — planning next milestone.
+- 🚧 **v1.3 Data Integrity 2** - Phases 18-23 (in progress)
 
 ## Phases
 
@@ -61,10 +62,74 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 </details>
 
+### 🚧 v1.3 Data Integrity 2 (In Progress)
+
+**Milestone Goal:** Validate every contract tool's eligibility and pricing calculations cell-by-cell against the 2026 ADL Contract Admin spreadsheet, fixing all discrepancies until the spreadsheet is fully redundant.
+
+#### Phase 18: Franchise Tags
+
+**Goal**: Validate FT eligibility (687 players) and EFT/NEFT/TT price calculations against TagElig26 + FT/5YO $ positional salary table
+**Depends on**: Previous milestone complete
+**Research**: Unlikely (internal validation against known data)
+**Plans**: TBD
+
+Plans:
+- [ ] 18-01: TBD (run /gsd:plan-phase 18 to break down)
+
+#### Phase 19: Extensions
+
+**Goal**: Validate EXT eligibility (1,008 players, iEXT vs oEXT distinction) and EPV/EYS calculations against TagElig26 + EXT sheet
+**Depends on**: Phase 18
+**Research**: Unlikely (internal validation)
+**Plans**: TBD
+
+Plans:
+- [ ] 19-01: TBD
+
+#### Phase 20: Tenders
+
+**Goal**: Validate ERFA (102) and RFA (105) eligibility and bid price calculations against TagElig26 + AFC/NFC RFA sheets
+**Depends on**: Phase 19
+**Research**: Unlikely (internal validation)
+**Plans**: TBD
+
+Plans:
+- [ ] 20-01: TBD
+
+#### Phase 21: 5YO & PPE
+
+**Goal**: Validate 5YO eligibility (31 players) and PPE escalator levels/prices against PPE5YO sheet with positional starter floors
+**Depends on**: Phase 20
+**Research**: Unlikely (internal validation)
+**Plans**: TBD
+
+Plans:
+- [ ] 21-01: TBD
+
+#### Phase 22: Buyout/Restructure
+
+**Goal**: Validate B/R eligibility and salary tier calculations against BR Auc sheet
+**Depends on**: Phase 21
+**Research**: Unlikely (internal validation)
+**Plans**: TBD
+
+Plans:
+- [ ] 22-01: TBD
+
+#### Phase 23: Cross-Tool Validation
+
+**Goal**: Full 1,549-player sweep comparing all computed eligibility and prices against every spreadsheet tab — zero discrepancies target
+**Depends on**: Phase 22
+**Research**: Unlikely (internal validation)
+**Plans**: TBD
+
+Plans:
+- [ ] 23-01: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order. Next phase continues from 18.
+Phases execute in numeric order. Next phase continues from 24.
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -85,3 +150,9 @@ Phases execute in numeric order. Next phase continues from 18.
 | 15. Eligibility Audit & Fixes | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 16. NFL Kickoff Rule | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Regression Testing & Validation | v1.2 | 1/1 | Complete | 2026-03-13 |
+| 18. Franchise Tags | v1.3 | 0/? | Not started | - |
+| 19. Extensions | v1.3 | 0/? | Not started | - |
+| 20. Tenders | v1.3 | 0/? | Not started | - |
+| 21. 5YO & PPE | v1.3 | 0/? | Not started | - |
+| 22. Buyout/Restructure | v1.3 | 0/? | Not started | - |
+| 23. Cross-Tool Validation | v1.3 | 0/? | Not started | - |
