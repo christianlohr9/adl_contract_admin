@@ -2,6 +2,10 @@
   "salary_cap_formula_multiplier": 0.81,
   "nfl_salary_cap_2025": 279.2,
   "adl_salary_cap_2025": 226.2,
+  "adl_salary_cap_by_year": {
+    "2025": 226.2,
+    "2026": 244.0
+  },
   "max_rollover_pct": 0.10,
   "rollover_rounding": 0.01,
   "excess_cap_space_inactivity_threshold_pct": 0.20,

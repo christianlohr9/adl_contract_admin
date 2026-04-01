@@ -41,6 +41,7 @@ from app.services.franchise_tags import (  # noqa: E402
 from app.services.rules import (  # noqa: E402
     ceil_100k,
     floor_100k,
+    get_adl_salary_cap,
     get_sd_minimum,
     round_to_10k,
 )
@@ -179,6 +180,11 @@ async def validate_positional_averages(
     discrepancies: list[dict] = []
     app_top_salaries: dict[str, dict[str, list[Decimal]]] = {}
 
+    # Cap ratio for ADL Cap Percentage adjustment
+    current_cap = get_adl_salary_cap(season)
+    previous_cap = get_adl_salary_cap(season - 1)
+    cap_pct = current_cap / previous_cap
+
     async with async_session() as session:
         for pos_name in POSITIONS:
             app_pos = POS_MAP[pos_name]
@@ -191,11 +197,11 @@ async def validate_positional_averages(
                 )
                 app_top_salaries[pos_name][tag_type] = top_sals
 
-                app_avg = (
-                    round_to_10k(sum(top_sals) / len(top_sals))
-                    if top_sals
-                    else Decimal("0")
+                raw_avg = (
+                    sum(top_sals) / len(top_sals) if top_sals else Decimal("0")
                 )
+                # Apply ADL Cap Percentage (current_cap / previous_cap)
+                app_avg = round_to_10k(cap_pct * raw_avg)
 
                 # EFT uses Feb 15 in the spreadsheet (marked with *)
                 # NEFT/TT use July 1
@@ -212,6 +218,8 @@ async def validate_positional_averages(
                     "position": pos_name,
                     "tag_type": tag_type,
                     "app_avg": app_avg,
+                    "raw_avg": round_to_10k(raw_avg),
+                    "cap_pct": round_to_10k(cap_pct),
                     "feb15_val": feb_val,
                     "jul1_val": jul_val,
                     "feb_match": feb_match,
@@ -241,6 +249,9 @@ async def validate_per_player_prices(
     Returns (player_results, price_discrepancies, bid_discrepancies).
     """
     sd_minimum = get_sd_minimum(season)
+    current_cap = get_adl_salary_cap(season)
+    previous_cap = get_adl_salary_cap(season - 1)
+    cap_pct = current_cap / previous_cap
     player_results: list[dict] = []
     price_discrepancies: list[dict] = []
     bid_discrepancies: list[dict] = []
@@ -293,9 +304,10 @@ async def validate_per_player_prices(
                 top_sals = await _get_top_n_positional_salaries(
                     session, app_pos, season, n
                 )
-                pos_avg = (
+                raw_avg = (
                     sum(top_sals) / len(top_sals) if top_sals else Decimal("0")
                 )
+                pos_avg = cap_pct * raw_avg
                 expected_salary = round_to_10k(max(pos_avg, salary_floor))
                 expected_bid = None
                 if opt.tag_type in ("NEFT", "TT"):

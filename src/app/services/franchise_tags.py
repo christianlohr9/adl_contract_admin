@@ -19,6 +19,7 @@ from app.models.player import Player
 from app.services.rules import (
     ceil_100k,
     floor_100k,
+    get_adl_salary_cap,
     get_contract_constants,
     get_sd_minimum,
     round_to_10k,
@@ -109,8 +110,12 @@ async def calculate_tag_salary(
 ) -> Decimal:
     """Calculate franchise/transition tag salary.
 
-    EFT/NEFT: MAX(AVG(Top5_Salaries_at_Position_EOY), 1.20 × prev_salary)
-    TT: MAX(AVG(Top10_Salaries_at_Position_EOY), 1.20 × prev_salary)
+    EFT/NEFT: MAX(cap_pct × AVG(Top5_Salaries_at_Position_EOY), 1.20 × prev_salary)
+    TT: MAX(cap_pct × AVG(Top10_Salaries_at_Position_EOY), 1.20 × prev_salary)
+
+    Where cap_pct = current_season_cap / previous_season_cap (the "ADL Cap
+    Percentage" referenced in the bylaws).  This adjusts prior-year salary
+    averages to the current cap environment.
 
     Rounded to nearest $10k.
     """
@@ -118,6 +123,12 @@ async def calculate_tag_salary(
     top_salaries = await _get_top_n_positional_salaries(session, position, season, n)
 
     positional_avg = sum(top_salaries) / len(top_salaries) if top_salaries else Decimal("0")
+
+    # Apply ADL Cap Percentage: current_cap / previous_cap
+    current_cap = get_adl_salary_cap(season)
+    previous_cap = get_adl_salary_cap(season - 1)
+    cap_pct = current_cap / previous_cap
+    positional_avg = cap_pct * positional_avg
 
     salary_floor = Decimal("1.20") * prev_salary
     raw = max(positional_avg, salary_floor)

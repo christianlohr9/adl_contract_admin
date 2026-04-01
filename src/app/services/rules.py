@@ -138,6 +138,12 @@ def get_sd_minimum(season: int) -> Decimal:
     return _lookup_by_year(c["salary_minimums"]["sd_minimum_by_year"], season)
 
 
+def get_adl_salary_cap(season: int) -> Decimal:
+    """Return the ADL salary cap (in millions) for the given season."""
+    c = get_salary_cap_constants()
+    return _lookup_by_year(c["adl_salary_cap_by_year"], season)
+
+
 def get_salary_growth_rate() -> Decimal:
     """Return the annual salary growth rate as a Decimal (e.g. ``Decimal('0.10')``)."""
     c = get_contract_constants()
@@ -167,6 +173,7 @@ __all__ = [
     "floor_100k",
     "ceil_100k",
     "round_to_nearest_4",
+    "get_adl_salary_cap",
     "get_veteran_minimum",
     "get_rookie_minimum",
     "get_sd_minimum",
