@@ -148,6 +148,7 @@ async def get_consecutive_tag_count(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> int:
     """Count consecutive EFT/NEFT tags leading into the given season.
 
@@ -160,7 +161,7 @@ async def get_consecutive_tag_count(
 
     for offset in range(1, max_tags + 1):
         check_season = season - offset
-        result = await session.execute(
+        query = (
             select(Contract.designation)
             .where(
                 Contract.player_id == player_id,
@@ -168,6 +169,9 @@ async def get_consecutive_tag_count(
             )
             .limit(1)
         )
+        if team_id is not None:
+            query = query.where(Contract.team_id == team_id)
+        result = await session.execute(query)
         designation = result.scalar_one_or_none()
         if designation and ("EFT" in designation or "NEFT" in designation):
             count += 1
@@ -186,8 +190,13 @@ async def check_tag_eligibility(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> tuple[bool, str | None]:
     """Check whether a player is eligible for a franchise/transition tag.
+
+    When ``team_id`` is provided, only contracts for that team are considered.
+    This is important in a two-conference league where a player has separate
+    contracts in each conference.
 
     Returns ``(True, None)`` if eligible, ``(False, reason)`` if not.
     """
@@ -198,7 +207,7 @@ async def check_tag_eligibility(
     # also have an active contract (which would mean they've already been re-signed).
     # Query explicitly for expired contracts to avoid picking up an active
     # contract when multiple contracts exist for the same player/season (Q2-D fix).
-    result = await session.execute(
+    expired_query = (
         select(Contract)
         .where(
             Contract.player_id == player_id,
@@ -208,6 +217,9 @@ async def check_tag_eligibility(
         .order_by(Contract.salary.desc())
         .limit(1)
     )
+    if team_id is not None:
+        expired_query = expired_query.where(Contract.team_id == team_id)
+    result = await session.execute(expired_query)
     contract = result.scalar_one_or_none()
 
     if contract is None:
@@ -215,7 +227,8 @@ async def check_tag_eligibility(
 
     # If the player also has an active contract with years > 0, they've been
     # re-signed and are no longer eligible for a tag on the old expired contract.
-    active_check = await session.execute(
+    # Scoped to the same team to avoid false positives from the other conference.
+    active_query = (
         select(Contract.id)
         .where(
             Contract.player_id == player_id,
@@ -224,11 +237,14 @@ async def check_tag_eligibility(
         )
         .limit(1)
     )
+    if team_id is not None:
+        active_query = active_query.where(Contract.team_id == team_id)
+    active_check = await session.execute(active_query)
     if active_check.scalar_one_or_none() is not None:
         return False, "Player has an active contract (already re-signed this season)"
 
     # Check consecutive tag limit for EFT/NEFT
-    consecutive = await get_consecutive_tag_count(session, player_id, season)
+    consecutive = await get_consecutive_tag_count(session, player_id, season, team_id)
     if consecutive >= max_consecutive:
         return (
             False,
@@ -301,8 +317,11 @@ async def calculate_franchise_tags(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> FranchiseTagResult:
     """Calculate all franchise/transition tag options for a player.
+
+    When ``team_id`` is provided, only contracts for that team are considered.
 
     Returns a ``FranchiseTagResult`` with up to 3 tag options (EFT, NEFT, TT),
     eligibility status, and consecutive tag count.
@@ -326,7 +345,7 @@ async def calculate_franchise_tags(
 
     # Load previous contract (stored in current season with years_remaining=0)
     # Explicitly filter for expired contracts to avoid picking wrong contract (Q2-D fix)
-    contract_result = await session.execute(
+    expired_query = (
         select(Contract)
         .where(
             Contract.player_id == player_id,
@@ -336,12 +355,15 @@ async def calculate_franchise_tags(
         .order_by(Contract.salary.desc())
         .limit(1)
     )
+    if team_id is not None:
+        expired_query = expired_query.where(Contract.team_id == team_id)
+    contract_result = await session.execute(expired_query)
     contract = contract_result.scalar_one_or_none()
     prev_salary = Decimal(str(contract.salary)) if contract else Decimal("0")
 
     # Check eligibility
-    eligible, reason = await check_tag_eligibility(session, player_id, season)
-    consecutive = await get_consecutive_tag_count(session, player_id, season)
+    eligible, reason = await check_tag_eligibility(session, player_id, season, team_id)
+    consecutive = await get_consecutive_tag_count(session, player_id, season, team_id)
 
     if not eligible:
         return FranchiseTagResult(

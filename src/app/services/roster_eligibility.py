@@ -83,9 +83,10 @@ async def _extract_extension_headline(
 
 async def _extract_tag_headline(
     session: AsyncSession, player_id: int, season: int,
+    team_id: int | None = None,
 ) -> tuple[Decimal | None, str]:
     """Extract headline value from franchise tag calculation."""
-    result = await calculate_franchise_tags(session, player_id, season)
+    result = await calculate_franchise_tags(session, player_id, season, team_id)
     if result.options:
         return result.options[0].salary, "Tag Salary"
     return None, "Tag Salary"
@@ -209,7 +210,7 @@ async def get_roster_eligibility(
             # Check eligibility for this player + action
             try:
                 eligibility = await check_eligibility(
-                    session, player.id, season, action,
+                    session, player.id, season, action, team_id,
                 )
             except Exception:
                 logger.exception(
@@ -225,9 +226,15 @@ async def get_roster_eligibility(
             headline_value: Decimal | None = None
             headline_label: str = ""
             try:
-                headline_value, headline_label = await extractor(
-                    session, player.id, season,
-                )
+                # Pass team_id to extractors that support it (franchise tags)
+                if action == "franchise_tag":
+                    headline_value, headline_label = await extractor(
+                        session, player.id, season, team_id,
+                    )
+                else:
+                    headline_value, headline_label = await extractor(
+                        session, player.id, season,
+                    )
             except Exception:
                 logger.exception(
                     "Error calculating %s for player %d",

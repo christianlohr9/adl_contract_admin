@@ -65,6 +65,7 @@ async def get_all_tools(
     player_id: int,
     session: SessionDep,
     season: int = _DEFAULT_SEASON,
+    team_id: int | None = None,
 ) -> PlayerToolsSchema:
     """Return all contract tool results for a player in a single call.
 
@@ -90,7 +91,7 @@ async def get_all_tools(
 
     # Franchise tags
     try:
-        result = await calculate_franchise_tags(session, player_id, season)
+        result = await calculate_franchise_tags(session, player_id, season, team_id)
         tags = TagResultSchema.model_validate(result, from_attributes=True)
     except Exception:
         logger.exception("Error calculating franchise tags for player %d", player_id)
@@ -202,10 +203,11 @@ async def get_tags(
     player_id: int,
     session: SessionDep,
     season: int = _DEFAULT_SEASON,
+    team_id: int | None = None,
 ) -> TagResultSchema:
     """Calculate franchise/transition tag options for a player."""
     await _verify_player(session, player_id)
-    result = await calculate_franchise_tags(session, player_id, season)
+    result = await calculate_franchise_tags(session, player_id, season, team_id)
     return TagResultSchema.model_validate(result, from_attributes=True)
 
 

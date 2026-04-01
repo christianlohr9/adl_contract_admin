@@ -110,11 +110,16 @@ async def check_eligibility(
     player_id: int,
     season: int,
     action: str,
+    team_id: int | None = None,
 ) -> EligibilityResult:
     """Check whether a player is eligible for a specific contract action.
 
     Dispatches to action-specific checkers. Each checker loads the player's
     active contract and validates against bylaws rules.
+
+    When ``team_id`` is provided, contract lookups are scoped to that team.
+    This is important in a two-conference league where a player has separate
+    contracts in each conference.
 
     Parameters
     ----------
@@ -127,6 +132,8 @@ async def check_eligibility(
     action : str
         One of: extension, franchise_tag, erfa_tender, rfa_tender,
         buyout_restructure, fifth_year_option, proven_performance_escalator.
+    team_id : int | None
+        Optional team to scope contract lookups to.
 
     Returns
     -------
@@ -180,7 +187,11 @@ async def check_eligibility(
     }
 
     checker = dispatch[action]
-    result = await checker(session, player_id, season)
+    # Franchise tag checker needs team_id for conference scoping
+    if action == ACTION_FRANCHISE_TAG:
+        result = await checker(session, player_id, season, team_id)
+    else:
+        result = await checker(session, player_id, season)
     result.window_status = window.status
     result.window_closes = window.closes
     return result
@@ -230,9 +241,10 @@ async def _check_franchise_tag(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> EligibilityResult:
     """Check franchise tag (EFT/NEFT/TT) eligibility."""
-    eligible, reason = await check_tag_eligibility(session, player_id, season)
+    eligible, reason = await check_tag_eligibility(session, player_id, season, team_id)
 
     if not eligible:
         return EligibilityResult(
@@ -245,15 +257,15 @@ async def _check_franchise_tag(
             ),
         )
 
-    # Check allotment — need team_id from previous season contract
-    team_id = await _get_team_id_for_player(
+    # Check allotment — use provided team_id or resolve from previous season contract
+    allotment_team_id = team_id or await _get_team_id_for_player(
         session, player_id, season, check_previous_season=True,
     )
-    if team_id is not None:
+    if allotment_team_id is not None:
         from app.services.allotments import has_allotment
 
         has_tag_allotment = await has_allotment(
-            session, team_id, season, "franchise_tag",
+            session, allotment_team_id, season, "franchise_tag",
         )
         if not has_tag_allotment:
             return EligibilityResult(
@@ -265,7 +277,7 @@ async def _check_franchise_tag(
                 ),
             )
 
-    consecutive = await get_consecutive_tag_count(session, player_id, season)
+    consecutive = await get_consecutive_tag_count(session, player_id, season, team_id)
     prerequisites = ["Must declare simultaneously which player and which tag type"]
     if consecutive == 2:
         prerequisites.append(
