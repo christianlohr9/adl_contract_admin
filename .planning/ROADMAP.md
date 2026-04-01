@@ -74,7 +74,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 18-01: TBD (run /gsd:plan-phase 18 to break down)
+- [ ] 18-01: FT Eligibility Validation
+- [ ] 18-02: FT Price Validation
 
 #### Phase 19: Extensions
 
@@ -150,7 +151,7 @@ Phases execute in numeric order. Next phase continues from 24.
 | 15. Eligibility Audit & Fixes | v1.2 | 2/2 | Complete | 2026-03-13 |
 | 16. NFL Kickoff Rule | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Regression Testing & Validation | v1.2 | 1/1 | Complete | 2026-03-13 |
-| 18. Franchise Tags | v1.3 | 0/? | Not started | - |
+| 18. Franchise Tags | v1.3 | 0/2 | Planned | - |
 | 19. Extensions | v1.3 | 0/? | Not started | - |
 | 20. Tenders | v1.3 | 0/? | Not started | - |
 | 21. 5YO & PPE | v1.3 | 0/? | Not started | - |
