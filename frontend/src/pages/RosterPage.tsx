@@ -3,7 +3,7 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useTeams } from "@/api/queries/teams";
 import { useTeamRoster } from "@/api/queries/teams";
 import { DataTable } from "@/components/data-table/DataTable";
-import { rosterColumns } from "@/components/roster/columns";
+import { getRosterColumns } from "@/components/roster/columns";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -44,7 +44,7 @@ export function RosterPage() {
       : (roster ?? []).filter((r) => r.position === positionFilter);
 
   function handleRowClick(row: RosterEntrySchema) {
-    navigate(`/roster/${row.player_id}`);
+    navigate(`/roster/${row.player_id}?team=${selectedTeamId}`);
   }
 
   function handleTeamChange(value: number | null) {
@@ -126,7 +126,7 @@ export function RosterPage() {
         </div>
       ) : (
         <DataTable
-          columns={rosterColumns}
+          columns={getRosterColumns(selectedTeamId)}
           data={filteredRoster}
           onRowClick={handleRowClick}
         />

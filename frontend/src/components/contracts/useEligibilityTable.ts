@@ -78,13 +78,14 @@ export function transformEligibilityData(
           player.player_id,
           player.player_name,
           player.position,
-          player.current_salary,
+          player.current_salary != null ? Number(player.current_salary) : null,
         );
         map.set(player.player_id, row);
       }
 
-      // Set the action value — cast needed because we're writing to a dynamic key
-      (row as Record<string, unknown>)[field] = player.headline_value;
+      // Set the action value — convert from Decimal string to number
+      (row as Record<string, unknown>)[field] =
+        player.headline_value != null ? Number(player.headline_value) : null;
     }
   }
 
@@ -129,7 +130,7 @@ export function useEligibilityTable(
             entry.player_id,
             entry.player_name,
             entry.position,
-            entry.salary,
+            entry.salary != null ? Number(entry.salary) : null,
           ),
         );
       }

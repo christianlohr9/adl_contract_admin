@@ -21,63 +21,65 @@ import { CapSummaryCards } from "@/components/cap/CapSummaryCards";
 import { CapChart } from "@/components/cap/CapChart";
 import { AllotmentsCard } from "@/components/cap/AllotmentsCard";
 
-const penaltyColumns: ColumnDef<PlayerCapDetailSchema>[] = [
-  {
-    accessorKey: "player_name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Player Name" />
-    ),
-    cell: ({ row }) => (
-      <Link
-        to={`/roster/${row.original.player_id}`}
-        className="font-medium text-foreground hover:underline"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {row.getValue("player_name")}
-      </Link>
-    ),
-  },
-  {
-    accessorKey: "position",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Position" />
-    ),
-    cell: ({ row }) => (
-      <Badge variant="secondary">{row.getValue<string>("position")}</Badge>
-    ),
-  },
-  {
-    accessorKey: "salary",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Salary" />
-    ),
-    cell: ({ row }) => formatSalary(row.getValue<number>("salary")),
-    sortingFn: "basic",
-  },
-  {
-    accessorKey: "contract_type",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Contract Type" />
-    ),
-    cell: ({ row }) =>
-      formatContractType(row.getValue<string>("contract_type")),
-  },
-  {
-    accessorKey: "years_remaining",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Years Remaining" />
-    ),
-  },
-  {
-    id: "total_penalty",
-    accessorFn: (row) => row.penalty_if_dropped.total_penalty,
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Total Penalty" />
-    ),
-    cell: ({ getValue }) => formatSalary(getValue<number>()),
-    sortingFn: "basic",
-  },
-];
+function getPenaltyColumns(teamId: number): ColumnDef<PlayerCapDetailSchema>[] {
+  return [
+    {
+      accessorKey: "player_name",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Player Name" />
+      ),
+      cell: ({ row }) => (
+        <Link
+          to={`/roster/${row.original.player_id}?team=${teamId}`}
+          className="font-medium text-foreground hover:underline"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {row.getValue("player_name")}
+        </Link>
+      ),
+    },
+    {
+      accessorKey: "position",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Position" />
+      ),
+      cell: ({ row }) => (
+        <Badge variant="secondary">{row.getValue<string>("position")}</Badge>
+      ),
+    },
+    {
+      accessorKey: "salary",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Salary" />
+      ),
+      cell: ({ row }) => formatSalary(row.getValue<number>("salary")),
+      sortingFn: "basic",
+    },
+    {
+      accessorKey: "contract_type",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Contract Type" />
+      ),
+      cell: ({ row }) =>
+        formatContractType(row.getValue<string>("contract_type")),
+    },
+    {
+      accessorKey: "years_remaining",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Years Remaining" />
+      ),
+    },
+    {
+      id: "total_penalty",
+      accessorFn: (row) => row.penalty_if_dropped.total_penalty,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Total Penalty" />
+      ),
+      cell: ({ getValue }) => formatSalary(getValue<number>()),
+      sortingFn: "basic",
+    },
+  ];
+}
 
 export function SalaryCapPage() {
   const navigate = useNavigate();
@@ -101,7 +103,7 @@ export function SalaryCapPage() {
   }
 
   function handleRowClick(row: PlayerCapDetailSchema) {
-    navigate(`/roster/${row.player_id}`);
+    navigate(`/roster/${row.player_id}?team=${selectedTeamId}`);
   }
 
   const sortedPlayers = cap?.player_details
@@ -162,7 +164,7 @@ export function SalaryCapPage() {
           <div>
             <h2 className="text-lg font-semibold mb-3">Player Penalties</h2>
             <DataTable
-              columns={penaltyColumns}
+              columns={getPenaltyColumns(selectedTeamId)}
               data={sortedPlayers}
               onRowClick={handleRowClick}
             />

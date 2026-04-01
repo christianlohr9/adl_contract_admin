@@ -1,110 +1,82 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { usePlayer } from "@/api/queries/players"
+import { usePlayerTools } from "@/api/queries/tools"
+import { PlayerHeader } from "@/components/player/PlayerHeader"
+import { ExtensionsTab } from "@/components/player/tools/ExtensionsTab"
+import { TagsTab } from "@/components/player/tools/TagsTab"
+import { TendersTab } from "@/components/player/tools/TendersTab"
+import { BuyoutTab } from "@/components/player/tools/BuyoutTab"
+import { FifthYearTab } from "@/components/player/tools/FifthYearTab"
+import { PPETab } from "@/components/player/tools/PPETab"
 
 const CONTRACT_TOOLS = [
-  {
-    value: "extensions",
-    label: "Extensions",
-    description:
-      "Extension options (1-year through max), salary projections, eligibility status. Covers X-A (standard) and X-B (veteran) extension paths.",
-  },
-  {
-    value: "tags",
-    label: "Tags",
-    description:
-      "Franchise tag (EFT, NEFT) and transition tag prices, consecutive tag premiums. Covers X-C tag rules and calculations.",
-  },
-  {
-    value: "tenders",
-    label: "Tenders",
-    description:
-      "ERFA and RFA tender options (FRFA, SRFA, ORFA, RRFA) with salary calculations. Covers X-D tender rules and eligibility.",
-  },
-  {
-    value: "buyout",
-    label: "Buyout",
-    description:
-      "Buyout/restructure salary with GM option builder. Covers X-E buyout rules, dead money implications, and restructure scenarios.",
-  },
-  {
-    value: "5yo",
-    label: "5YO",
-    description:
-      "5th Year Option pricing via NEFT/TT/modified-TT tiers. Shows option salary by position tier and exercise deadline.",
-  },
-  {
-    value: "ppe",
-    label: "PPE",
-    description:
-      "Proven Performance Escalator salary via starter percentile. Shows escalated salary if player meets snap/playtime thresholds.",
-  },
+  { value: "extensions", label: "Extensions" },
+  { value: "tags", label: "Tags" },
+  { value: "tenders", label: "Tenders" },
+  { value: "buyout", label: "Buyout" },
+  { value: "5yo", label: "5YO" },
+  { value: "ppe", label: "PPE" },
 ] as const
 
 export function PlayerDetailPage() {
-  const { playerId } = useParams<{ playerId: string }>()
+  const { playerId: playerIdParam } = useParams<{ playerId: string }>()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const playerId = Number(playerIdParam)
+  const teamId = searchParams.get("team") ? Number(searchParams.get("team")) : null
+
+  const {
+    data: player,
+    isLoading: playerLoading,
+    error: playerError,
+  } = usePlayer(playerId)
+
+  const { data: tools, isLoading: toolsLoading } = usePlayerTools(playerId, teamId)
+
+  if (playerError) {
+    return (
+      <div className="space-y-6">
+        <BackButton onClick={() => navigate(-1)} />
+        <Alert variant="destructive">
+          <AlertTitle>Player not found</AlertTitle>
+          <AlertDescription>
+            Could not load player #{playerIdParam}.
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => navigate(-1)}
-        className="gap-1"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Roster
-      </Button>
+      <BackButton onClick={() => navigate(-1)} />
 
-      {/* Player header */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Player #{playerId}</CardTitle>
-          <CardDescription>Contract details and tools</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm md:grid-cols-3">
-            <div>
-              <span className="text-muted-foreground">Name</span>
-              <p className="font-medium">Player #{playerId}</p>
+      {playerLoading ? (
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-8 w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-3 md:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-1">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-5 w-28" />
+                </div>
+              ))}
             </div>
-            <div>
-              <span className="text-muted-foreground">Position</span>
-              <p className="font-medium">--</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Team</span>
-              <p className="font-medium">--</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Current Salary</span>
-              <p className="font-medium">--</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Contract Type</span>
-              <p className="font-medium">--</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Years Remaining</span>
-              <p className="font-medium">--</p>
-            </div>
-          </div>
-          <p className="text-muted-foreground text-xs mt-4">
-            Phase 8 will populate from GET /api/players/{playerId}.
-          </p>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      ) : player ? (
+        <PlayerHeader player={player} />
+      ) : null}
 
-      {/* Contract tools tabs */}
       <Tabs defaultValue="extensions">
         <TabsList>
           {CONTRACT_TOOLS.map((tool) => (
@@ -121,12 +93,14 @@ export function PlayerDetailPage() {
                 <CardTitle>{tool.label}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-sm">
-                  {tool.description}
-                </p>
-                <p className="text-muted-foreground text-xs mt-4">
-                  Phase 8 will populate from GET /api/tools/{playerId}/all.
-                </p>
+                {toolsLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-32 w-full" />
+                  </div>
+                ) : (
+                  <ToolContent tab={tool.value} tools={tools ?? null} />
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -134,4 +108,36 @@ export function PlayerDetailPage() {
       </Tabs>
     </div>
   )
+}
+
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button variant="ghost" size="sm" onClick={onClick} className="gap-1">
+      <ArrowLeft className="h-4 w-4" />
+      Back
+    </Button>
+  )
+}
+
+function ToolContent({
+  tab,
+  tools,
+}: {
+  tab: (typeof CONTRACT_TOOLS)[number]["value"]
+  tools: import("@/api/types").PlayerToolsSchema | null
+}) {
+  switch (tab) {
+    case "extensions":
+      return <ExtensionsTab data={tools?.extensions ?? null} />
+    case "tags":
+      return <TagsTab data={tools?.tags ?? null} />
+    case "tenders":
+      return <TendersTab data={tools?.tenders ?? null} />
+    case "buyout":
+      return <BuyoutTab data={tools?.buyout ?? null} />
+    case "5yo":
+      return <FifthYearTab data={tools?.fifth_year_option ?? null} />
+    case "ppe":
+      return <PPETab data={tools?.ppe ?? null} />
+  }
 }

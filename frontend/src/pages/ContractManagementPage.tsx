@@ -69,7 +69,7 @@ export function ContractManagementPage() {
   }
 
   function handleRowClick(row: EligibilityRow) {
-    navigate(`/roster/${row.player_id}`);
+    navigate(`/roster/${row.player_id}?team=${selectedTeamId}`);
   }
 
   return (
