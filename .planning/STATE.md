@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 
 ## Current Position
 
-Phase: 19 of 23 (Extensions) — IN PROGRESS
-Plan: 19-01 complete (EXT eligibility validation)
-Status: Plan 19-02 ready (EXT pricing/EPV/EYS validation)
-Last activity: 2026-04-02 — 19-01 complete (EXT eligibility validated, 97.4% match rate)
+Phase: 19 of 23 (Extensions) — COMPLETE
+Plan: 19-02 complete (EXT pricing/EPV/EYS validation)
+Status: Ready for Phase 20 (Tenders)
+Last activity: 2026-04-02 — 19-02 complete (EPV pricing fixed, 59% exact match against EXT tab)
 
-Progress: ███░░░░░░░ 25% (v1.3)
+Progress: ████░░░░░░ 33% (v1.3)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 47
-- Average duration: ~9 min
-- Total execution time: ~414 min
+- Total plans completed: 48
+- Average duration: ~10 min
+- Total execution time: ~469 min
 
 **By Milestone:**
 
@@ -30,7 +30,7 @@ Progress: ███░░░░░░░ 25% (v1.3)
 | v1.0 MVP | 1-8 | 26 | 142 min | 5 min |
 | v1.1 League Calendar | 9-13 | 9 | 81 min | 9 min |
 | v1.2 Data Integrity | 14-17 | 8 | ~53 min | ~7 min |
-| v1.3 Data Integrity 2 | 18-23 | 4 | ~94 min | ~24 min |
+| v1.3 Data Integrity 2 | 18-23 | 5 | ~149 min | ~30 min |
 
 ## Accumulated Context
 
@@ -45,6 +45,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 ### Key Discoveries
 
 - ADL Cap Percentage: Tag salaries multiply positional averages by (current_cap / prev_cap). Discovered from spreadsheet formula, not in bylaws. May apply to 5YO/PPE too.
+- EPV Performance Salary: Uses prior season (End25 Sal) salary rankings × 1.1 growth rate, NOT current season contract table directly. Published salary rankings are a projected snapshot.
 
 ### Blockers/Concerns
 
@@ -60,5 +61,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-02
-Stopped at: Phase 19-01 complete — ready for 19-02 (EXT pricing/EPV/EYS validation)
+Stopped at: Phase 19 complete — ready for Phase 20 (Tenders)
 Resume file: None
