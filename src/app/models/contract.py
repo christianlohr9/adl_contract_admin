@@ -44,7 +44,7 @@ class Contract(TimestampMixin, Base):
     player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), index=True)
     season: Mapped[int] = mapped_column(comment="ADL season year this contract is for")
     salary: Mapped[float] = mapped_column(
-        Numeric(5, 2), comment="Salary in millions, e.g. 10.07 = $10.07M"
+        Numeric(10, 2), comment="Salary in millions, e.g. 10.07 = $10.07M"
     )
     years_remaining: Mapped[int] = mapped_column(
         comment="Contract years left including current season"

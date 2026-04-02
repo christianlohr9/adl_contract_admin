@@ -98,7 +98,7 @@ async def get_all_tools(
 
     # Tenders
     try:
-        result = await calculate_tenders(session, player_id, season)
+        result = await calculate_tenders(session, player_id, season, team_id)
         tenders = TenderResultSchema.model_validate(result, from_attributes=True)
     except Exception:
         logger.exception("Error calculating tenders for player %d", player_id)
@@ -162,6 +162,7 @@ async def get_eligibility(
     player_id: int,
     session: SessionDep,
     season: int = _DEFAULT_SEASON,
+    team_id: int | None = None,
 ) -> list[EligibilitySchema]:
     """Check eligibility for all contract action types.
 
@@ -173,7 +174,7 @@ async def get_eligibility(
 
     results: list[EligibilitySchema] = []
     for action in sorted(_VALID_ACTIONS):
-        eligibility = await check_eligibility(session, player_id, season, action)
+        eligibility = await check_eligibility(session, player_id, season, action, team_id)
         results.append(
             EligibilitySchema.model_validate(eligibility, from_attributes=True)
         )
@@ -216,10 +217,11 @@ async def get_tenders(
     player_id: int,
     session: SessionDep,
     season: int = _DEFAULT_SEASON,
+    team_id: int | None = None,
 ) -> TenderResultSchema:
     """Calculate tender options (ERFA/RFA) for a player."""
     await _verify_player(session, player_id)
-    result = await calculate_tenders(session, player_id, season)
+    result = await calculate_tenders(session, player_id, season, team_id)
     return TenderResultSchema.model_validate(result, from_attributes=True)
 
 
