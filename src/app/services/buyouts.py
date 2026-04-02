@@ -378,54 +378,10 @@ async def _calculate_pr_starter_floor(
     position: str,
     season: int,
 ) -> int:
-    """Calculate the PR Starter Floor for a position in a given season.
+    """Delegate to the shared implementation in ``epv.py``."""
+    from app.services.epv import calculate_pr_starter_floor
 
-    Bylaws formula:
-        PR Starter Floor = ROUND_TO_NEAREST_4(
-            (Total Position ADL Starts in Prior League Year)
-            / (ADL Weeks Played x 2)
-            * Missed_Start_Inflation_Rate
-        )
-
-    "Total Position ADL Starts" = count of weekly score entries at this position.
-    "ADL Weeks Played" = number of distinct weeks with scores.
-    The factor of 2 accounts for 2 conferences.
-    Missed_Start_Inflation_Rate ~ 1.005 per bylaws.
-    """
-    from sqlalchemy import func as sqla_func
-
-    from app.services.rules import round_to_nearest_4
-
-    # Count total weekly score entries (not YTD) at this position for the season
-    total_starts_result = await session.execute(
-        select(sqla_func.count(PlayerScore.id))
-        .join(Player, Player.id == PlayerScore.player_id)
-        .where(
-            Player.position == position,
-            PlayerScore.season == season,
-            PlayerScore.week != "YTD",
-        )
-    )
-    total_starts = total_starts_result.scalar_one() or 0
-
-    # Count distinct weeks played
-    weeks_result = await session.execute(
-        select(sqla_func.count(sqla_func.distinct(PlayerScore.week)))
-        .where(
-            PlayerScore.season == season,
-            PlayerScore.week != "YTD",
-        )
-    )
-    weeks_played = weeks_result.scalar_one() or 1  # avoid division by zero
-
-    missed_start_inflation = 1.005
-    denominator = weeks_played * 2  # 2 conferences
-
-    if denominator == 0:
-        return 4  # minimum fallback
-
-    raw_floor = (total_starts / denominator) * missed_start_inflation
-    return max(4, round_to_nearest_4(int(round(raw_floor))))
+    return await calculate_pr_starter_floor(session, position, season)
 
 
 async def calculate_starter_percentile(
