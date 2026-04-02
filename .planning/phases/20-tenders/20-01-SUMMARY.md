@@ -9,9 +9,9 @@ requires:
   - phase: 19-extensions
     provides: team_id scoping pattern for eligibility checks
 provides:
-  - ERFA eligibility with team_id scoping, original salary lookup, accrued seasons gate
-  - RFA eligibility with team_id scoping, accrued seasons gate, corrected RFA-re-tender rule
-  - 72% ERFA match rate (74/102), 58% RFA match rate (61/105) against TagElig26
+  - ERFA eligibility with team_id scoping, original salary lookup, conference-scoped accrued seasons
+  - RFA eligibility with team_id scoping, conference-scoped accrued seasons, corrected RFA-re-tender rule
+  - 96.7% ERFA match rate, 95.4% RFA match rate against TagElig26
 affects: [20-tenders, 23-cross-tool-validation]
 
 # Tech tracking
@@ -24,8 +24,9 @@ key-files:
   modified: [src/app/services/tenders.py, src/app/services/eligibility.py]
 
 key-decisions:
-  - "Use total DB accrued seasons (all teams) as best approximation — conference-scoped not feasible with current data"
-  - "ERFA requires < 3 accrued seasons, RFA requires exactly 3"
+  - "Conference-scoped accrued seasons: team_ids 129-144 = NFC, 145-160 = AFC"
+  - "ERFA requires < 3 accrued seasons, RFA requires exactly 3 (conference-scoped)"
+  - "Scoring history (player_scores) as fallback for players with no conference contracts"
   - "Removed universal RFA designation block — prior SRFA/RRFA contracts do not block RFA re-eligibility"
   - "Original signing salary lookup for ERFA vet-min comparison — carried-forward salary is inflated"
 
@@ -41,7 +42,7 @@ completed: 2026-04-02
 
 # Phase 20-01: Tender Eligibility Validation Summary
 
-**Team_id scoping, original salary lookup, accrued seasons gates, and RFA re-tender fix bring ERFA to 72% match and RFA to 58% match against TagElig26**
+**Conference-scoped accrued seasons, team_id scoping, original salary lookup, and historical data re-sync bring ERFA to 96.7% and RFA to 95.4% match against TagElig26**
 
 ## Performance
 
