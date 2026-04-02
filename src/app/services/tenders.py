@@ -16,6 +16,7 @@ from sqlalchemy import func, select
 
 from app.models.contract import Contract
 from app.models.player import Player
+from app.models.player_score import PlayerScore
 from app.services.rules import (
     floor_100k,
     get_contract_constants,
@@ -158,6 +159,65 @@ def calculate_rrfa_bid(
 
 
 # ---------------------------------------------------------------------------
+# Conference-scoped accrued seasons
+# ---------------------------------------------------------------------------
+
+# Team ID ranges per conference (DB IDs = MFL franchise ordinal + 128)
+_NFC_TEAM_IDS = range(129, 145)  # 129-144
+_AFC_TEAM_IDS = range(145, 161)  # 145-160
+
+
+def _same_conference_team_ids(team_id: int) -> range:
+    """Return the team_id range for the conference that *team_id* belongs to."""
+    if team_id in _NFC_TEAM_IDS:
+        return _NFC_TEAM_IDS
+    return _AFC_TEAM_IDS
+
+
+async def _get_conference_accrued_seasons(
+    session: AsyncSession,
+    player_id: int,
+    team_id: int,
+    season: int,
+) -> int:
+    """Count distinct prior seasons the player accrued in the same conference.
+
+    Primary source: contract history — count seasons where the player had a
+    contract on any team in the same conference as *team_id*.
+
+    Fallback: when a player has **zero** contracts in this conference but does
+    have scoring history (NFL activity), count those scoring seasons.  This
+    covers rookies/free agents who were active in the NFL but not yet picked up
+    on any ADL roster (e.g., mid-season adds the following year).
+    """
+    conf_teams = _same_conference_team_ids(team_id)
+
+    # Seasons with a contract in this conference
+    conf_result = await session.execute(
+        select(func.count(Contract.season.distinct())).where(
+            Contract.player_id == player_id,
+            Contract.team_id.in_(conf_teams),
+            Contract.season < season,
+        )
+    )
+    conf_accrued = conf_result.scalar() or 0
+
+    if conf_accrued > 0:
+        return conf_accrued
+
+    # Fallback for players with no conference contract history:
+    # count NFL scoring seasons as accrued (golden source for activity).
+    score_result = await session.execute(
+        select(func.count(PlayerScore.season.distinct())).where(
+            PlayerScore.player_id == player_id,
+            PlayerScore.week == "YTD",
+            PlayerScore.season < season,
+        )
+    )
+    return score_result.scalar() or 0
+
+
+# ---------------------------------------------------------------------------
 # ERFA eligibility
 # ---------------------------------------------------------------------------
 
@@ -260,16 +320,11 @@ async def check_erfa_eligibility(
     if prev_salary > vet_min_at_signing:
         return False, "Previous contract salary exceeds veteran minimum at time of signing"
 
-    # ERFA requires fewer than 3 accrued seasons.  Count distinct prior seasons
-    # the player has appeared on any roster as the best approximation of
-    # accrued seasons from available data.
-    accrued_result = await session.execute(
-        select(func.count(Contract.season.distinct())).where(
-            Contract.player_id == player_id,
-            Contract.season < season,
-        )
+    # ERFA requires fewer than 3 accrued seasons in the same conference.
+    # Conference-scoped: only count seasons on teams in the same conference.
+    accrued_seasons = await _get_conference_accrued_seasons(
+        session, player_id, scope_team, season,
     )
-    accrued_seasons = accrued_result.scalar() or 0
     if accrued_seasons >= _ERFA_MAX_ACCRUED_SEASONS:
         return False, f"Player has {accrued_seasons} accrued seasons (ERFA requires < {_ERFA_MAX_ACCRUED_SEASONS})"
 
@@ -391,15 +446,11 @@ async def check_rfa_eligibility(
         if original_length > 1:
             return False, "Multi-year UFA contract from 2023 or earlier"
 
-    # RFA requires exactly 3 accrued seasons (fewer = ERFA, more = UFA).
-    # Count distinct prior seasons the player has been on any roster.
-    accrued_result = await session.execute(
-        select(func.count(Contract.season.distinct())).where(
-            Contract.player_id == player_id,
-            Contract.season < season,
-        )
+    # RFA requires exactly 3 accrued seasons in the same conference.
+    # Conference-scoped: only count seasons on teams in the same conference.
+    accrued_seasons = await _get_conference_accrued_seasons(
+        session, player_id, scope_team, season,
     )
-    accrued_seasons = accrued_result.scalar() or 0
     if accrued_seasons != _RFA_REQUIRED_ACCRUED_SEASONS:
         return (
             False,
