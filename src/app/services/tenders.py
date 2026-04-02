@@ -288,6 +288,10 @@ _INELIGIBLE_TYPES_2021_OR_EARLIER = frozenset({
     "B/R", "EXT", "5YO",
 })
 
+# Required accrued seasons for RFA eligibility (exactly this many).
+# Players with fewer are ERFA-eligible, players with more are UFA.
+_RFA_REQUIRED_ACCRUED_SEASONS = 3
+
 
 async def check_rfa_eligibility(
     session: AsyncSession,
@@ -365,17 +369,6 @@ async def check_rfa_eligibility(
                     f"Contract includes ineligible type '{ineligible_type}' from {signed_season}",
                 )
 
-    # Universal rule (R10-D fix): "a player's expiring contract must not be...
-    # a previous RFA contract" — applies regardless of signed year.
-    # The bylaws opening paragraph states this as a universal condition.
-    _RFA_DESIGNATIONS = ("FRFA", "SRFA", "ORFA", "RRFA")
-    for rfa_type in _RFA_DESIGNATIONS:
-        if rfa_type in desig:
-            return (
-                False,
-                f"Contract is a previous RFA contract ('{rfa_type}')",
-            )
-
     # Must not be a multi-year UFA from 2023 or earlier (R4-D fix)
     if signed_season <= 2023 and "UFA" in desig:
         # Look up the original contract at signed_season to get original years_remaining.
@@ -397,6 +390,21 @@ async def check_rfa_eligibility(
         original_length = orig_years if orig_years is not None else (season - signed_season)
         if original_length > 1:
             return False, "Multi-year UFA contract from 2023 or earlier"
+
+    # RFA requires exactly 3 accrued seasons (fewer = ERFA, more = UFA).
+    # Count distinct prior seasons the player has been on any roster.
+    accrued_result = await session.execute(
+        select(func.count(Contract.season.distinct())).where(
+            Contract.player_id == player_id,
+            Contract.season < season,
+        )
+    )
+    accrued_seasons = accrued_result.scalar() or 0
+    if accrued_seasons != _RFA_REQUIRED_ACCRUED_SEASONS:
+        return (
+            False,
+            f"Player has {accrued_seasons} accrued seasons (RFA requires exactly {_RFA_REQUIRED_ACCRUED_SEASONS})",
+        )
 
     return True, None
 
