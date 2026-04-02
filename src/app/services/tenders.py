@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.models.contract import Contract
 from app.models.player import Player
@@ -161,46 +161,63 @@ def calculate_rrfa_bid(
 # ERFA eligibility
 # ---------------------------------------------------------------------------
 
+# Maximum accrued seasons for ERFA eligibility (exclusive).
+# Players with 3+ prior ADL seasons are not ERFA-eligible.
+_ERFA_MAX_ACCRUED_SEASONS = 3
+
 
 async def check_erfa_eligibility(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> tuple[bool, str | None]:
     """Check whether a player is eligible for an ERFA tender.
 
     Returns ``(True, None)`` if eligible, ``(False, reason)`` if not.
 
+    Parameters
+    ----------
+    team_id : int | None
+        Optional team to scope contract lookups to. In a two-conference league
+        a player may have contracts on multiple teams; scoping ensures we check
+        the correct team slot.
+
     Eligibility rules:
     - Player must have 0 years remaining (expired contract)
-    - Must not also have an active contract (already re-signed)
+    - Must not also have an active contract on the same team (already re-signed)
     - Previous contract must have been signed at or below the veteran minimum
       in one of the previous two league years
     - Previous contract must NOT be an ERFA contract itself
     """
-    # Load expired contract (years_remaining == 0) — explicitly filter to avoid
-    # picking an active contract when multiple exist per player/season (Q3-D fix)
-    result = await session.execute(
+    # Load expired contract (years_remaining == 0) — scope to team if given
+    expired_q = (
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
             Contract.years_remaining == 0,
         )
-        .order_by(Contract.salary.desc())
-        .limit(1)
     )
+    if team_id is not None:
+        expired_q = expired_q.where(Contract.team_id == team_id)
+    expired_q = expired_q.order_by(Contract.salary.desc()).limit(1)
+
+    result = await session.execute(expired_q)
     contract = result.scalar_one_or_none()
 
     if contract is None:
         return False, "No expired contract found (player may still have years remaining)"
 
-    # If the player also has an active contract, they've been re-signed
+    # If the player also has an active contract on the same team, they've been re-signed.
+    # Scope to the same team_id as the expired contract.
+    scope_team = team_id if team_id is not None else contract.team_id
     active_check = await session.execute(
         select(Contract.id)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.team_id == scope_team,
             Contract.years_remaining > 0,
         )
         .limit(1)
@@ -213,18 +230,48 @@ async def check_erfa_eligibility(
     if "ERFA" in desig:
         return False, "Player's expired contract is an ERFA contract"
 
-    # Contract must have been signed at or below veteran minimum in one of
-    # the previous two league years
-    prev_salary = Decimal(str(contract.salary))
+    # Contract must have been signed in one of the previous two league years
     signed_season = contract.signed_season
 
     eligible_seasons = [season - 1, season - 2]
     if signed_season not in eligible_seasons:
         return False, "Contract was not signed in one of the previous two league years"
 
+    # Compare salary at signing against the veteran minimum at that time.
+    # The current-season row may have a bumped salary (vet-min carry-forward),
+    # so look up the original contract at signed_season for the true signing salary.
+    # Scope to the same team to avoid picking a different conference's contract.
+    orig_q = (
+        select(Contract.salary)
+        .where(
+            Contract.player_id == player_id,
+            Contract.team_id == contract.team_id,
+            Contract.signed_season == signed_season,
+            Contract.season == signed_season,
+        )
+        .limit(1)
+    )
+    orig_salary_result = await session.execute(orig_q)
+    orig_salary_raw = orig_salary_result.scalar_one_or_none()
+    # If original contract found, use its salary; else fall back to current row
+    prev_salary = Decimal(str(orig_salary_raw)) if orig_salary_raw is not None else Decimal(str(contract.salary))
+
     vet_min_at_signing = get_veteran_minimum(signed_season)
     if prev_salary > vet_min_at_signing:
         return False, "Previous contract salary exceeds veteran minimum at time of signing"
+
+    # ERFA requires fewer than 3 accrued seasons.  Count distinct prior seasons
+    # the player has appeared on any roster as the best approximation of
+    # accrued seasons from available data.
+    accrued_result = await session.execute(
+        select(func.count(Contract.season.distinct())).where(
+            Contract.player_id == player_id,
+            Contract.season < season,
+        )
+    )
+    accrued_seasons = accrued_result.scalar() or 0
+    if accrued_seasons >= _ERFA_MAX_ACCRUED_SEASONS:
+        return False, f"Player has {accrued_seasons} accrued seasons (ERFA requires < {_ERFA_MAX_ACCRUED_SEASONS})"
 
     return True, None
 
@@ -246,42 +293,54 @@ async def check_rfa_eligibility(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> tuple[bool, str | None]:
     """Check whether a player is eligible for RFA tenders.
 
     Returns ``(True, None)`` if eligible, ``(False, reason)`` if not.
 
+    Parameters
+    ----------
+    team_id : int | None
+        Optional team to scope contract lookups to. In a two-conference league
+        a player may have contracts on multiple teams; scoping ensures we check
+        the correct team slot.
+
     Eligibility rules:
     - Player must have 0 years remaining (expired contract)
-    - Must not also have an active contract (already re-signed)
+    - Must not also have an active contract on the same team (already re-signed)
     - Contract must not be 4+ years old
     - Contract must not include ineligible types from 2021 or earlier
     - Must not be a multi-year UFA from 2023 or earlier
     - Must not be a previous RFA contract (universal rule)
     """
-    # Load expired contract (years_remaining == 0) — explicitly filter to avoid
-    # picking an active contract when multiple exist per player/season (Q3-D fix)
-    result = await session.execute(
+    # Load expired contract (years_remaining == 0) — scope to team if given
+    expired_q = (
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
             Contract.years_remaining == 0,
         )
-        .order_by(Contract.salary.desc())
-        .limit(1)
     )
+    if team_id is not None:
+        expired_q = expired_q.where(Contract.team_id == team_id)
+    expired_q = expired_q.order_by(Contract.salary.desc()).limit(1)
+
+    result = await session.execute(expired_q)
     contract = result.scalar_one_or_none()
 
     if contract is None:
         return False, "No expired contract found (player may still have years remaining)"
 
-    # If the player also has an active contract, they've been re-signed
+    # If the player also has an active contract on the same team, they've been re-signed.
+    scope_team = team_id if team_id is not None else contract.team_id
     active_check = await session.execute(
         select(Contract.id)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
+            Contract.team_id == scope_team,
             Contract.years_remaining > 0,
         )
         .limit(1)
@@ -351,6 +410,7 @@ async def calculate_tenders(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> TenderResult:
     """Calculate all applicable tender options for a player.
 
@@ -372,18 +432,20 @@ async def calculate_tenders(
             ineligibility_reasons=["Player not found"],
         )
 
-    # Load previous expired contract (years_remaining=0) — explicitly filter
-    # to avoid picking wrong contract when multiple exist (Q3-D fix)
-    contract_result = await session.execute(
+    # Load previous expired contract (years_remaining=0) — scope to team if given
+    expired_q = (
         select(Contract)
         .where(
             Contract.player_id == player_id,
             Contract.season == season,
             Contract.years_remaining == 0,
         )
-        .order_by(Contract.salary.desc())
-        .limit(1)
     )
+    if team_id is not None:
+        expired_q = expired_q.where(Contract.team_id == team_id)
+    expired_q = expired_q.order_by(Contract.salary.desc()).limit(1)
+
+    contract_result = await session.execute(expired_q)
     contract = contract_result.scalar_one_or_none()
     prev_salary = Decimal(str(contract.salary)) if contract else Decimal("0")
 
@@ -392,7 +454,7 @@ async def calculate_tenders(
     rfa_options: list[TenderOption] = []
 
     # Check ERFA eligibility
-    erfa_eligible, erfa_reason = await check_erfa_eligibility(session, player_id, season)
+    erfa_eligible, erfa_reason = await check_erfa_eligibility(session, player_id, season, team_id)
     if erfa_eligible:
         erfa_salary = calculate_erfa_salary(prev_salary, season)
         erfa_option = TenderOption(
@@ -405,7 +467,7 @@ async def calculate_tenders(
         ineligibility_reasons.append(f"ERFA: {erfa_reason}")
 
     # Check RFA eligibility
-    rfa_eligible, rfa_reason = await check_rfa_eligibility(session, player_id, season)
+    rfa_eligible, rfa_reason = await check_rfa_eligibility(session, player_id, season, team_id)
     if rfa_eligible:
         # Calculate all 4 RFA tender options
         rfa_options = [

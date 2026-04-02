@@ -188,7 +188,7 @@ async def check_eligibility(
 
     checker = dispatch[action]
     # Conference-scoped checkers need team_id
-    if action in (ACTION_FRANCHISE_TAG, ACTION_EXTENSION):
+    if action in (ACTION_FRANCHISE_TAG, ACTION_EXTENSION, ACTION_ERFA_TENDER, ACTION_RFA_TENDER):
         result = await checker(session, player_id, season, team_id)
     else:
         result = await checker(session, player_id, season)
@@ -305,9 +305,10 @@ async def _check_erfa_tender(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> EligibilityResult:
     """Check ERFA tender eligibility."""
-    eligible, reason = await check_erfa_eligibility(session, player_id, season)
+    eligible, reason = await check_erfa_eligibility(session, player_id, season, team_id)
 
     if not eligible:
         return EligibilityResult(
@@ -365,9 +366,10 @@ async def _check_rfa_tender(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> EligibilityResult:
     """Check RFA tender eligibility."""
-    eligible, reason = await check_rfa_eligibility(session, player_id, season)
+    eligible, reason = await check_rfa_eligibility(session, player_id, season, team_id)
 
     if not eligible:
         return EligibilityResult(
