@@ -381,7 +381,7 @@ async def _calculate_pr_starter_floor(
     """Delegate to the shared implementation in ``epv.py``."""
     from app.services.epv import calculate_pr_starter_floor
 
-    return await calculate_pr_starter_floor(session, position, season)
+    return calculate_pr_starter_floor(position)
 
 
 async def calculate_starter_percentile(

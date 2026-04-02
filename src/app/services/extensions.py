@@ -321,12 +321,34 @@ async def calculate_extensions(
             ineligibility_reason=reason,
         )
 
+    # Previous salary for EPV = prior season salary × growth rate.
+    # The league's published "previous salary" is the prior-year contract
+    # salary projected forward by the annual growth rate.
+    growth = Decimal("1") + get_salary_growth_rate()
+    prev_season_contract = None
+    if contract is not None:
+        prev_filters = [
+            Contract.player_id == player_id,
+            Contract.season == season - 1,
+            Contract.status == "active",
+            Contract.team_id == contract.team_id,
+        ]
+        prev_result = await session.execute(
+            select(Contract).where(*prev_filters).order_by(Contract.salary.desc()).limit(1)
+        )
+        prev_season_contract = prev_result.scalar_one_or_none()
+
+    if prev_season_contract is not None:
+        previous_salary = round_to_10k(Decimal(str(prev_season_contract.salary)) * growth)
+    else:
+        previous_salary = current_salary
+
     # Calculate EPV
     epv = await calculate_epv(
         session,
         player_id,
         season,
-        previous_salary=current_salary,
+        previous_salary=previous_salary,
         years_remaining=current_years,
     )
 
@@ -346,7 +368,7 @@ async def calculate_extensions(
         eys = calculate_eys(epv, ext_years, has_5yo=has_5yo)
 
         # Calculate smoothed salary
-        smoothed = calculate_smoothed_salary(current_salary, eys, current_years, ext_years)
+        smoothed = calculate_smoothed_salary(previous_salary, eys, current_years, ext_years)
 
         # Apply SD minimum floor
         if smoothed < sd_minimum:

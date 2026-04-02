@@ -15,7 +15,7 @@ from sqlalchemy import String, cast, func, select
 from app.models.contract import Contract
 from app.models.player import Player
 from app.models.player_score import PlayerScore
-from app.services.rules import get_contract_constants, round_to_10k, round_to_nearest_4
+from app.services.rules import get_contract_constants, get_salary_growth_rate, round_to_10k
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -132,55 +132,25 @@ async def get_position_rank(
     return min(total_rank, ppg_rank)
 
 
-async def calculate_pr_starter_floor(
-    session: AsyncSession,
+def calculate_pr_starter_floor(
     position: str,
-    season: int,
 ) -> int:
-    """Calculate the PR Starter Floor for a position in a given season.
+    """Return the PR Starter Floor for a position.
 
-    Bylaws formula:
-        PR Starter Floor = ROUND_TO_NEAREST_4(
-            (Total Position ADL Starts in Prior League Year)
-            / (ADL Weeks Played x 2)
-            * Missed_Start_Inflation_Rate
+    The floor is loaded from ``contracts.json`` ``extensions.pr_starter_floor_by_position``.
+    These values represent the average number of ADL starters at a position per
+    conference week, derived from actual lineup data and the bylaws formula::
+
+        ROUND_TO_NEAREST_4(
+            Total Position ADL Starts / (ADL Weeks Played x 2) * 1.005
         )
 
-    "Total Position ADL Starts" = count of weekly score entries at this position.
-    "ADL Weeks Played" = number of distinct weeks with scores.
-    The factor of 2 accounts for 2 conferences.
-    Missed_Start_Inflation_Rate ~ 1.005 per bylaws.
+    Since the app does not track weekly lineup starts, the authoritative values
+    are maintained in the constants file and updated annually.
     """
-    # Count total weekly score entries (not YTD) at this position for the season
-    total_starts_result = await session.execute(
-        select(func.count(PlayerScore.id))
-        .join(Player, Player.id == PlayerScore.player_id)
-        .where(
-            Player.position == position,
-            PlayerScore.season == season,
-            PlayerScore.week != "YTD",
-        )
-    )
-    total_starts = total_starts_result.scalar_one() or 0
-
-    # Count distinct weeks played
-    weeks_result = await session.execute(
-        select(func.count(func.distinct(PlayerScore.week)))
-        .where(
-            PlayerScore.season == season,
-            PlayerScore.week != "YTD",
-        )
-    )
-    weeks_played = weeks_result.scalar_one() or 1  # avoid division by zero
-
-    missed_start_inflation = 1.005
-    denominator = weeks_played * 2  # 2 conferences
-
-    if denominator == 0:
-        return 4  # minimum fallback
-
-    raw_floor = (total_starts / denominator) * missed_start_inflation
-    return max(4, round_to_nearest_4(int(round(raw_floor))))
+    constants = get_contract_constants()
+    floors = constants["extensions"].get("pr_starter_floor_by_position", {})
+    return floors.get(position, 4)
 
 
 async def is_robust_season(
@@ -236,20 +206,29 @@ async def calculate_performance_salary(
     """Calculate the performance salary for a position rank in a season.
 
     Formula (from extensions.yaml):
-        ``ROUND_TO_10K(AVERAGE(SAL(2*PR - 3), SAL(2*PR - 2)))``
+        ``ROUND_TO_10K(1.1 × AVERAGE(SAL_prev(2*PR - 3), SAL_prev(2*PR - 2)))``
 
     For PR=1 the formula becomes a linear extrapolation:
-        ``2 * AVG(SAL(1), SAL(2)) - AVG(SAL(3), SAL(4))``
+        ``1.1 × (2 * AVG(SAL(1), SAL(2)) - AVG(SAL(3), SAL(4)))``
 
-    *SAL(n)* is the nth highest salary at the position from the Contract table.
+    *SAL_prev(n)* is the nth highest salary at the position from the
+    **prior season** salary rankings.  The 1.1× factor projects those
+    rankings forward by the annual salary growth rate, matching the
+    league's published "current season salary rankings" methodology
+    (End-of-prior-year salaries × growth rate).
     """
-    # Fetch all active salaries at this position for the season, sorted desc
+    growth = Decimal("1") + get_salary_growth_rate()  # 1.10
+
+    # Use prior season salary rankings, projected forward by growth rate
+    salary_season = season - 1
+
+    # Fetch all active salaries at this position for the prior season, sorted desc
     result = await session.execute(
         select(Contract.salary)
         .join(Player, Player.id == Contract.player_id)
         .where(
             Player.position == position,
-            Contract.season == season,
+            Contract.season == salary_season,
             Contract.status == "active",
         )
         .order_by(Contract.salary.desc())
@@ -269,7 +248,10 @@ async def calculate_performance_salary(
         n2 = 2 * pr - 2
         raw = (_sal_at_rank(salaries, n1) + _sal_at_rank(salaries, n2)) / 2
 
-    return round_to_10k(raw)
+    # No rounding here — EPV values carry full precision through to EYS,
+    # which applies its own rounding.  The published spreadsheet keeps raw
+    # averages without intermediate rounding.
+    return growth * raw
 
 
 # ---------------------------------------------------------------------------
@@ -308,12 +290,11 @@ async def calculate_epv(
     result = await session.execute(select(Player.position).where(Player.id == player_id))
     position = result.scalar_one()
 
-    # Floor percentages from constants
+    # Floor percentage: always 75% of previous salary for EYS calculation.
+    # The published spreadsheet uses 0.75 for all players regardless of
+    # active/expired status.
     constants = get_contract_constants()
-    if years_remaining > 0:
-        floor_pct = Decimal(str(constants["extensions"]["ext_prev_sal_floor_active_pct"]))
-    else:
-        floor_pct = Decimal(str(constants["extensions"]["ext_prev_sal_floor_expired_pct"]))
+    floor_pct = Decimal(str(constants["extensions"]["ext_prev_sal_floor_active_pct"]))
 
     floor_value = round_to_10k(floor_pct * previous_salary)
 
@@ -356,23 +337,25 @@ async def calculate_epv(
     epv_curr: Decimal | None = None
     seasons_used: list[int] = []
 
+    # The starter floor is the same for a given position (from constants)
+    starter_floor = calculate_pr_starter_floor(position)
+
     if len(robust_seasons) >= 1:
         s_new, pr_new_raw = robust_seasons[0]
-        starter_floor_new = await calculate_pr_starter_floor(session, position, s_new)
-        pr_new = _apply_floor(pr_new_raw, starter_floor_new)
-        epv_new = await calculate_performance_salary(session, position, pr_new, s_new)
+        pr_new = _apply_floor(pr_new_raw, starter_floor)
+        # Performance salary always uses current season salary rankings
+        epv_new = await calculate_performance_salary(session, position, pr_new, season)
         seasons_used.append(s_new)
 
     if len(robust_seasons) >= 2:
         s_old, pr_old_raw = robust_seasons[1]
-        starter_floor_old = await calculate_pr_starter_floor(session, position, s_old)
-        pr_old = _apply_floor(pr_old_raw, starter_floor_old)
-        epv_old = await calculate_performance_salary(session, position, pr_old, s_old)
+        pr_old = _apply_floor(pr_old_raw, starter_floor)
+        # Performance salary always uses current season salary rankings
+        epv_old = await calculate_performance_salary(session, position, pr_old, season)
         seasons_used.append(s_old)
 
     if curr_pr is not None and curr_season_checked:
-        starter_floor_curr = await calculate_pr_starter_floor(session, position, season)
-        curr_pr = _apply_floor(curr_pr, starter_floor_curr)
+        curr_pr = _apply_floor(curr_pr, starter_floor)
         epv_curr = await calculate_performance_salary(session, position, curr_pr, season)
         if season not in seasons_used:
             seasons_used.append(season)

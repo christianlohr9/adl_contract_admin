@@ -16,7 +16,7 @@
     },
     "sd_minimum_by_year": {
       "2020": 1.32, "2021": 1.22, "2022": 1.39, "2023": 1.50,
-      "2024": 1.70, "2025": 1.86
+      "2024": 1.70, "2025": 1.86, "2026": 2.01
     },
     "nfl_rookie_minimum_by_year": {
       "2020": 0.610, "2021": 0.660, "2022": 0.705, "2023": 0.750,
@@ -95,7 +95,20 @@
     "ext_per_year_premium_discount_pct": 0.05,
     "ext_robust_games_minimum": 8,
     "ext_max_years": 6,
-    "ext_guarantee_level": "SD"
+    "ext_guarantee_level": "SD",
+    "pr_starter_floor_by_position": {
+      "QB": 16,
+      "RB": 28,
+      "WR": 50,
+      "TE": 18,
+      "DT": 38,
+      "DE": 40,
+      "LB": 38,
+      "CB": 38,
+      "S": 38,
+      "PK": 16,
+      "PN": 16
+    }
   },
   "rfa_tenders": {
     "per_franchise_per_year": 2,
