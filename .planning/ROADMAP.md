@@ -85,7 +85,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 19-01: TBD
+- [x] 19-01: EXT Eligibility Validation — completed 2026-04-02
+- [ ] 19-02: TBD
 
 #### Phase 20: Tenders
 
@@ -152,7 +153,7 @@ Phases execute in numeric order. Next phase continues from 24.
 | 16. NFL Kickoff Rule | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 17. Regression Testing & Validation | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 18. Franchise Tags | v1.3 | 2/2 | Complete | 2026-04-01 |
-| 19. Extensions | v1.3 | 0/? | Not started | - |
+| 19. Extensions | v1.3 | 1/? | In progress | - |
 | 20. Tenders | v1.3 | 0/? | Not started | - |
 | 21. 5YO & PPE | v1.3 | 0/? | Not started | - |
 | 22. Buyout/Restructure | v1.3 | 0/? | Not started | - |
