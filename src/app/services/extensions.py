@@ -134,22 +134,30 @@ async def check_extension_eligibility(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> tuple[bool, str | None]:
     """Check whether a player is eligible for an extension.
+
+    When ``team_id`` is provided, evaluates only the contract on that team.
+    This is important in a two-conference league where a player has separate
+    contracts in each conference with different years remaining.
 
     Returns ``(True, None)`` if eligible, ``(False, reason)`` if not.
     """
     constants = get_contract_constants()
     max_years = constants["max_contract_years"]
 
-    # Load current active contract
+    # Load current active contract (scoped to team when provided)
+    filters = [
+        Contract.player_id == player_id,
+        Contract.season == season,
+        Contract.status == "active",
+    ]
+    if team_id is not None:
+        filters.append(Contract.team_id == team_id)
     result = await session.execute(
         select(Contract)
-        .where(
-            Contract.player_id == player_id,
-            Contract.season == season,
-            Contract.status == "active",
-        )
+        .where(*filters)
         .order_by(Contract.salary.desc())
         .limit(1)
     )
@@ -189,7 +197,8 @@ async def check_extension_eligibility(
             )
 
         # Rule: Rookie/UDFA in final year cannot extend before NFL kickoff
-        if contract.years_remaining <= 1:
+        # Only applies to yr_rem=1 (final year); yr_rem=0 means expired — no gate
+        if contract.years_remaining == 1:
             cal_result = await session.execute(
                 select(SeasonCalendar).where(SeasonCalendar.season == season)
             )
@@ -212,16 +221,18 @@ async def check_extension_eligibility(
         return False, f"Contract already at maximum {max_years} years"
 
     # Rule: Players who received an EXT in current or prior window
-    # E3-D note: This query works correctly when EXT creates a new contract row
-    # with signed_season set to the season the EXT was applied. If the system
-    # ever modifies contracts in-place, this check would need revision.
+    # Scoped to same team when team_id is provided — an EXT on one conference
+    # contract doesn't block the other conference contract.
+    ext_filters = [
+        Contract.player_id == player_id,
+        Contract.designation.contains("EXT"),
+        Contract.signed_season >= season - 1,
+    ]
+    if team_id is not None:
+        ext_filters.append(Contract.team_id == team_id)
     ext_check = await session.execute(
         select(Contract.id)
-        .where(
-            Contract.player_id == player_id,
-            Contract.designation.contains("EXT"),
-            Contract.signed_season >= season - 1,
-        )
+        .where(*ext_filters)
         .limit(1)
     )
     if ext_check.scalar_one_or_none() is not None:
@@ -248,8 +259,11 @@ async def calculate_extensions(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> ExtensionResult:
     """Calculate all valid extension options for a player.
+
+    When ``team_id`` is provided, evaluates only the contract on that team.
 
     Returns an ``ExtensionResult`` with eligibility status and all valid
     ``ExtensionOption`` instances (1-year through max).
@@ -274,14 +288,17 @@ async def calculate_extensions(
             ineligibility_reason="Player not found",
         )
 
-    # Load current active contract
+    # Load current active contract (scoped to team when provided)
+    contract_filters = [
+        Contract.player_id == player_id,
+        Contract.season == season,
+        Contract.status == "active",
+    ]
+    if team_id is not None:
+        contract_filters.append(Contract.team_id == team_id)
     contract_result = await session.execute(
         select(Contract)
-        .where(
-            Contract.player_id == player_id,
-            Contract.season == season,
-            Contract.status == "active",
-        )
+        .where(*contract_filters)
         .order_by(Contract.salary.desc())
         .limit(1)
     )
@@ -291,7 +308,7 @@ async def calculate_extensions(
     current_years = contract.years_remaining if contract else 0
 
     # Check eligibility
-    eligible, reason = await check_extension_eligibility(session, player_id, season)
+    eligible, reason = await check_extension_eligibility(session, player_id, season, team_id)
     if not eligible:
         return ExtensionResult(
             player_id=player_id,

@@ -187,8 +187,8 @@ async def check_eligibility(
     }
 
     checker = dispatch[action]
-    # Franchise tag checker needs team_id for conference scoping
-    if action == ACTION_FRANCHISE_TAG:
+    # Conference-scoped checkers need team_id
+    if action in (ACTION_FRANCHISE_TAG, ACTION_EXTENSION):
         result = await checker(session, player_id, season, team_id)
     else:
         result = await checker(session, player_id, season)
@@ -206,9 +206,10 @@ async def _check_extension(
     session: AsyncSession,
     player_id: int,
     season: int,
+    team_id: int | None = None,
 ) -> EligibilityResult:
     """Delegate to existing extension eligibility checker."""
-    eligible, reason = await check_extension_eligibility(session, player_id, season)
+    eligible, reason = await check_extension_eligibility(session, player_id, season, team_id)
 
     if eligible:
         return EligibilityResult(
