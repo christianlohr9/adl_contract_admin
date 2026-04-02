@@ -14,7 +14,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from app.models.roster import RosterEntry
+from app.models.contract import Contract
+from app.models.player import Player
 from app.services.buyouts import calculate_5yo, calculate_buyout, calculate_ppe
 from app.services.eligibility import check_eligibility
 from app.services.extensions import calculate_extensions
@@ -185,13 +186,14 @@ async def get_roster_eligibility(
         if status.status == "open"
     }
 
-    # 3. Load team roster once
+    # 3. Load team contracts once (contracts are complete; roster_entries has
+    #    gaps due to the (player_id, season) unique constraint in dual-conference)
     result = await session.execute(
-        select(RosterEntry)
-        .where(RosterEntry.team_id == team_id, RosterEntry.season == season)
-        .options(joinedload(RosterEntry.player), joinedload(RosterEntry.contract))
+        select(Contract)
+        .where(Contract.team_id == team_id, Contract.season == season)
+        .options(joinedload(Contract.player))
     )
-    entries = result.unique().scalars().all()
+    contracts = result.unique().scalars().all()
 
     # 4. For each open action, check eligibility and extract headlines
     action_groups: list[ActionGroup] = []
@@ -203,9 +205,8 @@ async def get_roster_eligibility(
 
         eligible_players: list[PlayerActionSummary] = []
 
-        for entry in entries:
-            player = entry.player
-            contract = entry.contract
+        for contract in contracts:
+            player = contract.player
 
             # Check eligibility for this player + action
             try:
@@ -244,7 +245,7 @@ async def get_roster_eligibility(
                 headline_label = _HEADLINE_EXTRACTORS[action].__doc__ or action
 
             current_salary = (
-                Decimal(str(contract.salary)) if contract and contract.salary else None
+                Decimal(str(contract.salary)) if contract.salary else None
             )
 
             eligible_players.append(
