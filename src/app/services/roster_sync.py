@@ -135,7 +135,11 @@ async def sync_rosters(
                     await session.flush()
 
                 # ── Upsert Contract (team_id, player_id, season) ──
-                salary = float(Decimal(roster_player.salary))
+                raw_salary = Decimal(roster_player.salary) if roster_player.salary else Decimal(0)
+                # MFL returns R/F auction salaries in thousands (e.g., 7000 = $7M).
+                # Normal salaries are in millions (e.g., 7.00 = $7M).
+                # Threshold: any salary > 500 is clearly in thousands format.
+                salary = float(raw_salary / 1000 if raw_salary > 500 else raw_salary)
                 years_remaining = int(roster_player.contract_year)
                 designation = roster_player.contract_info
                 signed_season = _parse_signed_season(designation, season)

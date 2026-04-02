@@ -182,39 +182,51 @@ async def _get_conference_accrued_seasons(
 ) -> int:
     """Count distinct prior seasons the player accrued in the same conference.
 
-    Primary source: contract history — count seasons where the player had a
-    contract on any team in the same conference as *team_id*.
-
-    Fallback: when a player has **zero** contracts in this conference but does
-    have scoring history (NFL activity), count those scoring seasons.  This
-    covers rookies/free agents who were active in the NFL but not yet picked up
-    on any ADL roster (e.g., mid-season adds the following year).
+    Combines two sources:
+    1. Contract history: seasons with a contract on any team in the same
+       conference as *team_id*.
+    2. Scoring history: seasons where the player scored in the NFL but had
+       NO contract on ANY ADL team — these unrostered active seasons count
+       toward the current conference (covers rookies/free agents not yet
+       picked up in the ADL).
     """
     conf_teams = _same_conference_team_ids(team_id)
 
     # Seasons with a contract in this conference
     conf_result = await session.execute(
-        select(func.count(Contract.season.distinct())).where(
+        select(Contract.season.distinct()).where(
             Contract.player_id == player_id,
             Contract.team_id.in_(conf_teams),
             Contract.season < season,
         )
     )
-    conf_accrued = conf_result.scalar() or 0
+    conf_seasons = {row[0] for row in conf_result}
 
-    if conf_accrued > 0:
-        return conf_accrued
-
-    # Fallback for players with no conference contract history:
-    # count NFL scoring seasons as accrued (golden source for activity).
+    # All scoring seasons (golden source for NFL activity)
     score_result = await session.execute(
-        select(func.count(PlayerScore.season.distinct())).where(
+        select(PlayerScore.season.distinct()).where(
             PlayerScore.player_id == player_id,
             PlayerScore.week == "YTD",
             PlayerScore.season < season,
         )
     )
-    return score_result.scalar() or 0
+    score_seasons = {row[0] for row in score_result}
+
+    # All contract seasons across both conferences
+    all_contract_result = await session.execute(
+        select(Contract.season.distinct()).where(
+            Contract.player_id == player_id,
+            Contract.season < season,
+        )
+    )
+    all_contract_seasons = {row[0] for row in all_contract_result}
+
+    # Unrostered scoring seasons = scored in NFL but no ADL contract anywhere.
+    # These count toward the current conference since the player was active
+    # but not yet in the league system.
+    unrostered_seasons = score_seasons - all_contract_seasons
+
+    return len(conf_seasons | unrostered_seasons)
 
 
 # ---------------------------------------------------------------------------
