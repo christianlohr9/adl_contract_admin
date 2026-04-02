@@ -196,6 +196,10 @@ class MFLClient:
             params["YEAR"] = year
         return await self._export("playerScores", **params)
 
+    async def weekly_rosters(self, week: int) -> dict[str, Any]:
+        """Fetch all franchise rosters for a specific week."""
+        return await self._export("rosters", W=str(week))
+
     async def free_agents(self) -> dict[str, Any]:
         """Fetch available free agents."""
         return await self._export("freeAgents")

@@ -16,6 +16,7 @@ from sqlalchemy import func, select
 
 from app.models.contract import Contract
 from app.models.player import Player
+from app.models.player_season import PlayerSeason
 from app.services.rules import (
     floor_100k,
     get_contract_constants,
@@ -181,20 +182,36 @@ async def _get_conference_accrued_seasons(
 ) -> int:
     """Count distinct prior seasons the player accrued in the same conference.
 
-    Uses contract history: count seasons where the player had a contract on
-    any team in the same conference as *team_id*.  NFL scoring without an
-    ADL contract does NOT count as an accrued season.
+    Uses the player_seasons table (built from weekly MFL roster scans) as the
+    golden source.  This captures players who were rostered mid-season but
+    dropped before end-of-season snapshots.
+
+    Falls back to contract history if player_seasons has no data (e.g., table
+    not yet populated).
     """
     conf_teams = _same_conference_team_ids(team_id)
 
-    result = await session.execute(
+    # Primary: player_seasons (weekly roster scans — most complete)
+    ps_result = await session.execute(
+        select(func.count(PlayerSeason.season.distinct())).where(
+            PlayerSeason.player_id == player_id,
+            PlayerSeason.team_id.in_(conf_teams),
+            PlayerSeason.season < season,
+        )
+    )
+    ps_count = ps_result.scalar() or 0
+    if ps_count > 0:
+        return ps_count
+
+    # Fallback: contract history (end-of-season snapshots)
+    c_result = await session.execute(
         select(func.count(Contract.season.distinct())).where(
             Contract.player_id == player_id,
             Contract.team_id.in_(conf_teams),
             Contract.season < season,
         )
     )
-    return result.scalar() or 0
+    return c_result.scalar() or 0
 
 
 # ---------------------------------------------------------------------------
