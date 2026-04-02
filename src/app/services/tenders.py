@@ -183,27 +183,41 @@ async def _get_conference_accrued_seasons(
     """Count distinct prior seasons the player accrued in the same conference.
 
     Uses the player_seasons table (built from weekly MFL roster scans) as the
-    golden source.  This captures players who were rostered mid-season but
-    dropped before end-of-season snapshots.
+    golden source.  A season only counts as "accrued" if the player was on a
+    conference roster for at least 6 weeks (matching the NFL's accrued season
+    threshold).
 
-    Falls back to contract history if player_seasons has no data (e.g., table
-    not yet populated).
+    Falls back to contract history if player_seasons has no data.
     """
     conf_teams = _same_conference_team_ids(team_id)
 
-    # Primary: player_seasons (weekly roster scans — most complete)
-    ps_result = await session.execute(
-        select(func.count(PlayerSeason.season.distinct())).where(
+    # Primary: player_seasons with 6-week minimum per conference per season.
+    # Sum weeks across all teams in the conference for each season, then
+    # count seasons where the total meets the threshold.
+    from sqlalchemy import literal_column  # noqa: PLC0415
+
+    conf_season_weeks = (
+        select(
+            PlayerSeason.season,
+            func.sum(PlayerSeason.weeks_rostered).label("total_weeks"),
+        )
+        .where(
             PlayerSeason.player_id == player_id,
             PlayerSeason.team_id.in_(conf_teams),
             PlayerSeason.season < season,
         )
+        .group_by(PlayerSeason.season)
+        .having(func.sum(PlayerSeason.weeks_rostered) >= 6)
+        .subquery()
+    )
+    ps_result = await session.execute(
+        select(func.count()).select_from(conf_season_weeks)
     )
     ps_count = ps_result.scalar() or 0
     if ps_count > 0:
         return ps_count
 
-    # Fallback: contract history (end-of-season snapshots)
+    # Fallback: contract history (end-of-season snapshots — no week threshold)
     c_result = await session.execute(
         select(func.count(Contract.season.distinct())).where(
             Contract.player_id == player_id,

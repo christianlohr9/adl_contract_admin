@@ -34,3 +34,7 @@ class PlayerSeason(TimestampMixin, Base):
     season: Mapped[int] = mapped_column(
         comment="ADL season year the player was rostered",
     )
+    weeks_rostered: Mapped[int] = mapped_column(
+        default=0,
+        comment="Number of regular-season weeks on this team's roster",
+    )

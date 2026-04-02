@@ -1,14 +1,15 @@
 """Sync player-season data from MFL weekly roster snapshots.
 
 Scans weeks 1-17 for each season and records every (player, team, season)
-combination found. This captures players who were rostered mid-season but
-dropped before the end-of-season snapshot.
+combination found, with weeks_rostered count. This captures players who were
+rostered mid-season but dropped before the end-of-season snapshot.
 """
 
 from __future__ import annotations
 
 import asyncio
 import logging
+from collections import Counter
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -34,8 +35,9 @@ async def sync_player_seasons(
 ) -> SyncResult:
     """Scan all 17 weekly rosters and upsert PlayerSeason records.
 
-    For each week, fetches rosters and records every (player, team, season)
-    tuple. Duplicates are skipped via the unique constraint.
+    Two-pass approach:
+    1. Scan all 17 weeks and count appearances per (player, team).
+    2. Upsert PlayerSeason records with weeks_rostered.
     """
     result = SyncResult()
 
@@ -46,12 +48,8 @@ async def sync_player_seasons(
     player_rows = (await session.execute(select(Player))).scalars().all()
     player_lookup: dict[int, int] = {p.mfl_id: p.id for p in player_rows}
 
-    # Load existing player_seasons for this season to avoid redundant inserts
-    existing = await session.execute(
-        select(PlayerSeason.player_id, PlayerSeason.team_id)
-        .where(PlayerSeason.season == season)
-    )
-    seen: set[tuple[int, int]] = {(r[0], r[1]) for r in existing}
+    # Pass 1: count weeks per (player_id, team_id)
+    week_counts: Counter[tuple[int, int]] = Counter()
 
     for week in range(1, 18):
         try:
@@ -78,23 +76,39 @@ async def sync_player_seasons(
                 if player_id is None:
                     continue
 
-                key = (player_id, team_id)
-                if key in seen:
-                    continue
+                week_counts[(player_id, team_id)] += 1
 
-                session.add(PlayerSeason(
-                    player_id=player_id,
-                    team_id=team_id,
-                    season=season,
-                ))
-                seen.add(key)
-                result.created += 1
-
-        await session.flush()
         await asyncio.sleep(client._request_delay)  # noqa: SLF001
 
+    # Pass 2: upsert PlayerSeason records with weeks_rostered
+    existing_result = await session.execute(
+        select(PlayerSeason)
+        .where(PlayerSeason.season == season)
+    )
+    existing: dict[tuple[int, int], PlayerSeason] = {
+        (ps.player_id, ps.team_id): ps
+        for ps in existing_result.scalars().all()
+    }
+
+    for (player_id, team_id), weeks in week_counts.items():
+        key = (player_id, team_id)
+        if key in existing:
+            if existing[key].weeks_rostered != weeks:
+                existing[key].weeks_rostered = weeks
+                result.updated += 1
+        else:
+            session.add(PlayerSeason(
+                player_id=player_id,
+                team_id=team_id,
+                season=season,
+                weeks_rostered=weeks,
+            ))
+            result.created += 1
+
+    await session.flush()
+
     logger.info(
-        "Player-season sync for %d: %d new records, %d errors",
-        season, result.created, len(result.errors),
+        "Player-season sync for %d: %d created, %d updated, %d errors",
+        season, result.created, result.updated, len(result.errors),
     )
     return result
