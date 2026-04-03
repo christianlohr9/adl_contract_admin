@@ -857,26 +857,82 @@ async def calculate_ppe(
     percentile = await calculate_starter_percentile(
         session, player_id, player.position, season - 1
     )
+
+    # Bylaws: PPE applies to players who "finished in the 0th-75th percentile
+    # **above** his PR Starter Floor".  Players ranked below the starter floor
+    # (percentile returned as 0.0 by calculate_starter_percentile but actually
+    # outside the pool) or with no scores (None) do NOT qualify for any PPE.
+    #
+    # We must distinguish "rank == floor" (0th percentile, qualifies) from
+    # "rank > floor" (below floor, does not qualify).  Re-derive from rank.
+    from app.services.epv import calculate_pr_starter_floor
+
+    starter_floor = calculate_pr_starter_floor(player.position)
     if percentile is None:
-        percentile = 0.0
+        # No scores → below starter floor → no escalation
+        return PPEResult(
+            player_id=player_id,
+            player_name=player.name,
+            position=player.position,
+            current_salary=current_salary,
+            escalator_salary=None,
+            escalator_level=None,
+            eligible=True,
+            ineligibility_reason=None,
+        )
+
+    # percentile == 0.0 could mean rank == floor (qualifies) or rank > floor
+    # (does not qualify).  Re-check by computing rank explicitly.
+    if percentile == 0.0:
+        # Need to verify the player is actually AT the floor, not below it.
+        # calculate_starter_percentile returns 0.0 for both cases.
+        # Re-derive: get player rank among scorers at this position.
+        from app.models.player_score import PlayerScore as PS
+
+        rank_result = await session.execute(
+            select(PS.player_id, PS.points)
+            .join(Player, Player.id == PS.player_id)
+            .where(
+                Player.position == player.position,
+                PS.season == season - 1,
+                PS.week == "YTD",
+            )
+            .order_by(PS.points.desc())
+        )
+        all_scores = rank_result.all()
+        player_rank = 0
+        for i, row in enumerate(all_scores):
+            if row.player_id == player_id:
+                player_rank = i + 1
+                break
+        total_starters = min(starter_floor, len(all_scores))
+        if player_rank > total_starters:
+            # Below the starter floor — no PPE escalation
+            return PPEResult(
+                player_id=player_id,
+                player_name=player.name,
+                position=player.position,
+                current_salary=current_salary,
+                escalator_salary=None,
+                escalator_level=None,
+                eligible=True,
+                ineligibility_reason=None,
+            )
 
     prev_salary = Decimal(str(contract.salary))
 
-    # Determine escalator level and salary (P4-D fix: use tag prices, not bid functions)
-    # Bylaws: "SRFA tag price" / "ORFA tag price" — these are the raw
-    # MAX(NFL_price, multiplier * prev_salary) values without floor_100k rounding.
+    # Determine escalator level and salary.
+    # Bylaws: "SRFA tag price" / "ORFA tag price" — these are the raw NFL
+    # RFA tag prices for the season, NOT the tender MAX(NFL, mult * salary).
     nfl_prices = _get_nfl_rfa_prices(season)
-    constants = get_contract_constants()
     if percentile >= 0.75:
         # Level 3: SRFA tag price
         escalator_level = "level_3"
-        srfa_multiplier = Decimal(str(constants["rfa_tenders"]["srfa_salary_multiplier_vs_previous"]))
-        escalator_salary = round_to_10k(max(nfl_prices["SRFA"], srfa_multiplier * prev_salary))
+        escalator_salary = round_to_10k(nfl_prices["SRFA"])
     else:
         # Level 1-2: ORFA tag price
         escalator_level = "level_1_2"
-        orfa_multiplier = Decimal(str(constants["rfa_tenders"]["orfa_salary_multiplier_vs_previous"]))
-        escalator_salary = round_to_10k(max(nfl_prices["ORFA"], orfa_multiplier * prev_salary))
+        escalator_salary = round_to_10k(nfl_prices["ORFA"])
 
     # If current salary is higher, player keeps current salary
     if current_salary > escalator_salary:
