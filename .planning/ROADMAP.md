@@ -97,7 +97,7 @@ Plans:
 
 Plans:
 - [x] 20-01: Tender Eligibility Validation — completed 2026-04-02
-- [ ] 20-02: TBD
+- [x] 20-02: Tender Pricing Validation — completed 2026-04-03
 
 #### Phase 21: 5YO & PPE
 
@@ -155,7 +155,7 @@ Phases execute in numeric order. Next phase continues from 24.
 | 17. Regression Testing & Validation | v1.2 | 1/1 | Complete | 2026-03-13 |
 | 18. Franchise Tags | v1.3 | 2/2 | Complete | 2026-04-01 |
 | 19. Extensions | v1.3 | 2/2 | Complete | 2026-04-02 |
-| 20. Tenders | v1.3 | 1/? | In progress | - |
+| 20. Tenders | v1.3 | 2/2 | Complete | 2026-04-03 |
 | 21. 5YO & PPE | v1.3 | 0/? | Not started | - |
 | 22. Buyout/Restructure | v1.3 | 0/? | Not started | - |
 | 23. Cross-Tool Validation | v1.3 | 0/? | Not started | - |
