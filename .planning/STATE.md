@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 Phase: 20 of 23 (Tenders)
 Plan: 20-01 complete (ERFA/RFA eligibility validation)
 Status: Ready for 20-02 (tender bid price validation)
-Last activity: 2026-04-02 — 20-01 complete (ERFA 72%, RFA 58% match against TagElig26)
+Last activity: 2026-04-02 — 20-01 complete (ERFA 98.6%, RFA 99.0% match against TagElig26)
 
 Progress: █████░░░░░ 42% (v1.3)
 
@@ -40,12 +40,14 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ### Deferred Issues
 
-- ISS-018-001: Incomplete roster data for teams 129-144 (Conference 1 partial import)
+- ISS-018-001: RESOLVED — weekly roster scans from 2016 now provide complete data; contracts table used as roster source; salary column widened for R/F auction values
 
 ### Key Discoveries
 
 - ADL Cap Percentage: Tag salaries multiply positional averages by (current_cap / prev_cap). Discovered from spreadsheet formula, not in bylaws. May apply to 5YO/PPE too.
 - EPV Performance Salary: Uses prior season (End25 Sal) salary rankings × 1.1 growth rate, NOT current season contract table directly. Published salary rankings are a projected snapshot.
+- Accrued seasons: conference-scoped, 6-week minimum per season (NFL rule), summed across all conference teams. Weekly roster scans (MFL rosters?W=1..17) are the golden source — end-of-season snapshots miss mid-season drops.
+- Spreadsheet eligibility flags are pre-action snapshots. App DB reflects current state (post-action), so already-tendered/extended players correctly show as ineligible.
 
 ### Blockers/Concerns
 

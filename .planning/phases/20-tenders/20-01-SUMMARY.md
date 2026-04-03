@@ -11,27 +11,31 @@ requires:
 provides:
   - ERFA eligibility with team_id scoping, original salary lookup, conference-scoped accrued seasons
   - RFA eligibility with team_id scoping, conference-scoped accrued seasons, corrected RFA-re-tender rule
-  - 96.7% ERFA match rate, 95.4% RFA match rate against TagElig26
+  - Weekly roster scan system (player_seasons table) for accurate accrued seasons from 2016+
+  - 98.6% ERFA match rate, 99.0% RFA match rate against TagElig26 (remaining ~1% are already-actioned players)
 affects: [20-tenders, 23-cross-tool-validation]
 
 # Tech tracking
 tech-stack:
-  added: []
-  patterns: [accrued seasons gate for ERFA/RFA eligibility]
+  added: [player_seasons table, weekly roster scan sync]
+  patterns: [conference-scoped accrued seasons with 6-week threshold, weekly MFL roster scans]
 
 key-files:
-  created: []
-  modified: [src/app/services/tenders.py, src/app/services/eligibility.py]
+  created: [src/app/models/player_season.py, src/app/services/player_season_sync.py]
+  modified: [src/app/services/tenders.py, src/app/services/eligibility.py, src/app/services/roster_eligibility.py, src/app/api/tools.py, src/app/api/teams.py, src/app/mfl/client.py, src/app/models/contract.py]
 
 key-decisions:
   - "Conference-scoped accrued seasons: team_ids 129-144 = NFC, 145-160 = AFC"
   - "ERFA requires < 3 accrued seasons, RFA requires exactly 3 (conference-scoped)"
-  - "Scoring history (player_scores) as fallback for players with no conference contracts"
+  - "6-week minimum per conference per season for accrued (NFL rule), summed across all conference teams"
+  - "Weekly roster scans (MFL rosters?W=1..17) from 2016 as golden source for accrued seasons"
+  - "Contracts table as roster source of truth (roster_entries has dual-conference unique constraint bug)"
   - "Removed universal RFA designation block — prior SRFA/RRFA contracts do not block RFA re-eligibility"
   - "Original signing salary lookup for ERFA vet-min comparison — carried-forward salary is inflated"
 
 patterns-established:
   - "team_id scoping now used by franchise tags, extensions, ERFA, and RFA"
+  - "player_seasons table from weekly roster scans — golden source for accrued seasons"
 
 issues-created: []
 
@@ -42,7 +46,7 @@ completed: 2026-04-02
 
 # Phase 20-01: Tender Eligibility Validation Summary
 
-**Conference-scoped accrued seasons, team_id scoping, original salary lookup, and historical data re-sync bring ERFA to 96.7% and RFA to 95.4% match against TagElig26**
+**Weekly roster scans from 2016, conference-scoped 6-week accrued threshold, and team_id scoping bring ERFA to 98.6% and RFA to 99.0% match against TagElig26**
 
 ## Performance
 
