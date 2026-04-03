@@ -8,6 +8,7 @@ All salary math uses ``Decimal`` — floats from DB are converted at the boundar
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import TYPE_CHECKING
@@ -442,11 +443,9 @@ async def calculate_starter_percentile(
     if rank > total_starters:
         return 0.0
 
-    # Percentile: (total_starters - rank) / (total_starters - 1) if > 1 starter
-    if total_starters <= 1:
-        return 1.0
-
-    percentile = (total_starters - rank) / (total_starters - 1)
+    # Percentile: (total_starters - rank) / total_starters
+    # This yields 0.0 for the last starter and approaches 1.0 for rank 1.
+    percentile = (total_starters - rank) / total_starters
     return percentile
 
 
@@ -466,8 +465,12 @@ async def calculate_modified_tt_salary(
     """Calculate a modified Transition Tag salary using a custom salary rank range.
 
     Same formula as TT but averaging salaries from rank ``start_rank`` to
-    ``end_rank`` instead of top 10.
+    ``end_rank`` instead of top 10.  Applies the ADL Cap Percentage
+    (``current_cap / previous_cap``) to the prior-season salary average,
+    consistent with ``calculate_tag_salary``.
     """
+    from app.services.rules import get_adl_salary_cap
+
     # Get enough salaries to cover the range
     top_salaries = await _get_top_n_positional_salaries(
         session, position, season, end_rank
@@ -480,6 +483,12 @@ async def calculate_modified_tt_salary(
         selected = top_salaries
 
     positional_avg = sum(selected) / len(selected) if selected else Decimal("0")
+
+    # Apply ADL Cap Percentage: current_cap / previous_cap
+    current_cap = get_adl_salary_cap(season)
+    previous_cap = get_adl_salary_cap(season - 1)
+    cap_pct = current_cap / previous_cap
+    positional_avg = cap_pct * positional_avg
 
     salary_floor = Decimal("1.20") * prev_salary
     raw = max(positional_avg, salary_floor)
@@ -494,16 +503,45 @@ async def calculate_modified_tt_salary(
 def _determine_5yo_tier(percentile: float) -> str:
     """Determine the 5YO salary tier from a percentile value.
 
-    Percentile ties are rounded down per bylaws (players get highest eligible tier).
+    Tier boundaries (percentile = ``(floor - rank) / floor``):
+
+    * **NEFT** (top_87_5): percentile *strictly greater than* 87.5 %
+    * **TT** (75_to_87_5): percentile *strictly greater than* 75 % and ≤ 87.5 %
+    * **5YO+** (25_to_75): percentile ≥ 25 % and ≤ 75 %
+    * **5YO−** (bottom_25): percentile < 25 %
+
+    The "> 87.5 %" and "> 75 %" boundaries are *exclusive* — a player sitting
+    exactly at the threshold falls into the lower tier (validated against the
+    authoritative PPE5YO spreadsheet).
     """
-    if percentile >= 0.875:
+    if percentile > 0.875:
         return "top_87_5"
-    elif percentile >= 0.75:
+    elif percentile > 0.75:
         return "75_to_87_5"
     elif percentile >= 0.25:
         return "25_to_75"
     else:
         return "bottom_25"
+
+
+# ---------------------------------------------------------------------------
+# ADL draft round extraction
+# ---------------------------------------------------------------------------
+
+_ADL_DRAFT_RE = re.compile(r"^\d{4}\s+(\d+)\.\d+")
+
+
+def _extract_adl_draft_round(designation: str | None) -> int | None:
+    """Extract the ADL draft round from a contract designation.
+
+    Designation format for drafted rookies is ``"YYYY R.PP"`` (e.g.
+    ``"2023 1.04"``).  Returns the round number, or ``None`` if the
+    designation does not match the pattern.
+    """
+    if not designation:
+        return None
+    m = _ADL_DRAFT_RE.match(designation)
+    return int(m.group(1)) if m else None
 
 
 # ---------------------------------------------------------------------------
@@ -538,25 +576,13 @@ async def calculate_5yo(
             ineligibility_reason="Player not found",
         )
 
-    # Eligibility: first-round drafted rookies only
+    # Eligibility: must have an active rookie contract in year 4
     constants = get_contract_constants()
     eligible_rounds = constants["fifth_year_option"]["eligible_rounds"]
-    if player.draft_round not in eligible_rounds:
-        return FifthYearOptionResult(
-            player_id=player_id,
-            player_name=player.name,
-            position=player.position,
-            percentile_tier="",
-            salary=Decimal("0"),
-            guarantee_level="FG",
-            eligible=False,
-            ineligibility_reason=(
-                f"Player was drafted in round {player.draft_round}, "
-                f"only rounds {eligible_rounds} are eligible"
-            ),
-        )
 
-    # Eligibility: must be in 4th season of rookie contract
+    # Fetch ALL active contracts — in a two-conference league a player may
+    # have multiple contracts.  We need to find the one drafted in an
+    # eligible ADL round.
     contract_result = await session.execute(
         select(Contract)
         .where(
@@ -565,10 +591,9 @@ async def calculate_5yo(
             Contract.status == "active",
         )
         .order_by(Contract.salary.desc())
-        .limit(1)
     )
-    contract = contract_result.scalar_one_or_none()
-    if contract is None:
+    all_contracts = contract_result.scalars().all()
+    if not all_contracts:
         return FifthYearOptionResult(
             player_id=player_id,
             player_name=player.name,
@@ -578,6 +603,51 @@ async def calculate_5yo(
             guarantee_level="FG",
             eligible=False,
             ineligibility_reason="No active contract found",
+        )
+
+    # Find the contract with an eligible ADL draft round designation.
+    # In a two-conference league a player might have round-1 in one
+    # conference and round-2 in another.
+    contract = None
+    adl_draft_round = None
+    for c in all_contracts:
+        r = _extract_adl_draft_round(c.designation)
+        if r in eligible_rounds:
+            contract = c
+            adl_draft_round = r
+            break
+
+    if contract is None:
+        # No contract with an eligible ADL round — check if any have a round at all
+        best = all_contracts[0]
+        adl_draft_round = _extract_adl_draft_round(best.designation)
+        return FifthYearOptionResult(
+            player_id=player_id,
+            player_name=player.name,
+            position=player.position,
+            percentile_tier="",
+            salary=Decimal("0"),
+            guarantee_level="FG",
+            eligible=False,
+            ineligibility_reason=(
+                f"Player was drafted in ADL round {adl_draft_round}, "
+                f"only rounds {eligible_rounds} are eligible"
+            ),
+        )
+
+    if adl_draft_round not in eligible_rounds:
+        return FifthYearOptionResult(
+            player_id=player_id,
+            player_name=player.name,
+            position=player.position,
+            percentile_tier="",
+            salary=Decimal("0"),
+            guarantee_level="FG",
+            eligible=False,
+            ineligibility_reason=(
+                f"Player was drafted in ADL round {adl_draft_round}, "
+                f"only rounds {eligible_rounds} are eligible"
+            ),
         )
 
     # Check if this is the 4th year of the contract
@@ -693,23 +763,6 @@ async def calculate_ppe(
     constants = get_contract_constants()
     ppe_config = constants["proven_performance_escalator"]
 
-    # Eligibility: rounds 2-5 (from contracts.json eligible_rounds)
-    eligible_rounds = ppe_config["eligible_rounds"]
-    if player.draft_round not in eligible_rounds:
-        return PPEResult(
-            player_id=player_id,
-            player_name=player.name,
-            position=player.position,
-            current_salary=Decimal("0"),
-            escalator_salary=None,
-            escalator_level=None,
-            eligible=False,
-            ineligibility_reason=(
-                f"Player was drafted in round {player.draft_round}, "
-                f"only rounds {eligible_rounds} are eligible"
-            ),
-        )
-
     # Eligibility: position must not be PK or PN
     ineligible_positions = ppe_config["ineligible_positions"]
     if player.position in ineligible_positions:
@@ -726,7 +779,9 @@ async def calculate_ppe(
             ),
         )
 
-    # Eligibility: must be in year 4 of rookie contract
+    # Eligibility: must be in year 4 of rookie contract.
+    # Fetch ALL active contracts — in a two-conference league a player may
+    # have multiple contracts with different ADL draft rounds.
     contract_result = await session.execute(
         select(Contract)
         .where(
@@ -735,10 +790,9 @@ async def calculate_ppe(
             Contract.status == "active",
         )
         .order_by(Contract.salary.desc())
-        .limit(1)
     )
-    contract = contract_result.scalar_one_or_none()
-    if contract is None:
+    all_contracts = contract_result.scalars().all()
+    if not all_contracts:
         return PPEResult(
             player_id=player_id,
             player_name=player.name,
@@ -748,6 +802,37 @@ async def calculate_ppe(
             escalator_level=None,
             eligible=False,
             ineligibility_reason="No active contract found",
+        )
+
+    # Find the contract with an eligible ADL draft round designation.
+    eligible_rounds = ppe_config["eligible_rounds"]
+    contract = None
+    adl_draft_round = None
+    for c in all_contracts:
+        r = _extract_adl_draft_round(c.designation)
+        if r in eligible_rounds:
+            contract = c
+            adl_draft_round = r
+            break
+
+    if contract is None:
+        best = all_contracts[0]
+        adl_draft_round = _extract_adl_draft_round(best.designation)
+        contract = best
+
+    if adl_draft_round not in eligible_rounds:
+        return PPEResult(
+            player_id=player_id,
+            player_name=player.name,
+            position=player.position,
+            current_salary=Decimal("0"),
+            escalator_salary=None,
+            escalator_level=None,
+            eligible=False,
+            ineligibility_reason=(
+                f"Player was drafted in ADL round {adl_draft_round}, "
+                f"only rounds {eligible_rounds} are eligible"
+            ),
         )
 
     current_salary = Decimal(str(contract.salary))
