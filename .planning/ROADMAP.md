@@ -107,7 +107,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 21-01: TBD
+- [x] 21-01: 5YO Validation — completed 2026-04-03
+- [ ] 21-02: PPE Validation
 
 #### Phase 22: Buyout/Restructure
 
@@ -156,6 +157,6 @@ Phases execute in numeric order. Next phase continues from 24.
 | 18. Franchise Tags | v1.3 | 2/2 | Complete | 2026-04-01 |
 | 19. Extensions | v1.3 | 2/2 | Complete | 2026-04-02 |
 | 20. Tenders | v1.3 | 2/2 | Complete | 2026-04-03 |
-| 21. 5YO & PPE | v1.3 | 0/? | Not started | - |
+| 21. 5YO & PPE | v1.3 | 1/2 | In progress | - |
 | 22. Buyout/Restructure | v1.3 | 0/? | Not started | - |
 | 23. Cross-Tool Validation | v1.3 | 0/? | Not started | - |
