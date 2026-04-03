@@ -183,19 +183,18 @@ async def _get_conference_accrued_seasons(
     """Count distinct prior seasons the player accrued in the same conference.
 
     Uses the player_seasons table (built from weekly MFL roster scans) as the
-    golden source.  A season only counts as "accrued" if the player was on a
-    conference roster for at least 6 weeks (matching the NFL's accrued season
-    threshold).
+    golden source.  A season only counts as "accrued" if the player was on
+    conference rosters for at least 6 total weeks that season.
+
+    For players drafted before 2020, adds pre-data accrued seasons based on
+    the earliest season they appear in the conference (proving they were in
+    the league before our data starts).
 
     Falls back to contract history if player_seasons has no data.
     """
     conf_teams = _same_conference_team_ids(team_id)
 
     # Primary: player_seasons with 6-week minimum per conference per season.
-    # Sum weeks across all teams in the conference for each season, then
-    # count seasons where the total meets the threshold.
-    from sqlalchemy import literal_column  # noqa: PLC0415
-
     conf_season_weeks = (
         select(
             PlayerSeason.season,
@@ -214,6 +213,7 @@ async def _get_conference_accrued_seasons(
         select(func.count()).select_from(conf_season_weeks)
     )
     ps_count = ps_result.scalar() or 0
+
     if ps_count > 0:
         return ps_count
 
