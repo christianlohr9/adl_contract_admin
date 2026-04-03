@@ -95,9 +95,10 @@ async def _extract_tag_headline(
 
 async def _extract_erfa_headline(
     session: AsyncSession, player_id: int, season: int,
+    team_id: int | None = None,
 ) -> tuple[Decimal | None, str]:
     """Extract headline value from ERFA tender calculation."""
-    result = await calculate_tenders(session, player_id, season)
+    result = await calculate_tenders(session, player_id, season, team_id)
     if result.erfa_option:
         return result.erfa_option.salary, "ERFA Tender"
     return None, "ERFA Tender"
@@ -105,9 +106,10 @@ async def _extract_erfa_headline(
 
 async def _extract_rfa_headline(
     session: AsyncSession, player_id: int, season: int,
+    team_id: int | None = None,
 ) -> tuple[Decimal | None, str]:
     """Extract headline value from RFA tender calculation."""
-    result = await calculate_tenders(session, player_id, season)
+    result = await calculate_tenders(session, player_id, season, team_id)
     if result.rfa_options:
         return result.rfa_options[0].salary, "RFA Tender"
     return None, "RFA Tender"
@@ -227,8 +229,8 @@ async def get_roster_eligibility(
             headline_value: Decimal | None = None
             headline_label: str = ""
             try:
-                # Pass team_id to extractors that support it (franchise tags)
-                if action == "franchise_tag":
+                # Pass team_id to extractors that need conference scoping
+                if action in ("franchise_tag", "erfa_tender", "rfa_tender"):
                     headline_value, headline_label = await extractor(
                         session, player.id, season, team_id,
                     )
