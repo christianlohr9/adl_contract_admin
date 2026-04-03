@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-13)
 
 ## Current Position
 
-Phase: 21 of 23 (5YO & PPE) — Plan 01 complete
-Plan: 21-01 complete (5YO validation)
-Status: Ready for 21-02 (PPE) or Phase 22 (B/R)
-Last activity: 2026-04-03 — 21-01 complete (5 code fixes, 22/32 picks match, remaining are scoring data discrepancies)
+Phase: 21 of 23 (5YO & PPE) — Complete
+Plan: 21-02 complete (PPE validation)
+Status: Ready for Phase 22 (Buyout/Restructure)
+Last activity: 2026-04-04 — 21-02 complete (2 code fixes, 100% logic match, 100% price match)
 
-Progress: ██████░░░░ 50% (v1.3)
+Progress: ███████░░░ 67% (v1.3)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 51
-- Average duration: ~10 min
-- Total execution time: ~505 min
+- Total plans completed: 52
+- Average duration: ~11 min
+- Total execution time: ~550 min
 
 **By Milestone:**
 
@@ -30,7 +30,7 @@ Progress: ██████░░░░ 50% (v1.3)
 | v1.0 MVP | 1-8 | 26 | 142 min | 5 min |
 | v1.1 League Calendar | 9-13 | 9 | 81 min | 9 min |
 | v1.2 Data Integrity | 14-17 | 8 | ~53 min | ~7 min |
-| v1.3 Data Integrity 2 | 18-23 | 8 | ~205 min | ~26 min |
+| v1.3 Data Integrity 2 | 18-23 | 9 | ~250 min | ~28 min |
 
 ## Accumulated Context
 
@@ -44,7 +44,9 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ### Key Discoveries
 
-- ADL Cap Percentage: Tag salaries multiply positional averages by (current_cap / prev_cap). Discovered from spreadsheet formula, not in bylaws. May apply to 5YO/PPE too.
+- ADL Cap Percentage: Tag salaries multiply positional averages by (current_cap / prev_cap). Discovered from spreadsheet formula, not in bylaws. Confirmed applies to 5YO modified TT (21-01) but NOT PPE (uses raw NFL tag prices).
+- PPE price = raw NFL RFA tag price (SRFA or ORFA), NOT the tender MAX formula. Bylaws say "the SRFA/ORFA tag price."
+- PPE below-floor exclusion: players ranked below PR Starter Floor get NO escalation. Bylaws say "above his PR Starter Floor."
 - EPV Performance Salary: Uses prior season (End25 Sal) salary rankings × 1.1 growth rate, NOT current season contract table directly. Published salary rankings are a projected snapshot.
 - Accrued seasons: conference-scoped, 6-week minimum per season (NFL rule), summed across all conference teams. Weekly roster scans (MFL rosters?W=1..17) are the golden source — end-of-season snapshots miss mid-season drops.
 - Spreadsheet eligibility flags are pre-action snapshots. App DB reflects current state (post-action), so already-tendered/extended players correctly show as ineligible.
@@ -62,6 +64,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-03
-Stopped at: Phase 21 plan 01 complete — ready for 21-02 (PPE) or Phase 22
+Last session: 2026-04-04
+Stopped at: Phase 21 complete — ready for Phase 22 (Buyout/Restructure)
 Resume file: None
