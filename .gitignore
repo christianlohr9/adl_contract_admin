@@ -95,3 +95,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Project artifacts
+*.db
+*.xlsx
