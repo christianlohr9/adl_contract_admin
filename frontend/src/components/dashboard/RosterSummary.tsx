@@ -1,10 +1,4 @@
 import { Link } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { RosterEntrySchema } from "@/api/types";
 
 interface RosterSummaryProps {
@@ -18,39 +12,32 @@ export function RosterSummary({ roster }: RosterSummaryProps) {
     positionCounts[pos] = (positionCounts[pos] || 0) + 1;
   }
 
-  // Sort positions alphabetically
   const sortedPositions = Object.entries(positionCounts).sort(([a], [b]) =>
     a.localeCompare(b),
   );
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center justify-between">
-          <span>Roster Summary</span>
-          <Link
-            to="/roster"
-            className="text-sm font-normal text-muted-foreground hover:underline"
-          >
-            View roster
-          </Link>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{roster.length}</div>
-        <p className="text-sm text-muted-foreground mb-3">Total Players</p>
-        <div className="space-y-1">
-          {sortedPositions.map(([position, count]) => (
-            <div
-              key={position}
-              className="flex justify-between text-sm text-muted-foreground"
-            >
-              <span>{position}</span>
-              <span>{count}</span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="rounded-xl border-l-4 border-l-primary bg-card p-6">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">
+          Roster
+        </span>
+        <Link
+          to="/roster"
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          View roster
+        </Link>
+      </div>
+      <div className="text-4xl font-bold tabular-nums">{roster.length}</div>
+      <span className="text-xs text-muted-foreground">Total Players</span>
+      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
+        {sortedPositions.map(([position, count]) => (
+          <span key={position} className="text-xs text-muted-foreground">
+            {position} {count}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
