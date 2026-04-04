@@ -35,13 +35,28 @@ services:
       - .env
     ports:
       - "8000:8000"
+    # For local dev with hot-reload, add --reload to the uvicorn command.
     command: >
-      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     volumes:
       - ./src:/app/src
       - ./rules:/app/rules
       - ./migrations:/app/migrations
       - ./alembic.ini:/app/alembic.ini
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      # Should match the URL users use to reach the backend in their browser.
+      VITE_API_URL: http://localhost:8000
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+    depends_on:
+      - web
 
 volumes:
   pgdata:
