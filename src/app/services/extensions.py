@@ -27,13 +27,12 @@ from app.services.rules import (
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Result dataclasses
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class ExtensionOption:
     """A single extension option (e.g. 'extend 3 years')."""
 
@@ -46,6 +45,8 @@ class ExtensionOption:
 
 
 @dataclass
+
+
 class ExtensionResult:
     """Full result from calculate_extensions — all valid options for a player."""
 
@@ -59,10 +60,7 @@ class ExtensionResult:
     eligible: bool = True
     ineligibility_reason: str | None = None
 
-
-# ---------------------------------------------------------------------------
 # EYS calculation
-# ---------------------------------------------------------------------------
 
 
 def calculate_eys(
@@ -93,10 +91,7 @@ def calculate_eys(
     multiplier = Decimal("1.15") - Decimal("0.05") * effective_years
     return round_to_10k(max_epv * multiplier)
 
-
-# ---------------------------------------------------------------------------
 # Salary smoothing
-# ---------------------------------------------------------------------------
 
 
 def calculate_smoothed_salary(
@@ -124,10 +119,7 @@ def calculate_smoothed_salary(
 
     return round_to_10k((past_total + future_total) / denominator)
 
-
-# ---------------------------------------------------------------------------
 # Eligibility checking
-# ---------------------------------------------------------------------------
 
 
 async def check_extension_eligibility(
@@ -249,10 +241,7 @@ async def check_extension_eligibility(
 
     return True, None
 
-
-# ---------------------------------------------------------------------------
 # Extension options calculator
-# ---------------------------------------------------------------------------
 
 
 async def calculate_extensions(

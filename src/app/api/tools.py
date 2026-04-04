@@ -40,10 +40,7 @@ router = APIRouter(prefix="/api/tools", tags=["contract-tools"])
 # Default season for all endpoints
 _DEFAULT_SEASON = 2026
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 
 async def _verify_player(session: SessionDep, player_id: int) -> Player:
@@ -54,13 +51,12 @@ async def _verify_player(session: SessionDep, player_id: int) -> Player:
         raise HTTPException(status_code=404, detail=f"Player {player_id} not found")
     return player
 
-
-# ---------------------------------------------------------------------------
 # Bundled endpoint — "What can I do with this player?"
-# ---------------------------------------------------------------------------
 
 
 @router.get("/{player_id}/all", response_model=PlayerToolsSchema)
+
+
 async def get_all_tools(
     player_id: int,
     session: SessionDep,
@@ -151,13 +147,12 @@ async def get_all_tools(
         window_statuses=window_statuses,
     )
 
-
-# ---------------------------------------------------------------------------
 # Eligibility endpoint — check all action types at once
-# ---------------------------------------------------------------------------
 
 
 @router.get("/{player_id}/eligibility", response_model=list[EligibilitySchema])
+
+
 async def get_eligibility(
     player_id: int,
     session: SessionDep,
@@ -181,13 +176,12 @@ async def get_eligibility(
 
     return results
 
-
-# ---------------------------------------------------------------------------
 # Individual tool endpoints
-# ---------------------------------------------------------------------------
 
 
 @router.get("/{player_id}/extensions", response_model=ExtensionResultSchema)
+
+
 async def get_extensions(
     player_id: int,
     session: SessionDep,
@@ -200,6 +194,8 @@ async def get_extensions(
 
 
 @router.get("/{player_id}/tags", response_model=TagResultSchema)
+
+
 async def get_tags(
     player_id: int,
     session: SessionDep,
@@ -213,6 +209,8 @@ async def get_tags(
 
 
 @router.get("/{player_id}/tenders", response_model=TenderResultSchema)
+
+
 async def get_tenders(
     player_id: int,
     session: SessionDep,
@@ -226,6 +224,8 @@ async def get_tenders(
 
 
 @router.get("/{player_id}/buyout", response_model=BuyoutResultSchema)
+
+
 async def get_buyout(
     player_id: int,
     session: SessionDep,
@@ -238,6 +238,8 @@ async def get_buyout(
 
 
 @router.get("/{player_id}/5yo", response_model=FifthYearOptionSchema)
+
+
 async def get_5yo(
     player_id: int,
     session: SessionDep,
@@ -250,6 +252,8 @@ async def get_5yo(
 
 
 @router.get("/{player_id}/ppe", response_model=PPESchema)
+
+
 async def get_ppe(
     player_id: int,
     session: SessionDep,

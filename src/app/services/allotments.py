@@ -16,10 +16,7 @@ from app.models.allotment import Allotment
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Allotment limits (from contract_tools.yaml / contracts.json)
-# ---------------------------------------------------------------------------
 
 # Per-team per-season limits for each action type.
 # Extensions are unlimited and not tracked.
@@ -30,10 +27,7 @@ _ALLOTMENT_LIMITS: dict[str, int] = {
     "july_1_tender": 2,
 }
 
-
-# ---------------------------------------------------------------------------
 # Public API
-# ---------------------------------------------------------------------------
 
 
 async def get_remaining_allotments(

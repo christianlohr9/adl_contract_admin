@@ -37,13 +37,12 @@ from app.services.tenders import (
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Buyout/Restructure result dataclasses
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class BuyoutOption:
     """A single GM option after B/R auction."""
 
@@ -54,6 +53,8 @@ class BuyoutOption:
 
 
 @dataclass
+
+
 class BuyoutSalaryTier:
     """Salary at a given contract year count for B/R."""
 
@@ -62,6 +63,8 @@ class BuyoutSalaryTier:
 
 
 @dataclass
+
+
 class BuyoutResult:
     """Full result from calculate_buyout."""
 
@@ -76,10 +79,7 @@ class BuyoutResult:
     eligible: bool
     ineligibility_reason: str | None
 
-
-# ---------------------------------------------------------------------------
 # B/R salary calculation
-# ---------------------------------------------------------------------------
 
 
 def calculate_br_salary(
@@ -100,10 +100,7 @@ def calculate_br_salary(
     calculated = high_bid * discount
     return round_to_10k(max(calculated, sd_minimum))
 
-
-# ---------------------------------------------------------------------------
 # Opening bid
-# ---------------------------------------------------------------------------
 
 
 def calculate_br_opening_bid(season: int) -> Decimal:
@@ -111,10 +108,7 @@ def calculate_br_opening_bid(season: int) -> Decimal:
     sd_minimum = get_sd_minimum(season)
     return ceil_100k(sd_minimum)
 
-
-# ---------------------------------------------------------------------------
 # Salary tier table
-# ---------------------------------------------------------------------------
 
 
 def calculate_br_salary_tiers(
@@ -133,10 +127,7 @@ def calculate_br_salary_tiers(
         tiers.append(BuyoutSalaryTier(contract_years=years, salary=salary))
     return tiers
 
-
-# ---------------------------------------------------------------------------
 # GM options builder
-# ---------------------------------------------------------------------------
 
 
 def _build_gm_options(
@@ -200,10 +191,7 @@ def _build_gm_options(
 
     return options
 
-
-# ---------------------------------------------------------------------------
 # Eligibility
-# ---------------------------------------------------------------------------
 
 
 async def check_buyout_eligibility(
@@ -259,10 +247,7 @@ async def check_buyout_eligibility(
 
     return True, None
 
-
-# ---------------------------------------------------------------------------
 # Main buyout orchestrator
-# ---------------------------------------------------------------------------
 
 
 async def calculate_buyout(
@@ -349,13 +334,12 @@ async def calculate_buyout(
         ineligibility_reason=None,
     )
 
-
-# ===========================================================================
 # 5th Year Option (5YO)
-# ===========================================================================
 
 
 @dataclass
+
+
 class FifthYearOptionResult:
     """Full result from calculate_5yo."""
 
@@ -368,10 +352,7 @@ class FifthYearOptionResult:
     eligible: bool
     ineligibility_reason: str | None
 
-
-# ---------------------------------------------------------------------------
 # Starter percentile calculation
-# ---------------------------------------------------------------------------
 
 
 async def _calculate_pr_starter_floor(
@@ -448,10 +429,7 @@ async def calculate_starter_percentile(
     percentile = (total_starters - rank) / total_starters
     return percentile
 
-
-# ---------------------------------------------------------------------------
 # Modified TT salary (for 5YO lower tiers)
-# ---------------------------------------------------------------------------
 
 
 async def calculate_modified_tt_salary(
@@ -494,10 +472,7 @@ async def calculate_modified_tt_salary(
     raw = max(positional_avg, salary_floor)
     return round_to_10k(raw)
 
-
-# ---------------------------------------------------------------------------
 # 5YO percentile tier determination
-# ---------------------------------------------------------------------------
 
 
 def _determine_5yo_tier(percentile: float) -> str:
@@ -523,10 +498,7 @@ def _determine_5yo_tier(percentile: float) -> str:
     else:
         return "bottom_25"
 
-
-# ---------------------------------------------------------------------------
 # ADL draft round extraction
-# ---------------------------------------------------------------------------
 
 _ADL_DRAFT_RE = re.compile(r"^\d{4}\s+(\d+)\.\d+")
 
@@ -543,10 +515,7 @@ def _extract_adl_draft_round(designation: str | None) -> int | None:
     m = _ADL_DRAFT_RE.match(designation)
     return int(m.group(1)) if m else None
 
-
-# ---------------------------------------------------------------------------
 # 5YO main orchestrator
-# ---------------------------------------------------------------------------
 
 
 async def calculate_5yo(
@@ -713,13 +682,12 @@ async def calculate_5yo(
         ineligibility_reason=None,
     )
 
-
-# ===========================================================================
 # Proven Performance Escalator (PPE)
-# ===========================================================================
 
 
 @dataclass
+
+
 class PPEResult:
     """Full result from calculate_ppe."""
 

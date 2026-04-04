@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+
+
 class BackfillStatus:
     """In-memory tracking of historical backfill completeness."""
 
@@ -31,7 +33,6 @@ class BackfillStatus:
     started_at: datetime | None = None
     completed_at: datetime | None = None
     error: str | None = None
-
 
 _backfill_status = BackfillStatus()
 

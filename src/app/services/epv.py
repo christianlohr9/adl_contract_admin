@@ -20,13 +20,12 @@ from app.services.rules import get_contract_constants, get_salary_growth_rate, r
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Result dataclass
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class EPVResult:
     """Container for an EPV calculation result."""
 
@@ -40,10 +39,7 @@ class EPVResult:
     position: str
     seasons_used: list[int] = field(default_factory=list)
 
-
-# ---------------------------------------------------------------------------
 # Position rank helpers
-# ---------------------------------------------------------------------------
 
 
 async def get_position_rank(
@@ -179,10 +175,7 @@ async def is_robust_season(
     count = result.scalar_one()
     return count >= min_games
 
-
-# ---------------------------------------------------------------------------
 # Performance salary
-# ---------------------------------------------------------------------------
 
 
 def _sal_at_rank(salaries: list[Decimal], n: int) -> Decimal:
@@ -253,10 +246,7 @@ async def calculate_performance_salary(
     # averages without intermediate rounding.
     return growth * raw
 
-
-# ---------------------------------------------------------------------------
 # EPV orchestrator
-# ---------------------------------------------------------------------------
 
 
 async def calculate_epv(

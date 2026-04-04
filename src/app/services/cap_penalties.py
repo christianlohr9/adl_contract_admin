@@ -17,12 +17,12 @@ from app.services.rules import (
     round_to_10k,
 )
 
-# ---------------------------------------------------------------------------
 # Result dataclass
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class PenaltyResult:
     """Result of a cap penalty calculation."""
 
@@ -34,10 +34,7 @@ class PenaltyResult:
     total_penalty: Decimal
     notes: str
 
-
-# ---------------------------------------------------------------------------
 # Per-type penalty calculators (pure functions)
-# ---------------------------------------------------------------------------
 
 _ZERO = Decimal("0")
 
@@ -125,10 +122,7 @@ def calculate_fg_penalty(salary: Decimal, years_remaining: int) -> PenaltyResult
         notes=notes,
     )
 
-
-# ---------------------------------------------------------------------------
 # Dispatcher
-# ---------------------------------------------------------------------------
 
 
 def calculate_penalty(
@@ -198,10 +192,7 @@ def calculate_penalty(
 
     return result
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 
 def _get_penalty_rates() -> dict:

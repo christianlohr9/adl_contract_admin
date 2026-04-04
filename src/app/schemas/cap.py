@@ -8,10 +8,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
 
-
-# ---------------------------------------------------------------------------
 # Penalty result
-# ---------------------------------------------------------------------------
 
 
 class PenaltyResultSchema(BaseModel):
@@ -27,10 +24,7 @@ class PenaltyResultSchema(BaseModel):
     total_penalty: Decimal
     notes: str
 
-
-# ---------------------------------------------------------------------------
 # Player cap detail
-# ---------------------------------------------------------------------------
 
 
 class PlayerCapDetailSchema(BaseModel):
@@ -47,10 +41,7 @@ class PlayerCapDetailSchema(BaseModel):
     designation: str
     penalty_if_dropped: PenaltyResultSchema
 
-
-# ---------------------------------------------------------------------------
 # Team cap summary
-# ---------------------------------------------------------------------------
 
 
 class TeamCapSummarySchema(BaseModel):
@@ -68,10 +59,7 @@ class TeamCapSummarySchema(BaseModel):
     player_details: list[PlayerCapDetailSchema]
     roster_count: int
 
-
-# ---------------------------------------------------------------------------
 # Allotments
-# ---------------------------------------------------------------------------
 
 
 class AllotmentsSchema(BaseModel):

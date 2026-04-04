@@ -26,13 +26,12 @@ from app.services.rules import (
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Result dataclasses
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class TenderOption:
     """A single tender option (ERFA or one of four RFA tiers)."""
 
@@ -43,6 +42,8 @@ class TenderOption:
 
 
 @dataclass
+
+
 class TenderResult:
     """Full result from calculate_tenders — all applicable tender options."""
 
@@ -56,10 +57,7 @@ class TenderResult:
     rfa_eligible: bool = False
     ineligibility_reasons: list[str] = field(default_factory=list)
 
-
-# ---------------------------------------------------------------------------
 # ERFA tender calculation
-# ---------------------------------------------------------------------------
 
 
 def calculate_erfa_salary(prev_salary: Decimal, season: int) -> Decimal:
@@ -71,10 +69,8 @@ def calculate_erfa_salary(prev_salary: Decimal, season: int) -> Decimal:
     erfa_pct = Decimal("1.10")
     return max(vet_min, erfa_pct * prev_salary)
 
-
-# ---------------------------------------------------------------------------
 # RFA tender calculations
-# ---------------------------------------------------------------------------
+
 
 def _get_nfl_rfa_prices(season: int) -> dict[str, Decimal]:
     """Load NFL RFA tender prices for the given season from contracts.json.
@@ -157,10 +153,7 @@ def calculate_rrfa_bid(
     nfl_price = nfl_rrfa_price if nfl_rrfa_price is not None else _get_nfl_rfa_prices(season)["RRFA"]
     return floor_100k(nfl_price)
 
-
-# ---------------------------------------------------------------------------
 # Conference-scoped accrued seasons
-# ---------------------------------------------------------------------------
 
 # Team ID ranges per conference (DB IDs = MFL franchise ordinal + 128)
 _NFC_TEAM_IDS = range(129, 145)  # 129-144
@@ -227,10 +220,7 @@ async def _get_conference_accrued_seasons(
     )
     return c_result.scalar() or 0
 
-
-# ---------------------------------------------------------------------------
 # ERFA eligibility
-# ---------------------------------------------------------------------------
 
 # Maximum accrued seasons for ERFA eligibility (exclusive).
 # Players with 3+ prior ADL seasons are not ERFA-eligible.
@@ -341,11 +331,7 @@ async def check_erfa_eligibility(
 
     return True, None
 
-
-# ---------------------------------------------------------------------------
 # RFA eligibility
-# ---------------------------------------------------------------------------
-
 
 # Contract types that make a player ineligible for RFA if from 2021 or earlier
 _INELIGIBLE_TYPES_2021_OR_EARLIER = frozenset({
@@ -470,10 +456,7 @@ async def check_rfa_eligibility(
 
     return True, None
 
-
-# ---------------------------------------------------------------------------
 # Main orchestrator
-# ---------------------------------------------------------------------------
 
 
 async def calculate_tenders(

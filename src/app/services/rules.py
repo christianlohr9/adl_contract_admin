@@ -13,13 +13,12 @@ import yaml
 # services/ -> app/ -> src/ -> project root
 _RULES_DIR = Path(__file__).resolve().parent.parent.parent.parent / "rules"
 
-
-# ---------------------------------------------------------------------------
 # Generic loaders (cached)
-# ---------------------------------------------------------------------------
 
 
 @lru_cache(maxsize=16)
+
+
 def load_constants(name: str) -> dict:
     """Load ``rules/constants/{name}.json`` and return the parsed dict."""
     path = _RULES_DIR / "constants" / f"{name}.json"
@@ -28,16 +27,15 @@ def load_constants(name: str) -> dict:
 
 
 @lru_cache(maxsize=16)
+
+
 def load_formulas(name: str) -> dict:
     """Load ``rules/formulas/{name}.yaml`` and return the parsed dict."""
     path = _RULES_DIR / "formulas" / f"{name}.yaml"
     with path.open() as f:
         return yaml.safe_load(f)
 
-
-# ---------------------------------------------------------------------------
 # Convenience wrappers
-# ---------------------------------------------------------------------------
 
 
 def get_contract_constants() -> dict:
@@ -64,10 +62,7 @@ def get_free_agency_formulas() -> dict:
     """Return free_agency.yaml formulas."""
     return load_formulas("free_agency")
 
-
-# ---------------------------------------------------------------------------
 # Salary rounding helpers (Decimal in, Decimal out — salaries in millions)
-# ---------------------------------------------------------------------------
 
 
 def round_to_10k(amount: Decimal) -> Decimal:
@@ -104,10 +99,7 @@ def round_to_nearest_4(value: int) -> int:
     """Round to nearest multiple of 4 (for PR Starter Floor)."""
     return int(4 * round(value / 4))
 
-
-# ---------------------------------------------------------------------------
 # Season-specific value getters
-# ---------------------------------------------------------------------------
 
 
 def _lookup_by_year(mapping: dict[str, object], season: int) -> Decimal:
@@ -151,11 +143,12 @@ def get_salary_growth_rate() -> Decimal:
 
 
 @lru_cache(maxsize=1)
+
+
 def get_cap_penalty_rates() -> dict:
     """Return cap penalty rates from salary_cap.json ``cap_penalty_rates``."""
     c = get_salary_cap_constants()
     return c["cap_penalty_rates"]
-
 
 # Suppress unused import warning — math is used by round_to_nearest_4's round()
 __all__ = [

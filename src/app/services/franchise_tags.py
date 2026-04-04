@@ -28,13 +28,12 @@ from app.services.rules import (
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Result dataclasses
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class TagOption:
     """A single franchise/transition tag option."""
 
@@ -47,6 +46,8 @@ class TagOption:
 
 
 @dataclass
+
+
 class FranchiseTagResult:
     """Full result from calculate_franchise_tags."""
 
@@ -59,10 +60,7 @@ class FranchiseTagResult:
     ineligibility_reason: str | None
     consecutive_tag_count: int  # How many consecutive EFT/NEFT tags
 
-
-# ---------------------------------------------------------------------------
 # Tag salary calculation
-# ---------------------------------------------------------------------------
 
 
 def _resolve_position_filter(position: str):
@@ -134,10 +132,7 @@ async def calculate_tag_salary(
     raw = max(positional_avg, salary_floor)
     return round_to_10k(raw)
 
-
-# ---------------------------------------------------------------------------
 # Opening bid calculation (NEFT and TT only)
-# ---------------------------------------------------------------------------
 
 
 def calculate_opening_bid(tag_salary: Decimal, sd_minimum: Decimal) -> Decimal:
@@ -149,10 +144,7 @@ def calculate_opening_bid(tag_salary: Decimal, sd_minimum: Decimal) -> Decimal:
     tag_component = floor_100k(tag_salary)
     return max(sd_component, tag_component)
 
-
-# ---------------------------------------------------------------------------
 # Consecutive tag check
-# ---------------------------------------------------------------------------
 
 
 async def get_consecutive_tag_count(
@@ -191,10 +183,7 @@ async def get_consecutive_tag_count(
 
     return count
 
-
-# ---------------------------------------------------------------------------
 # Eligibility check
-# ---------------------------------------------------------------------------
 
 
 async def check_tag_eligibility(
@@ -264,10 +253,7 @@ async def check_tag_eligibility(
 
     return True, None
 
-
-# ---------------------------------------------------------------------------
 # Third consecutive tag premium
-# ---------------------------------------------------------------------------
 
 
 async def _calculate_third_tag_salary(
@@ -318,10 +304,7 @@ async def _calculate_third_tag_salary(
 
     return round_to_10k(max(option_a, option_b, option_c))
 
-
-# ---------------------------------------------------------------------------
 # Main orchestrator
-# ---------------------------------------------------------------------------
 
 
 async def calculate_franchise_tags(

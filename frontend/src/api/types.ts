@@ -1,6 +1,4 @@
-// ---------------------------------------------------------------------------
 // Player schemas (from player.py)
-// ---------------------------------------------------------------------------
 
 export interface PlayerSchema {
   id: number;
@@ -29,9 +27,7 @@ export interface PlayerWithContractSchema {
   status: string | null;
 }
 
-// ---------------------------------------------------------------------------
 // Team schemas (from team.py)
-// ---------------------------------------------------------------------------
 
 export interface TeamSchema {
   id: number;
@@ -41,9 +37,7 @@ export interface TeamSchema {
   division: string;
 }
 
-// ---------------------------------------------------------------------------
 // Contract schemas (from contract.py)
-// ---------------------------------------------------------------------------
 
 export interface ContractSchema {
   id: number;
@@ -70,9 +64,7 @@ export interface RosterEntrySchema {
   roster_status: string;
 }
 
-// ---------------------------------------------------------------------------
 // Tool schemas (from tools.py)
-// ---------------------------------------------------------------------------
 
 export interface EligibilitySchema {
   action: string;
@@ -201,9 +193,7 @@ export interface PlayerToolsSchema {
   ppe: PPESchema | null;
 }
 
-// ---------------------------------------------------------------------------
 // Roster eligibility schemas (from roster_eligibility.py)
-// ---------------------------------------------------------------------------
 
 export interface WindowStatusSchema {
   action: string;
@@ -235,9 +225,7 @@ export interface RosterEligibilitySchema {
   window_statuses: Record<string, WindowStatusSchema>;
 }
 
-// ---------------------------------------------------------------------------
 // Calendar schemas (from calendar.py)
-// ---------------------------------------------------------------------------
 
 export interface SeasonCalendarSchema {
   id: number;
@@ -277,9 +265,7 @@ export interface SeasonCalendarSchema {
   updated_at: string | null;
 }
 
-// ---------------------------------------------------------------------------
 // Cap schemas (from cap.py)
-// ---------------------------------------------------------------------------
 
 export interface PenaltyResultSchema {
   contract_type: string;
@@ -321,9 +307,7 @@ export interface AllotmentsSchema {
   july_1_tender: number;
 }
 
-// ---------------------------------------------------------------------------
 // Snapshot schema (from snapshot.py)
-// ---------------------------------------------------------------------------
 
 export interface TeamSnapshotSchema {
   team: TeamSchema;

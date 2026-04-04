@@ -9,9 +9,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict
 
-# ---------------------------------------------------------------------------
 # Eligibility
-# ---------------------------------------------------------------------------
 
 
 class EligibilitySchema(BaseModel):
@@ -27,10 +25,7 @@ class EligibilitySchema(BaseModel):
     window_status: str | None = None  # "open", "closed", "unconfigured"
     window_closes: date | None = None
 
-
-# ---------------------------------------------------------------------------
 # Window Status
-# ---------------------------------------------------------------------------
 
 
 class WindowStatusSchema(BaseModel):
@@ -44,10 +39,7 @@ class WindowStatusSchema(BaseModel):
     closes: date | None = None
     reason: str | None = None
 
-
-# ---------------------------------------------------------------------------
 # Extensions
-# ---------------------------------------------------------------------------
 
 
 class ExtensionOptionSchema(BaseModel):
@@ -77,10 +69,7 @@ class ExtensionResultSchema(BaseModel):
     ineligibility_reason: str | None = None
     options: list[ExtensionOptionSchema] = []
 
-
-# ---------------------------------------------------------------------------
 # Franchise / Transition Tags
-# ---------------------------------------------------------------------------
 
 
 class TagOptionSchema(BaseModel):
@@ -110,10 +99,7 @@ class TagResultSchema(BaseModel):
     consecutive_tag_count: int = 0
     options: list[TagOptionSchema] = []
 
-
-# ---------------------------------------------------------------------------
 # Tenders
-# ---------------------------------------------------------------------------
 
 
 class TenderOptionSchema(BaseModel):
@@ -142,10 +128,7 @@ class TenderResultSchema(BaseModel):
     rfa_eligible: bool = False
     ineligibility_reasons: list[str] = []
 
-
-# ---------------------------------------------------------------------------
 # Buyout / Restructure
-# ---------------------------------------------------------------------------
 
 
 class BuyoutSalaryTierSchema(BaseModel):
@@ -184,10 +167,7 @@ class BuyoutResultSchema(BaseModel):
     eligible: bool
     ineligibility_reason: str | None = None
 
-
-# ---------------------------------------------------------------------------
 # 5th Year Option
-# ---------------------------------------------------------------------------
 
 
 class FifthYearOptionSchema(BaseModel):
@@ -204,10 +184,7 @@ class FifthYearOptionSchema(BaseModel):
     eligible: bool
     ineligibility_reason: str | None = None
 
-
-# ---------------------------------------------------------------------------
 # Proven Performance Escalator
-# ---------------------------------------------------------------------------
 
 
 class PPESchema(BaseModel):
@@ -224,10 +201,7 @@ class PPESchema(BaseModel):
     eligible: bool
     ineligibility_reason: str | None = None
 
-
-# ---------------------------------------------------------------------------
 # Bundled player tools response
-# ---------------------------------------------------------------------------
 
 
 class PlayerToolsSchema(BaseModel):

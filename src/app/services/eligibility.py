@@ -27,13 +27,12 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Result dataclass
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class EligibilityResult:
     """Result of an eligibility check for a specific contract action."""
 
@@ -45,10 +44,7 @@ class EligibilityResult:
     window_status: str | None = None
     window_closes: date | None = None
 
-
-# ---------------------------------------------------------------------------
 # Action type constants
-# ---------------------------------------------------------------------------
 
 ACTION_EXTENSION = "extension"
 ACTION_FRANCHISE_TAG = "franchise_tag"
@@ -68,10 +64,7 @@ _VALID_ACTIONS = frozenset({
     ACTION_PROVEN_PERFORMANCE_ESCALATOR,
 })
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 
 async def _get_team_id_for_player(
@@ -99,10 +92,7 @@ async def _get_team_id_for_player(
     )
     return result.scalar_one_or_none()
 
-
-# ---------------------------------------------------------------------------
 # Main entry point
-# ---------------------------------------------------------------------------
 
 
 async def check_eligibility(
@@ -196,10 +186,7 @@ async def check_eligibility(
     result.window_closes = window.closes
     return result
 
-
-# ---------------------------------------------------------------------------
 # Extension eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_extension(
@@ -232,10 +219,7 @@ async def _check_extension(
         ),
     )
 
-
-# ---------------------------------------------------------------------------
 # Franchise tag eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_franchise_tag(
@@ -295,10 +279,7 @@ async def _check_franchise_tag(
         prerequisites=prerequisites,
     )
 
-
-# ---------------------------------------------------------------------------
 # ERFA tender eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_erfa_tender(
@@ -356,10 +337,7 @@ async def _check_erfa_tender(
         prerequisites=["Player does not enter auction; exclusive rights retained"],
     )
 
-
-# ---------------------------------------------------------------------------
 # RFA tender eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_rfa_tender(
@@ -419,10 +397,7 @@ async def _check_rfa_tender(
         ],
     )
 
-
-# ---------------------------------------------------------------------------
 # Buyout/Restructure eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_buyout_restructure(
@@ -476,10 +451,7 @@ async def _check_buyout_restructure(
         ],
     )
 
-
-# ---------------------------------------------------------------------------
 # Fifth Year Option eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_fifth_year_option(
@@ -577,10 +549,7 @@ async def _check_fifth_year_option(
         ],
     )
 
-
-# ---------------------------------------------------------------------------
 # Proven Performance Escalator eligibility
-# ---------------------------------------------------------------------------
 
 
 async def _check_proven_performance_escalator(

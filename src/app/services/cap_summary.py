@@ -20,13 +20,12 @@ if TYPE_CHECKING:
 
 _ZERO = Decimal("0")
 
-
-# ---------------------------------------------------------------------------
 # Result dataclasses
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class PlayerCapDetail:
     """Per-player cap breakdown including penalty if dropped."""
 
@@ -41,6 +40,8 @@ class PlayerCapDetail:
 
 
 @dataclass
+
+
 class TeamCapSummary:
     """Team-level cap summary with per-player details."""
 
@@ -54,10 +55,7 @@ class TeamCapSummary:
     player_details: list[PlayerCapDetail] = field(default_factory=list)
     roster_count: int = 0
 
-
-# ---------------------------------------------------------------------------
 # Service functions
-# ---------------------------------------------------------------------------
 
 
 async def get_player_cap_detail(
@@ -148,10 +146,7 @@ async def get_team_cap_summary(
         roster_count=len(player_details),
     )
 
-
-# ---------------------------------------------------------------------------
 # Internal helpers
-# ---------------------------------------------------------------------------
 
 
 def _build_player_detail(contract: Contract) -> PlayerCapDetail:

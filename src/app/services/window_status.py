@@ -17,10 +17,7 @@ from app.models.season_calendar import SeasonCalendar
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-
-# ---------------------------------------------------------------------------
 # Action type constants (mirrored from eligibility.py to avoid circular imports)
-# ---------------------------------------------------------------------------
 
 ACTION_EXTENSION = "extension"
 ACTION_FRANCHISE_TAG = "franchise_tag"
@@ -40,13 +37,12 @@ _ALL_ACTIONS = (
     ACTION_PROVEN_PERFORMANCE_ESCALATOR,
 )
 
-
-# ---------------------------------------------------------------------------
 # Result dataclass
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class WindowStatus:
     """Status of a contract action's window for a given season."""
 
@@ -56,10 +52,7 @@ class WindowStatus:
     closes: date | None = None
     reason: str | None = None
 
-
-# ---------------------------------------------------------------------------
 # Internal helpers
-# ---------------------------------------------------------------------------
 
 
 def _check_deadline(
@@ -184,10 +177,7 @@ def _resolve_window(
         reason=f"Unknown action type: {action}",
     )
 
-
-# ---------------------------------------------------------------------------
 # Public API
-# ---------------------------------------------------------------------------
 
 
 async def get_window_status(

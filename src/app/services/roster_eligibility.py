@@ -30,13 +30,12 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-
-# ---------------------------------------------------------------------------
 # Result dataclasses
-# ---------------------------------------------------------------------------
 
 
 @dataclass
+
+
 class PlayerActionSummary:
     """Summary of a single player's eligibility for a contract action."""
 
@@ -49,6 +48,8 @@ class PlayerActionSummary:
 
 
 @dataclass
+
+
 class ActionGroup:
     """Group of eligible players for a single contract action type."""
 
@@ -58,6 +59,8 @@ class ActionGroup:
 
 
 @dataclass
+
+
 class RosterEligibilitySummary:
     """Full roster eligibility summary across all open action windows."""
 
@@ -66,10 +69,7 @@ class RosterEligibilitySummary:
     action_groups: list[ActionGroup] = field(default_factory=list)
     window_statuses: dict[str, WindowStatus] = field(default_factory=dict)
 
-
-# ---------------------------------------------------------------------------
 # Headline value extractors — one per action type
-# ---------------------------------------------------------------------------
 
 
 async def _extract_extension_headline(
@@ -138,7 +138,6 @@ async def _extract_ppe_headline(
     result = await calculate_ppe(session, player_id, season)
     return result.escalator_salary, "PPE Salary"
 
-
 _HEADLINE_EXTRACTORS = {
     "extension": _extract_extension_headline,
     "franchise_tag": _extract_tag_headline,
@@ -149,10 +148,7 @@ _HEADLINE_EXTRACTORS = {
     "proven_performance_escalator": _extract_ppe_headline,
 }
 
-
-# ---------------------------------------------------------------------------
 # Main service
-# ---------------------------------------------------------------------------
 
 
 async def get_roster_eligibility(
