@@ -83,7 +83,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: TBD
 
 Plans:
-- [ ] 24-01: TBD (run /gsd:plan-phase 24 to break down)
+- [x] 24-01: Code & dependency cleanup — completed 2026-04-04
 
 #### Phase 25: UX Audit & Redesign
 
@@ -146,7 +146,7 @@ Phases execute in numeric order. Next phase continues from 24.
 | 21. 5YO & PPE | v1.3 | 2/2 | Complete | 2026-04-04 |
 | 22. Buyout/Restructure | v1.3 | 1/1 | Complete | 2026-04-04 |
 | 23. Cross-Tool Validation | v1.3 | 1/1 | Complete | 2026-04-04 |
-| 24. Repo Polish | v1.4 | 0/? | Not started | - |
+| 24. Repo Polish | v1.4 | 1/? | In progress | - |
 | 25. UX Audit & Redesign | v1.4 | 0/? | Not started | - |
 | 26. Production Configuration | v1.4 | 0/? | Not started | - |
 | 27. No-Cost Deployment | v1.4 | 0/? | Not started | - |
