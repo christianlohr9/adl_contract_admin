@@ -102,6 +102,7 @@ export function ContractManagementPage() {
                 columns={columns}
                 data={rows}
                 onRowClick={handleRowClick}
+                initialSorting={[{ id: "position", desc: false }]}
               />
             </>
           )}

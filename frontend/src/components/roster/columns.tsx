@@ -1,8 +1,9 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { PositionBadge } from "@/components/ui/position-badge";
 import { DataTableColumnHeader } from "@/components/data-table/DataTableColumnHeader";
 import { formatSalary, formatContractType } from "@/lib/format";
+import { positionSortValue } from "@/lib/position";
 import type { RosterEntrySchema } from "@/api/types";
 
 export function getRosterColumns(teamId: number): ColumnDef<RosterEntrySchema>[] {
@@ -27,10 +28,12 @@ export function getRosterColumns(teamId: number): ColumnDef<RosterEntrySchema>[]
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Position" />
       ),
-      cell: ({ row }) => {
-        const position = row.getValue<string>("position");
-        return <Badge variant="secondary">{position}</Badge>;
-      },
+      cell: ({ row }) => (
+        <PositionBadge position={row.getValue<string>("position")} />
+      ),
+      sortingFn: (rowA, rowB) =>
+        positionSortValue(rowA.getValue("position")) -
+        positionSortValue(rowB.getValue("position")),
       filterFn: "equals",
     },
     {

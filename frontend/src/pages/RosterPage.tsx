@@ -87,6 +87,7 @@ export function RosterPage() {
           columns={getRosterColumns(selectedTeamId)}
           data={filteredRoster}
           onRowClick={handleRowClick}
+          initialSorting={[{ id: "position", desc: false }]}
         />
       )}
     </div>

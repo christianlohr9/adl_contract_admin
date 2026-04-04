@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { PositionBadge } from "@/components/ui/position-badge";
+import { positionSortValue } from "@/lib/position";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "@/components/data-table/DataTable";
 import { DataTableColumnHeader } from "@/components/data-table/DataTableColumnHeader";
@@ -36,8 +37,11 @@ function getPenaltyColumns(teamId: number): ColumnDef<PlayerCapDetailSchema>[] {
         <DataTableColumnHeader column={column} title="Position" />
       ),
       cell: ({ row }) => (
-        <Badge variant="secondary">{row.getValue<string>("position")}</Badge>
+        <PositionBadge position={row.getValue<string>("position")} />
       ),
+      sortingFn: (rowA, rowB) =>
+        positionSortValue(rowA.getValue("position")) -
+        positionSortValue(rowB.getValue("position")),
     },
     {
       accessorKey: "salary",

@@ -1,7 +1,8 @@
 import { type ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
+import { PositionBadge } from "@/components/ui/position-badge";
 import { DataTableColumnHeader } from "@/components/data-table/DataTableColumnHeader";
 import { formatSalary } from "@/lib/format";
+import { positionSortValue } from "@/lib/position";
 import type { EligibilityRow } from "./useEligibilityTable";
 import type { WindowStatusSchema } from "@/api/types";
 
@@ -63,10 +64,11 @@ export function getEligibilityColumns(
         <DataTableColumnHeader column={column} title="Position" />
       ),
       cell: ({ row }) => (
-        <Badge variant="secondary">
-          {row.getValue<string>("position")}
-        </Badge>
+        <PositionBadge position={row.getValue<string>("position")} />
       ),
+      sortingFn: (rowA, rowB) =>
+        positionSortValue(rowA.getValue("position")) -
+        positionSortValue(rowB.getValue("position")),
     },
     {
       accessorKey: "current_salary",
