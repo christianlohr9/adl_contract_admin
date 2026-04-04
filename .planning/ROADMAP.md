@@ -14,10 +14,7 @@ None
 - ✅ [v1.1 League Calendar & Contract Management](milestones/v1.1-ROADMAP.md) (Phases 9-13) — SHIPPED 2026-03-13
 - ✅ [v1.2 Data Integrity & Eligibility Accuracy](milestones/v1.2-ROADMAP.md) (Phases 14-17) — SHIPPED 2026-03-13
 - ✅ [v1.3 Data Integrity 2](milestones/v1.3-ROADMAP.md) (Phases 18-23) — SHIPPED 2026-04-04
-
-## Current Milestone
-
-None — v1.3 complete, ready for next milestone
+- 🚧 **v1.4 Polish & Deploy** - Phases 24-27 (in progress)
 
 ## Phases
 
@@ -74,6 +71,51 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 </details>
 
+### 🚧 v1.4 Polish & Deploy (In Progress)
+
+**Milestone Goal:** Clean up the repo, redesign UX to sell commissioners on replacing the spreadsheet, and deploy to free-tier hosting
+
+#### Phase 24: Repo Polish
+
+**Goal**: Remove AI slop (unnecessary comments, dead code, unused files/deps), add favicon, clean repo for public readiness
+**Depends on**: Previous milestone complete
+**Research**: Unlikely (internal cleanup)
+**Plans**: TBD
+
+Plans:
+- [ ] 24-01: TBD (run /gsd:plan-phase 24 to break down)
+
+#### Phase 25: UX Audit & Redesign
+
+**Goal**: Full UX review as a designer — layout, flows, visual hierarchy, mobile responsiveness, polish. Make commissioners say "yes, this replaces the spreadsheet"
+**Depends on**: Phase 24
+**Research**: Unlikely (internal UI patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 25-01: TBD
+
+#### Phase 26: Production Configuration
+
+**Goal**: Environment management, CORS for production domain, production-ready settings, error handling
+**Depends on**: Phase 25
+**Research**: Unlikely (established patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 26-01: TBD
+
+#### Phase 27: No-Cost Deployment
+
+**Goal**: Deploy to a free-tier platform (Fly.io / Render / Railway), CI/CD pipeline, DNS
+**Depends on**: Phase 26
+**Research**: Likely (platform evaluation for FastAPI + PostgreSQL + React SPA)
+**Research topics**: Evaluate free-tier hosting options that support FastAPI + PostgreSQL + static React
+**Plans**: TBD
+
+Plans:
+- [ ] 27-01: TBD
+
 ## Progress
 
 **Execution Order:**
@@ -104,3 +146,7 @@ Phases execute in numeric order. Next phase continues from 24.
 | 21. 5YO & PPE | v1.3 | 2/2 | Complete | 2026-04-04 |
 | 22. Buyout/Restructure | v1.3 | 1/1 | Complete | 2026-04-04 |
 | 23. Cross-Tool Validation | v1.3 | 1/1 | Complete | 2026-04-04 |
+| 24. Repo Polish | v1.4 | 0/? | Not started | - |
+| 25. UX Audit & Redesign | v1.4 | 0/? | Not started | - |
+| 26. Production Configuration | v1.4 | 0/? | Not started | - |
+| 27. No-Cost Deployment | v1.4 | 0/? | Not started | - |

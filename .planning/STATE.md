@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** Planning next milestone
+**Current focus:** v1.4 Polish & Deploy — repo cleanup, UX redesign, production deployment
 
 ## Current Position
 
-Phase: 23 of 23 — all phases complete
-Plan: N/A
-Status: Ready to plan next milestone
-Last activity: 2026-04-04 — v1.3 milestone archived
+Phase: 24 of 27 (Repo Polish)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-04 — Milestone v1.4 created
 
-Progress: ██████████ 100% (v1.3)
+Progress: ░░░░░░░░░░ 0% (v1.4)
 
 ## Performance Metrics
 
@@ -61,9 +61,10 @@ None.
 - v1.1 League Calendar & Contract Management shipped: 5 phases (9-13), completed 2026-03-13
 - v1.2 Data Integrity & Eligibility Accuracy shipped: 4 phases (14-17), completed 2026-03-13
 - v1.3 Data Integrity 2 shipped: cell-by-cell spreadsheet validation for all contract tools, 6 phases (18-23), completed 2026-04-04. 99.7% match rate, spreadsheet declared redundant.
+- v1.4 Polish & Deploy created: repo cleanup, UX redesign for commissioner buy-in, no-cost deployment, 4 phases (24-27)
 
 ## Session Continuity
 
 Last session: 2026-04-04
-Stopped at: v1.3 milestone archived
+Stopped at: Milestone v1.4 initialization
 Resume file: None
