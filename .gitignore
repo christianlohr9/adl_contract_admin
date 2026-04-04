@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -99,3 +99,4 @@ cython_debug/
 # Project artifacts
 *.db
 *.xlsx
+Analytics Dynasty League Bylaws*.md

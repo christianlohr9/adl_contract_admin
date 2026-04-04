@@ -31,10 +31,7 @@ export function SplashPage() {
             return (
               <button
                 key={team.id}
-                onClick={() => {
-                  selectTeam(team.id, abbr);
-                  navigate("/dashboard");
-                }}
+                onClick={() => selectTeam(team.id, abbr)}
                 className="flex items-center justify-center rounded-lg px-2 py-3 text-sm font-bold text-white transition-all hover:scale-110 hover:opacity-90"
                 style={{ backgroundColor: color }}
                 title={team.name}
