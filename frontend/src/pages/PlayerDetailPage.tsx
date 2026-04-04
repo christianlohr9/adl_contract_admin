@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -58,7 +58,7 @@ export function PlayerDetailPage() {
       <BackButton onClick={() => navigate(-1)} />
 
       {playerLoading ? (
-        <Card>
+        <Card className="border-t-2 border-t-primary">
           <CardHeader>
             <Skeleton className="h-8 w-64" />
           </CardHeader>
@@ -78,7 +78,7 @@ export function PlayerDetailPage() {
       ) : null}
 
       <Tabs defaultValue="extensions">
-        <TabsList>
+        <TabsList className="rounded-xl bg-muted/50 p-1">
           {CONTRACT_TOOLS.map((tool) => (
             <TabsTrigger key={tool.value} value={tool.value}>
               {tool.label}
@@ -87,22 +87,15 @@ export function PlayerDetailPage() {
         </TabsList>
 
         {CONTRACT_TOOLS.map((tool) => (
-          <TabsContent key={tool.value} value={tool.value}>
-            <Card>
-              <CardHeader>
-                <CardTitle>{tool.label}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {toolsLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-48" />
-                    <Skeleton className="h-32 w-full" />
-                  </div>
-                ) : (
-                  <ToolContent tab={tool.value} tools={tools ?? null} />
-                )}
-              </CardContent>
-            </Card>
+          <TabsContent key={tool.value} value={tool.value} className="pt-4">
+            {toolsLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+            ) : (
+              <ToolContent tab={tool.value} tools={tools ?? null} />
+            )}
           </TabsContent>
         ))}
       </Tabs>
