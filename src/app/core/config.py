@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     mfl_request_delay: float = 1.0
     mfl_backfill_request_delay: float = 6.0
 
+    # CORS configuration
+    cors_origins: list[str] = ["http://localhost:5173"]
+
     # Sync scheduler configuration
     sync_interval_hours: int = 6
     sync_enabled: bool = True
