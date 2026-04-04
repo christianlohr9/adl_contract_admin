@@ -1,21 +1,14 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { parseAsInteger, useQueryState } from "nuqs";
-import { useTeams, useTeamRoster } from "@/api/queries/teams";
+import { useTeamRoster } from "@/api/queries/teams";
 import { useRosterEligibility } from "@/api/queries/eligibility";
+import { useTeamSelection } from "@/hooks/useTeamSelection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DeadlineCountdown } from "@/components/contracts/DeadlineCountdown";
 import { DataTable } from "@/components/data-table/DataTable";
 import { useEligibilityTable } from "@/components/contracts/useEligibilityTable";
@@ -24,16 +17,10 @@ import type { EligibilityRow } from "@/components/contracts/useEligibilityTable"
 
 export function ContractManagementPage() {
   const navigate = useNavigate();
-  const { data: teams, isLoading: teamsLoading } = useTeams();
-
-  const [teamId, setTeamId] = useQueryState(
-    "team",
-    parseAsInteger.withDefault(0),
-  );
+  const { selectedTeam } = useTeamSelection();
+  const selectedTeamId = selectedTeam?.id ?? 0;
 
   const [eligibleOnly, setEligibleOnly] = useState(true);
-
-  const selectedTeamId = teamId > 0 ? teamId : teams?.[0]?.id ?? 0;
 
   const { data: eligibility, isLoading: eligibilityLoading } =
     useRosterEligibility(selectedTeamId > 0 ? selectedTeamId : null);
@@ -62,49 +49,13 @@ export function ContractManagementPage() {
   const isLoading =
     eligibilityLoading || (!eligibleOnly && rosterLoading);
 
-  function handleTeamChange(value: number | null) {
-    if (value != null) {
-      setTeamId(value);
-    }
-  }
-
   function handleRowClick(row: EligibilityRow) {
     navigate(`/roster/${row.player_id}?team=${selectedTeamId}`);
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Contract Management</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage contract actions and view window statuses.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium">Team</label>
-          {teamsLoading ? (
-            <Skeleton className="h-8 w-48" />
-          ) : (
-            <Select
-              value={selectedTeamId}
-              onValueChange={handleTeamChange}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select a team" />
-              </SelectTrigger>
-              <SelectContent>
-                {teams?.map((team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      </div>
+      <h1 className="text-3xl font-bold">Contract Management</h1>
 
       {isLoading && selectedTeamId > 0 ? (
         <div className="space-y-4">

@@ -1,19 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { parseAsInteger, useQueryState } from "nuqs";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DataTable } from "@/components/data-table/DataTable";
 import { DataTableColumnHeader } from "@/components/data-table/DataTableColumnHeader";
-import { useTeams } from "@/api/queries/teams";
+import { useTeamSelection } from "@/hooks/useTeamSelection";
 import { useTeamCap, useTeamAllotments } from "@/api/queries/cap";
 import { formatSalary, formatContractType } from "@/lib/format";
 import type { PlayerCapDetailSchema } from "@/api/types";
@@ -83,24 +75,12 @@ function getPenaltyColumns(teamId: number): ColumnDef<PlayerCapDetailSchema>[] {
 
 export function SalaryCapPage() {
   const navigate = useNavigate();
-  const { data: teams, isLoading: teamsLoading } = useTeams();
-
-  const [teamId, setTeamId] = useQueryState(
-    "team",
-    parseAsInteger.withDefault(0),
-  );
-
-  const selectedTeamId = teamId > 0 ? teamId : teams?.[0]?.id ?? 0;
+  const { selectedTeam } = useTeamSelection();
+  const selectedTeamId = selectedTeam?.id ?? 0;
 
   const { data: cap, isLoading: capLoading } = useTeamCap(selectedTeamId);
   const { data: allotments, isLoading: allotmentsLoading } =
     useTeamAllotments(selectedTeamId);
-
-  function handleTeamChange(value: number | null) {
-    if (value != null) {
-      setTeamId(value);
-    }
-  }
 
   function handleRowClick(row: PlayerCapDetailSchema) {
     navigate(`/roster/${row.player_id}?team=${selectedTeamId}`);
@@ -114,34 +94,7 @@ export function SalaryCapPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Salary Cap</h1>
-        <p className="text-muted-foreground mt-2">
-          Team salary cap summary and allotments.
-        </p>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium">Team</label>
-          {teamsLoading ? (
-            <Skeleton className="h-8 w-48" />
-          ) : (
-            <Select value={selectedTeamId} onValueChange={handleTeamChange}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select a team" />
-              </SelectTrigger>
-              <SelectContent>
-                {teams?.map((team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      </div>
+      <h1 className="text-3xl font-bold">Salary Cap</h1>
 
       {isLoading && selectedTeamId > 0 ? (
         <div className="space-y-4">

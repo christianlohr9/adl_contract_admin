@@ -244,10 +244,7 @@ export function CalendarPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">League Calendar</h1>
-        <p className="text-muted-foreground mt-2">
-          Configure season dates, deadlines, and auction windows.
-        </p>
+        <h1 className="text-3xl font-bold">League Calendar</h1>
       </div>
 
       {/* Season Selector */}
