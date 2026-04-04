@@ -1,5 +1,5 @@
-import { Link, useLocation } from "react-router-dom"
-import { Home, Users, DollarSign, FileText, Calendar } from "lucide-react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Home, Users, DollarSign, FileText, Calendar, ArrowLeftRight } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -13,9 +13,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { PlayerSearch } from "@/components/player/PlayerSearch"
+import { useTeamSelection } from "@/hooks/useTeamSelection"
 
 const navItems = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Roster", url: "/roster", icon: Users },
   { title: "Salary Cap", url: "/cap", icon: DollarSign },
   { title: "Contracts", url: "/contracts", icon: FileText },
@@ -24,13 +25,22 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { selectedTeam, clearTeam } = useTeamSelection()
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-3 space-y-3">
-        <span className="text-lg font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
-          ADL Contract Admin
-        </span>
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
+          <span className="text-lg font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+            ADL Contract Admin
+          </span>
+          {selectedTeam && (
+            <span className="text-sm font-bold text-primary">
+              {selectedTeam.abbr}
+            </span>
+          )}
+        </div>
         <div className="group-data-[collapsible=icon]:hidden">
           <PlayerSearch />
         </div>
@@ -42,8 +52,8 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => {
                 const isActive =
-                  item.url === "/"
-                    ? location.pathname === "/"
+                  item.url === "/dashboard"
+                    ? location.pathname === "/dashboard"
                     : location.pathname.startsWith(item.url)
 
                 return (
@@ -59,6 +69,24 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 )
               })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Switch Team"
+                  onClick={() => {
+                    clearTeam()
+                    navigate("/")
+                  }}
+                >
+                  <ArrowLeftRight />
+                  <span>Switch Team</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

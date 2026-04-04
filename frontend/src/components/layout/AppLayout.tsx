@@ -1,10 +1,21 @@
-import { Outlet } from "react-router-dom"
+import { useEffect } from "react"
+import { Outlet, useNavigate } from "react-router-dom"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AppSidebar } from "@/components/layout/AppSidebar"
 import { Separator } from "@/components/ui/separator"
+import { useTeamSelection } from "@/hooks/useTeamSelection"
 
 export function AppLayout() {
+  const { selectedTeam } = useTeamSelection()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!selectedTeam) navigate("/", { replace: true })
+  }, [selectedTeam, navigate])
+
+  if (!selectedTeam) return null
+
   return (
     <TooltipProvider>
       <SidebarProvider>
