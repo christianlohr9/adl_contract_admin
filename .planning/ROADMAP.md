@@ -91,12 +91,13 @@ Plans:
 **Goal**: Full UX review as a designer — layout, flows, visual hierarchy, mobile responsiveness, polish. Make commissioners say "yes, this replaces the spreadsheet"
 **Depends on**: Phase 24
 **Research**: Unlikely (internal UI patterns)
-**Status**: In progress
+**Status**: Complete
 
 Plans:
 - [x] 25-01: Dark base theme + team color system — completed 2026-04-04
 - [x] 25-02: Splash screen team picker + sidebar branding — completed 2026-04-04
 - [x] 25-03: Dashboard redesign + global Sleeper typography — completed 2026-04-04
+- [x] 25-04: Contract tool layouts + player detail redesign — completed 2026-04-04
 
 #### Phase 26: Production Configuration
 
@@ -150,6 +151,6 @@ Phases execute in numeric order. Next phase continues from 24.
 | 22. Buyout/Restructure | v1.3 | 1/1 | Complete | 2026-04-04 |
 | 23. Cross-Tool Validation | v1.3 | 1/1 | Complete | 2026-04-04 |
 | 24. Repo Polish | v1.4 | 2/2 | Complete | 2026-04-04 |
-| 25. UX Audit & Redesign | v1.4 | 3/? | In progress | - |
+| 25. UX Audit & Redesign | v1.4 | 4/4 | Complete | 2026-04-04 |
 | 26. Production Configuration | v1.4 | 0/? | Not started | - |
 | 27. No-Cost Deployment | v1.4 | 0/? | Not started | - |
