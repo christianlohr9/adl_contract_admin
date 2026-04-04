@@ -34,6 +34,12 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 - ✓ NFL kickoff eligibility rule for Drafted Rookie/UDFA contracts — v1.2
 - ✓ Full regression validation: 879 players, 0 anomalies across 32 teams — v1.2
 
+- ✓ Cell-by-cell validation of all contract tools against spreadsheet (FT, EXT, ERFA, RFA, 5YO, PPE, B/R) — v1.3
+- ✓ Weekly roster scan system for accurate conference-scoped accrued seasons — v1.3
+- ✓ ADL Cap Percentage adjustment for tag/5YO salary calculations — v1.3
+- ✓ EPV performance salary methodology (prior-season × 1.1 growth) — v1.3
+- ✓ PPE below-floor exclusion and raw NFL tag pricing — v1.3
+
 ### Active
 
 - [ ] Calendar timeline visualization (visual period rendering)
@@ -47,7 +53,7 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 
 ## Context
 
-- **Shipped v1.0 + v1.1 + v1.2**: Full-stack app with ~16,404 LOC (9,722 Python + 6,682 TypeScript)
+- **Shipped v1.0 + v1.1 + v1.2 + v1.3**: Full-stack app with ~15,418 LOC (8,718 Python + 6,700 TypeScript)
 - **Tech stack**: Python/FastAPI/PostgreSQL/SQLAlchemy/Alembic backend; React/TypeScript/Vite/shadcn-ui frontend; MD/JSON/YAML for rule data
 - **Bylaws source of truth**: `Analytics Dynasty League Bylaws 2025.md` — all rules derived from this document
 - **League**: 32 teams, 2 conferences, MFL league ID 60206
@@ -56,12 +62,14 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 - **Old codebase**: Archived to `archive/` — EPV logic fully ported
 - **Historical data**: Multi-season player scores (weeks 1-17 + YTD) and contract history imported via startup backfill with gap detection
 - **Eligibility accuracy**: All 7 contract action eligibility checks audited and validated against bylaws — 879 players, 0 anomalies
+- **Spreadsheet redundancy**: v1.3 cell-by-cell validation achieved 99.7% match rate across 1,549 players × 4 tools — spreadsheet declared redundant for contract calculations
+- **Accrued seasons**: Weekly roster scans (2016+) provide conference-scoped accrued season counts with 6-week threshold
 
 ## Constraints
 
 - **Bylaws authority**: All contract rules, formulas, and constants MUST be derived from the bylaws document. If a rule is unclear, mark TODO — never guess.
 - **Tech stack**: Python/FastAPI/PostgreSQL/SQLAlchemy/Alembic backend; React/TypeScript frontend; MD/JSON/YAML for rule data
-- **Phase numbering**: Next phase starts at 18 (continuing from v1.2)
+- **Phase numbering**: Next phase starts at 24 (continuing from v1.3)
 
 ## Key Decisions
 
@@ -86,6 +94,12 @@ Accurate, automated contract extension calculations (EPV-based) that eliminate m
 | Tool-centric window gating (no abstract period layer) | Simpler, each action checks its own calendar fields | ✓ Good |
 | SeasonCalendar with 27 nullable date fields | Commissioner fills progressively; all fields optional | ✓ Good |
 | Dynamic eligibility columns by window status | Only shows relevant contract actions, reduces noise | ✓ Good |
+| ADL Cap Percentage for tag salaries | Discovered from spreadsheet formula: (current_cap / prev_cap) × positional avg | ✓ Good |
+| Prior-season salary × 1.1 for EPV performance | Published End25 Sal rankings are projected snapshots, not current contracts | ✓ Good |
+| Conference-scoped accrued seasons from weekly roster scans | 6-week threshold per conference per season (NFL rule); more accurate than end-of-season snapshots | ✓ Good |
+| Raw NFL tag prices for PPE (not MAX formula) | Bylaws say "the SRFA/ORFA tag price" — literal interpretation | ✓ Good |
+| PPE below-floor exclusion | Bylaws say "above his PR Starter Floor" — no escalation for below-floor players | ✓ Good |
+| Direct DB access for CLI validation scripts | Faster than HTTP API, doesn't require running server | ✓ Good |
 
 ---
-*Last updated: 2026-03-13 after v1.2 milestone*
+*Last updated: 2026-04-04 after v1.3 milestone*

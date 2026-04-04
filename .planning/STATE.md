@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-13)
+See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Accurate, automated contract extension calculations (EPV-based) that eliminate manual rule interpretation and spreadsheet formulas
-**Current focus:** v1.3 Data Integrity 2 — COMPLETE (spreadsheet declared redundant 2026-04-04)
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 23 of 23 (Cross-Tool Validation) — Complete
-Plan: 23-01 complete (full 1,549-player sweep, 99.7% match rate)
-Status: v1.3 Data Integrity 2 milestone COMPLETE
-Last activity: 2026-04-04 — 23-01 complete (0 code changes, spreadsheet declared redundant)
+Phase: 23 of 23 — all phases complete
+Plan: N/A
+Status: Ready to plan next milestone
+Last activity: 2026-04-04 — v1.3 milestone archived
 
 Progress: ██████████ 100% (v1.3)
 
@@ -30,7 +30,7 @@ Progress: ██████████ 100% (v1.3)
 | v1.0 MVP | 1-8 | 26 | 142 min | 5 min |
 | v1.1 League Calendar | 9-13 | 9 | 81 min | 9 min |
 | v1.2 Data Integrity | 14-17 | 8 | ~53 min | ~7 min |
-| v1.3 Data Integrity 2 | 18-23 | 11 | ~273 min | ~25 min |
+| v1.3 Data Integrity 2 | 18-23 | 10 | ~273 min | ~25 min |
 
 ## Accumulated Context
 
@@ -40,7 +40,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 ### Deferred Issues
 
-- ISS-018-001: RESOLVED — weekly roster scans from 2016 now provide complete data; contracts table used as roster source; salary column widened for R/F auction values
+None.
 
 ### Key Discoveries
 
@@ -65,5 +65,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-04
-Stopped at: v1.3 milestone complete — all 23 phases done, spreadsheet declared redundant
+Stopped at: v1.3 milestone archived
 Resume file: None

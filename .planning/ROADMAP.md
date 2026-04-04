@@ -62,75 +62,17 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 </details>
 
-### ✅ v1.3 Data Integrity 2 — SHIPPED 2026-04-04
+<details>
+<summary>✅ v1.3 Data Integrity 2 (Phases 18-23) — SHIPPED 2026-04-04</summary>
 
-**Milestone Goal:** Validate every contract tool's eligibility and pricing calculations cell-by-cell against the 2026 ADL Contract Admin spreadsheet, fixing all discrepancies until the spreadsheet is fully redundant.
+- [x] Phase 18: Franchise Tags (2/2 plans) — completed 2026-04-01
+- [x] Phase 19: Extensions (2/2 plans) — completed 2026-04-02
+- [x] Phase 20: Tenders (2/2 plans) — completed 2026-04-03
+- [x] Phase 21: 5YO & PPE (2/2 plans) — completed 2026-04-04
+- [x] Phase 22: Buyout/Restructure (1/1 plan) — completed 2026-04-04
+- [x] Phase 23: Cross-Tool Validation (1/1 plan) — completed 2026-04-04
 
-**Result:** 99.7% match rate across 6,196 eligibility checks + full pricing sweeps. Zero core logic bugs. Spreadsheet declared redundant for contract calculations.
-
-#### Phase 18: Franchise Tags
-
-**Goal**: Validate FT eligibility (687 players) and EFT/NEFT/TT price calculations against TagElig26 + FT/5YO $ positional salary table
-**Depends on**: Previous milestone complete
-**Research**: Unlikely (internal validation against known data)
-**Plans**: TBD
-
-Plans:
-- [x] 18-01: FT Eligibility Validation — completed 2026-04-01
-- [x] 18-02: FT Price Validation — completed 2026-04-01
-
-#### Phase 19: Extensions
-
-**Goal**: Validate EXT eligibility (1,008 players, iEXT vs oEXT distinction) and EPV/EYS calculations against TagElig26 + EXT sheet
-**Depends on**: Phase 18
-**Research**: Unlikely (internal validation)
-**Plans**: TBD
-
-Plans:
-- [x] 19-01: EXT Eligibility Validation — completed 2026-04-02
-- [x] 19-02: EXT Pricing Validation — completed 2026-04-02
-
-#### Phase 20: Tenders
-
-**Goal**: Validate ERFA (102) and RFA (105) eligibility and bid price calculations against TagElig26 + AFC/NFC RFA sheets
-**Depends on**: Phase 19
-**Research**: Unlikely (internal validation)
-**Plans**: TBD
-
-Plans:
-- [x] 20-01: Tender Eligibility Validation — completed 2026-04-02
-- [x] 20-02: Tender Pricing Validation — completed 2026-04-03
-
-#### Phase 21: 5YO & PPE
-
-**Goal**: Validate 5YO eligibility (31 players) and PPE escalator levels/prices against PPE5YO sheet with positional starter floors
-**Depends on**: Phase 20
-**Research**: Unlikely (internal validation)
-**Plans**: TBD
-
-Plans:
-- [x] 21-01: 5YO Validation — completed 2026-04-03
-- [x] 21-02: PPE Validation — completed 2026-04-04
-
-#### Phase 22: Buyout/Restructure
-
-**Goal**: Validate B/R eligibility and salary tier calculations against BR Auc sheet
-**Depends on**: Phase 21
-**Research**: Unlikely (internal validation)
-**Plans**: TBD
-
-Plans:
-- [x] 22-01: B/R Eligibility & Salary Tier Validation — completed 2026-04-04
-
-#### Phase 23: Cross-Tool Validation
-
-**Goal**: Full 1,549-player sweep comparing all computed eligibility and prices against every spreadsheet tab — zero discrepancies target
-**Depends on**: Phase 22
-**Research**: Unlikely (internal validation)
-**Plans**: TBD
-
-Plans:
-- [x] 23-01: Cross-Tool Validation Sweep — completed 2026-04-04
+</details>
 
 ## Progress
 

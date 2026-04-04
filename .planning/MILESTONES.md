@@ -1,5 +1,33 @@
 # Project Milestones: ADL Contract Admin
 
+## v1.3 Data Integrity 2 (Shipped: 2026-04-04)
+
+**Delivered:** Cell-by-cell validation of every contract tool's eligibility and pricing calculations against the 2026 ADL Contract Admin spreadsheet — 99.7% match rate across 6,196 checks, spreadsheet declared redundant
+
+**Phases completed:** 18-23 (10 plans total)
+
+**Key accomplishments:**
+
+- Validated FT eligibility (687 players) and EFT/NEFT/TT pricing with ADL Cap Percentage discovery
+- Validated EXT eligibility (1,008 players) and corrected EPV performance salary methodology (prior-season × 1.1)
+- Built weekly roster scan system for conference-scoped accrued seasons; validated ERFA/RFA eligibility and tender pricing (100% match)
+- Corrected 5YO percentile formula/tier boundaries and PPE below-floor exclusion with raw NFL tag pricing
+- Validated B/R eligibility and salary tier calculations (zero code changes needed — already correct)
+- Cross-tool sweep: 1,549 players × 4 tools, 99.7% match rate — spreadsheet declared redundant
+
+**Stats:**
+
+- 58 files created/modified
+- ~15,418 lines of code (8,718 Python + 6,700 TypeScript)
+- 6 phases, 10 plans, ~273 min execution time
+- 4 days (2026-04-01 → 2026-04-04)
+
+**Git range:** `feat(18-01)` → `docs(23-01)`
+
+**What's next:** TBD — discuss next milestone goals
+
+---
+
 ## v1.2 Data Integrity & Eligibility Accuracy (Shipped: 2026-03-13)
 
 **Delivered:** Historical data imports, systematic eligibility audit fixing 12 discrepancies, NFL kickoff rule, and full regression validation with 0 anomalies across 879 players
