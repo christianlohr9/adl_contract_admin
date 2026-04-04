@@ -91,10 +91,10 @@ Plans:
 **Goal**: Full UX review as a designer — layout, flows, visual hierarchy, mobile responsiveness, polish. Make commissioners say "yes, this replaces the spreadsheet"
 **Depends on**: Phase 24
 **Research**: Unlikely (internal UI patterns)
-**Plans**: TBD
+**Status**: In progress
 
 Plans:
-- [ ] 25-01: TBD
+- [x] 25-01: Dark base theme + team color system — completed 2026-04-04
 
 #### Phase 26: Production Configuration
 
