@@ -8,7 +8,6 @@ from sqlalchemy.orm import joinedload
 
 from app.core.db import SessionDep
 from app.models.contract import Contract
-from app.models.player import Player
 from app.models.roster import RosterEntry, RosterStatus
 from app.models.team import Team
 
