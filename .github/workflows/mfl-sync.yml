@@ -1,0 +1,23 @@
+name: MFL Sync
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger MFL sync
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "${{ secrets.API_URL }}/api/sync/trigger" \
+            -H "Content-Type: application/json")
+
+          if [ "$HTTP_CODE" -eq 202 ]; then
+            echo "Sync triggered successfully (HTTP $HTTP_CODE)"
+          else
+            echo "Sync trigger failed (HTTP $HTTP_CODE)"
+            exit 1
+          fi
