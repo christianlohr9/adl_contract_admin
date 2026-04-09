@@ -118,7 +118,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 27-01: TBD
+- [x] 27-01: Deployment artifacts (Dockerfile, render.yaml, GitHub Actions sync) — completed 2026-04-09
 
 ## Progress
 
@@ -153,4 +153,4 @@ Phases execute in numeric order. Next phase continues from 24.
 | 24. Repo Polish | v1.4 | 2/2 | Complete | 2026-04-04 |
 | 25. UX Audit & Redesign | v1.4 | 4/4 | Complete | 2026-04-04 |
 | 26. Production Configuration | v1.4 | 1/1 | Complete | 2026-04-04 |
-| 27. No-Cost Deployment | v1.4 | 0/? | Not started | - |
+| 27. No-Cost Deployment | v1.4 | 1/1 | Complete | 2026-04-09 |
