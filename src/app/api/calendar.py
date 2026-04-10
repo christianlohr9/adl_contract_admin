@@ -14,7 +14,7 @@ from app.schemas.calendar import (
 router = APIRouter(prefix="/api/calendar", tags=["calendar"])
 
 
-@router.get("/", response_model=list[SeasonCalendarSchema])
+@router.get("", response_model=list[SeasonCalendarSchema])
 async def list_calendars(
     session: SessionDep,
 ) -> list[SeasonCalendarSchema]:

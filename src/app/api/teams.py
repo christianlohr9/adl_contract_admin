@@ -29,7 +29,7 @@ from app.services.roster_eligibility import get_roster_eligibility
 router = APIRouter(prefix="/api/teams", tags=["teams"])
 
 
-@router.get("/", response_model=list[TeamSchema])
+@router.get("", response_model=list[TeamSchema])
 async def list_teams(session: SessionDep) -> list[TeamSchema]:
     """Return all 32 teams, ordered by name."""
     result = await session.execute(select(Team).order_by(Team.name))

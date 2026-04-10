@@ -67,7 +67,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await engine.dispose()
 
 
-app = FastAPI(title="ADL Contract Admin", lifespan=lifespan)
+app = FastAPI(title="ADL Contract Admin", lifespan=lifespan, redirect_slashes=False)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
