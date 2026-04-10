@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,6 +32,28 @@ class Settings(BaseSettings):
     sync_interval_hours: int = 6
     sync_enabled: bool = True
     sync_historical_years: list[int] = [2020, 2021, 2022, 2023, 2024, 2025]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _parse_cors_origins(cls, v: object) -> object:
+        """Accept comma-separated string or JSON array for CORS_ORIGINS."""
+        if isinstance(v, str):
+            s = v.strip()
+            if s.startswith("["):
+                return v  # let pydantic parse as JSON
+            return [item.strip() for item in s.split(",") if item.strip()]
+        return v
+
+    @field_validator("sync_historical_years", mode="before")
+    @classmethod
+    def _parse_sync_historical_years(cls, v: object) -> object:
+        """Accept comma-separated string or JSON array for SYNC_HISTORICAL_YEARS."""
+        if isinstance(v, str):
+            s = v.strip()
+            if s.startswith("["):
+                return v
+            return [int(item.strip()) for item in s.split(",") if item.strip()]
+        return v
 
 
 @lru_cache
