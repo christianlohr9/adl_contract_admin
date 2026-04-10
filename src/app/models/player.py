@@ -26,8 +26,8 @@ class Player(TimestampMixin, Base):
     )
     name: Mapped[str] = mapped_column(String(200), comment="Display name")
     position: Mapped[str] = mapped_column(
-        String(3),
-        comment="Position: QB, RB, WR, TE, PK, PN, DT, DE, LB, CB, S",
+        String(10),
+        comment="Position: QB, RB, WR, TE, PK, PN, DT, DE, LB, CB, S, Coach, TMQB, etc.",
     )
     nfl_team: Mapped[str | None] = mapped_column(
         String(3), nullable=True, comment="3-letter NFL team code, null for free agents"
