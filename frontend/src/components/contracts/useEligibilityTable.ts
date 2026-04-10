@@ -84,7 +84,7 @@ export function transformEligibilityData(
       }
 
       // Set the action value — convert from Decimal string to number
-      (row as Record<string, unknown>)[field] =
+      (row as unknown as Record<string, unknown>)[field] =
         player.headline_value != null ? Number(player.headline_value) : null;
     }
   }

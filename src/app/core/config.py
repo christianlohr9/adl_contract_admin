@@ -1,9 +1,10 @@
 """Application configuration via Pydantic v2 settings."""
 
 from functools import lru_cache
+from typing import Annotated
 
 from pydantic import field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -26,12 +27,19 @@ class Settings(BaseSettings):
     mfl_backfill_request_delay: float = 6.0
 
     # CORS configuration
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
 
     # Sync scheduler configuration
     sync_interval_hours: int = 6
     sync_enabled: bool = True
-    sync_historical_years: list[int] = [2020, 2021, 2022, 2023, 2024, 2025]
+    sync_historical_years: Annotated[list[int], NoDecode] = [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+    ]
 
     @field_validator("cors_origins", mode="before")
     @classmethod
